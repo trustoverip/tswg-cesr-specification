@@ -309,7 +309,7 @@ Alignment on a four-character (24-bit) boundary requires one pad character this 
 |        T2       |        T1       |        T0       |========P0=======|
 
 ```
-Where:        `bX` represents a bit from `b`, `BX` represents a byte from `b`, `zX` represents a zeroed pad bit, `PX` represents a trailing pad character, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string. We see that Base64 conversion effectively left shifts `a` by four bits plus two pad characters.  The Base64 conversion effectively left shifts `b` by four bits plus one pad character. In other words, the Base64 conversion of `b` is no longer right-aligned with respect to the trailing Base64 character.
+where `bX` represents a bit from `b`, `BX` represents a byte from `b`, `zX` represents a zeroed pad bit, `PX` represents a trailing pad character, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string. We see that Base64 conversion effectively left shifts `a` by two bits plus one pad character. In other words, the Base64 conversion of `b` is no longer right-aligned with respect to the trailing Base64 character.
 
 Finally, `c` requires exactly four Base64 characters to capture all of its twenty-four bits of information. There are no pad characters required.
 
