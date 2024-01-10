@@ -902,9 +902,7 @@ The following table defines the meaning of the symbols used in the Indexed Code 
 
 The policy for placing entries into the tables in general is in order of first needed first-entered basis. In addition, the compact code tables prioritize entries that satisfy the requirement that the associated cryptographic operations maintain at least 128 bits of cryptographic strength. This precludes the entry of many weak cryptographic suites into the compact tables. CESR's compact code table includes only best-of-class cryptographic operations along with common non-cryptographic Primitive types. At the time of this writing, there is the expectation that the National Institute of Standards and Technology (NIST) soon will  approve standardized post-quantum resistant cryptographic operations. When that happens, codes for the most appropriate post-quantum operations will be added. For example, Falcon appears to be one of the leading candidates with open-source code already available.
 
-#### Table 1
-
-Master code table
+#### Master code table
 
 This master table includes both the Primitive and Count code types. The types are separated by headers. The table has 5 columns. These are as follows:
 
@@ -914,16 +912,14 @@ This master table includes both the Primitive and Count code types. The types ar
 4) the length in characters of the count portion of the code
 5) The length in characters of the fully qualified primitive, including code and its appended material or the number of elements in the group. This is empty when variable length.
 
-
-
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
-|            |    Basic One Character Codes  |             |              |              |
+|            | **Basic One Character Codes**     |             |              |              |
 |     `A`    | Seed of Ed25519 private key       |      1      |              |      44      |
 |     `B`    | Ed25519 non-transferable prefix public verification key |      1      |              |      44      |
 |     `C`    | X25519 public encryption key.     |      1      |              |      44      |
 |     `D`    | Ed25519 public verification key   |      1      |              |      44      |
-|     `E`    | Blake3-256 Digest                 |             |      44      |
+|     `E`    | Blake3-256 Digest                 |      1      |              |      44      |
 |     `F`    | Blake2b-256 Digest                |      1      |              |      44      |
 |     `G`    | Blake2s-256 Digest                |      1      |              |      44      |
 |     `H`    | SHA3-256 Digest                   |      1      |              |      44      |
@@ -935,7 +931,7 @@ This master table includes both the Primitive and Count code types. The types ar
 |     `N`    | Big number 4 byte b2              |      1      |              |       12     |
 |     `O`    | X25519 private decryption key     |      1      |              |       44     |
 |     `P`    | X25519 124 char b64 Cipher of 44 char qb64 Seed     |      1      |              |      124     |
-|            |  Basic Two Character Codes    |             |              |              |
+|            | **Basic Two Character Codes**     |             |              |              |
 |    `0A`    | Random salt, seed, private key, or sequence number of length 128 bits |      2      |              |      24      |
 |    `0B`    | Ed25519 signature                 |      2      |              |      88      |
 |    `0C`    | ECDSA secp256k1 signature         |      2      |              |      88      |
@@ -944,7 +940,7 @@ This master table includes both the Primitive and Count code types. The types ar
 |    `0F`    | SHA3-512 Digest                   |      2      |              |      88      |
 |    `0G`    | SHA2-512 Digest                   |      2      |              |      88      |
 |    `0H`    | Long value of length 32 bits      |      2      |              |       8      |
-|            |  Basic Four Character Codes   |             |              |              |
+|            | **Basic Four Character Codes**    |             |              |              |
 |   `1AAA`   | ECDSA secp256k1 non-transferable prefix public verification key   |      4      |              |      48      |
 |   `1AAB`   | ECDSA secp256k1 public verification or encryption key |      4      |              |      48      |
 |   `1AAC`   | Ed448 non-transferable prefix public verification key |      4      |              |      80      |
@@ -953,21 +949,21 @@ This master table includes both the Primitive and Count code types. The types ar
 |   `1AAF`   | Tag Base64 4 chars or 3 byte number  |      4      |              |      8       |
 |   `1AAG`   | DateTime Base64 custom encoded 32 char ISO-8601 DateTime |      4      |              |      36      |
 |   `1AAH`   | X25519 100 char b64 Cipher of 24 char qb64 Salt |      4      |              |      100      |
-|            |  Small Variable Raw Size Codes   |             |              |              |
+|            | **Small Variable Raw Size Codes** |             |              |              |
 |   `4A`     | String Base64 Only Lead Size 0      |      4      |      2        |            |
 |   `5A`     | String Base64 Only Lead Size 1      |      4      |      2        |            |
 |   `6A`     | String Base64 Only Lead Size 2      |      4      |      2        |            |
 |   `4B`     | Bytes Lead Size 0                  |      4      |      2        |            |
 |   `5B`     | Bytes Lead Size 1                  |      4      |      2        |            |
 |   `6B`     | Bytes Lead Size 2                  |      4      |      2        |            |
-|            |  Large Variable Raw Size Codes   |             |              |              |
+|            | **Large Variable Raw Size Codes**  |             |              |              |
 |   `7AAA`   | String Big Base64 Only Lead Size 0 |      8      |      4        |            |
 |   `8AAA`   | String Big Base64 Only Lead Size 1 |      8      |      4        |            |
 |   `7AAA`   | String Big Base64 Only Lead Size 2 |      8      |      4        |            |
 |   `7AAB`   | Bytes Big Lead Size 0              |      8      |      4        |            |
 |   `8AAB`   | Bytes Big Lead Size 1              |      8      |      4        |            |
 |   `9AAB`   | Bytes Big Lead Size 2              |      8      |      4        |            |
-|            |  Counter Four Character Codes |             |              |              |
+|            | **Counter Four Character Codes**   |             |              |              |
 |   `-A##`   | Count of attached qualified Base64 indexed controller signatures |      4      |       2      |       4      |
 |   `-B##`   | Count of attached qualified Base64 indexed witness signatures    |      4      |       2      |       4      |
 |   `-C##`   | Count of attached qualified Base64 nontransferable identifier receipt couples  pre+sig |      4      |       2      |       4      |
@@ -975,31 +971,29 @@ This master table includes both the Primitive and Count code types. The types ar
 |   `-E##`   | Count of attached qualified Base64 first seen replay couples fn+dt |      4      |       2      |       4      |
 |   `-F##`   | Count of attached qualified Base64 transferable indexed sig groups pre+snu+dig + idx sig group|      4      |       2      |       4      |
 |   `-V##`   | Count of total attached grouped material qualified Base64 4 char quadlets |      4      |       2      |       4      |
-|            |  Counter Eight Character Codes |             |              |              |
+|            | **Counter Eight Character Codes** |             |              |              |
 | `-0V#####` | Count of total attached grouped material qualified Base64 4 char quadlets |      8      |       5      |       8      |
-|            |    Protocol Genus Version Codes    |             |              |             |
+|            | **Protocol Genus Version Codes**    |             |              |             |
 |`--AAA###`  | KERI ACDC protocol stack  version      |      8      |       5      |       8     |
 
-#### Table 2
-
-Indexed code table
+#### Indexed code table
 
 |   Code    | Description                            | Code Length | Index Length | Ondex Length | Total Length |
-|:-------- :|:---------------------------------------|:-----------:|:------------:|:------------:|:------------:|
-|           |    Indexed Two Character Codes     |             |              |              |              |
-|    `A#`   | Ed25519 indexed signature both same    |      2      |       1      |      0       |      88      |
-|    `B#`   | Ed25519 indexed signature current only |      2      |       1      |      0       |      88      |
-|    `C#`   | ECDSA secp256k1 indexed sig both same  |      2      |       1      |      0       |      88      |
-|    `D#`   | ECDSA secp256k1 indexed sig curr only  |      2      |       1      |      0       |      88      |
-|           |    Indexed Four Character Codes    |             |              |              |              |
+|:---------:|:---------------------------------------|:-----------:|:------------:|:------------:|:------------:|
+|           | **Indexed Two Character Codes**        |             |              |              |              |
+|    `A#`   | Ed25519 indexed signature both same    |      2      |       1      |       0      |      88      |
+|    `B#`   | Ed25519 indexed signature current only |      2      |       1      |       0      |      88      |
+|    `C#`   | ECDSA secp256k1 indexed sig both same  |      2      |       1      |       0      |      88      |
+|    `D#`   | ECDSA secp256k1 indexed sig curr only  |      2      |       1      |       0      |      88      |
+|           | **Indexed Four Character Codes**       |             |              |              |              |
 |   `0A##`  | Ed448 indexed signature  dual          |      4      |       1      |       1      |      156     |
 |   `0B##`  | Ed448 indexed signature current only   |      4      |       1      |       1      |      156     |
-|           |    Indexed Six Character Codes     |             |              |              |              |
+|           | **Indexed Six Character Codes**        |             |              |              |              |
 | `2A####`  | Ed25519 indexed sig big dual           |      6      |       2      |       2      |      92      |
 | `2B####`  | Ed25519 indexed sig big current only   |      6      |       2      |       2      |      92      |
 | `2C####`  | ECDSA secp256k1 indexed sig big dual   |      6      |       2      |       2      |      92      |
 | `2D####`  | ECDSA secp256k1 idx sig big curr only  |      6      |       2      |       2      |      92      |
-|           |    Indexed Eight Character Codes   |             |              |              |              |
+|           | **Indexed Eight Character Codes**      |             |              |              |              |
 |`3A######` | Ed448 indexed signature  big dual      |      8      |       3      |       3      |      160     |
 |`3B######` | Ed448 indexed signature  big curr only |      8      |       3      |       3      |      160     |
 
@@ -1018,10 +1012,10 @@ The example has only one group that includes nested groups. The example is annot
 -FAB     # Trans Indexed Sig Groups counter code 1 following group
 E_T2_p83_gRSuAYvGhqV3S0JzYEF2dIa-OCPLbIhBO7Y    # trans prefix of signer for sigs
 -EAB0AAAAAAAAAAAAAAAAAAAAAAB    # sequence number of est event of signer's public keys for sigs
-EwmQtlcszNoEIDfqD-Zih3N6o5B3humRKvBBln2juTEM      # digest of est event of signer's public keys for sigs
+EwmQtlcszNoEIDfqD-Zih3N6o5B3humRKvBBln2juTEM    # digest of est event of signer's public keys for sigs
 -AAD     # Controller Indexed Sigs counter code 3 following sigs
-AA5267UlFg1jHee4Dauht77SzGl8WUC_0oimYG5If3SdIOSzWM8Qs9SFajAilQcozXJVnbkY5stG_K4NbKdNB4AQ         # sig 0
-ABBgeqntZW3Gu4HL0h3odYz6LaZ_SMfmITL-Btoq_7OZFe3L16jmOe49Ur108wH7mnBaq2E_0U0N0c5vgrJtDpAQ    # sig 1
+AA5267UlFg1jHee4Dauht77SzGl8WUC_0oimYG5If3SdIOSzWM8Qs9SFajAilQcozXJVnbkY5stG_K4NbKdNB4AQ  # sig 0
+ABBgeqntZW3Gu4HL0h3odYz6LaZ_SMfmITL-Btoq_7OZFe3L16jmOe49Ur108wH7mnBaq2E_0U0N0c5vgrJtDpAQ  # sig 1
 ACTD7NDX93ZGTkZBBuSeSGsAQ7u0hngpNTZTK_Um7rUZGnLRNJvo5oOnnC1J2iBQHuxoq8PyjdT3BHS2LiPrs2Cg  # sig 2
 ```
 
@@ -1153,7 +1147,7 @@ The final serialization may be converted to a python `dict` by deserializing the
 
 The generation steps may be reversed to verify the embedded `SAID`. The `SAID` generation and verification protocol for mappings assumes that the fields in a mapping serialization such as JSON are ordered in stable, round-trippable, reproducible order, i.e., canonical. The natural canonical ordering is called `field insertion order`.
 
-## Example Schema Immutability using JSON Schema with SAIDs
+#### Example Schema Immutability using JSON Schema with SAIDs
 
 `SAIDs` make [JSON Schema](https://json-schema.org/draft/2020-12/json-schema-core.html) fully self-contained with self-referential, unambiguously cryptographically bound, and verifiable content-addressable identifiers. We apply the `SAID` derivation protocol defined above to generate the `$id` field.
 
