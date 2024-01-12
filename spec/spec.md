@@ -284,8 +284,6 @@ The fact that Base64 [[spec: RFC4648]] by itself does not satisfy the Composabil
 
 In CESR, however, both ‘T’ and ‘B’ Domain representations include a prepended Framing code prefix that is structured in such a way as to ensure Composability.
 
-### Example of using prepended code prefixes
-
 Suppose, that Base64 characters are used in the Text domain and binary bytes are used in the Binary domain, called respectively, naive text and naive binary encodings and Domains. Recall that a byte encodes 8 bits of information and a Base64 character encodes 6 bits of information. Furthermore, suppose that there are three Primitives denoted `a`, `b`, and `c` in the naive Binary domain with lengths of 1, 2, and 3 bytes, respectively.
 
 In the following diagrams, each byte is denoted in a naive binary Primitive with zero-based most significant bit first indices, e.g., `a1` is bit one from `a`, `a0` is bit zero, and `A0` for byte zero, `A1` for byte 1, etc.
@@ -311,46 +309,38 @@ And finally, for `c` below:
 |c7:c6:c5:c4:c3:c2:c1:c0|c7:c6:c5:c4:c3:c2:c1:c0|c7:c6:c5:c4:c3:c2:c1:c0|
 ```
 
-## Conversions
+#### Conversions
 
 When doing a naive Base64 conversion of a naive binary Primitive, one Base64 character represents only six bits from a given byte. In the following diagrams, each character of a Base64 conversion is denoted using zero-based indices, with the most significant character first.
 
 Therefore, encoding `a` in Base64 requires at least two Base64 characters because the zeroth character only captures the six bits from the first byte, and another character is needed to capture the other two bits. The convention in Base64 uses a Base64 character where the non-coding bits are zeros. This is diagrammed as follows:
-
-### Diagram 1
 
 ```text
 |           A0          |
 |a7:a6:a5:a4:a3:a2:a1:a0|z3:z2:z1:z0|
 |        T1       |        T0       |
 ```
-where `aX` represents a bit from `A0` and `zX` represents a zeroed pad bit, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string.
+where `aX` represents a bit from `a`, `AX` represents a byte from `a`, `zX` represents a zeroed pad bit, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string.
 
 Naive Base64 encoding always pads each individual conversion of a string of bytes to an even multiple of four characters. This provides a property that is not true Composability but does ensure that multiple distinct concatenated conversions from binary to Base64 text are separable. It may be described as a sort of one-way composability. So, with pad characters, denoted by replacing the spaces with `=` characters, the Base64 conversion of `a` is as follows:
-
-#### Diagram 2
 
 ```text
 |           A0          |
 |a7:a6:a5:a4:a3:a2:a1:a0|z3:z2:z1:z0|
 |        T3       |        T2       |========P1=======|========P0=======|
 ```
-where `aX` represents a bit from `a`, `AX` represents a byte from `a`, `zX` represents a zeroed pad bit, `PX` represents a trailing pad character, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string. We see that Base64 conversion effectively left shifts `a` by four bits plus two pad characters. In other words, the Base64 conversion of `a` is no longer right-aligned with respect to the trailing Base64 character.
+where `PX` represents a trailing pad character. We see that Base64 conversion effectively left shifts `a` by four bits plus two pad characters. In other words, the Base64 conversion of `a` is no longer right-aligned with respect to the trailing Base64 character.
 
 Likewise, `b` requires at least three Base64 characters to capture all of its sixteen bits of information as follows:
-
-#### Diagram 3
 
 ```text
 |           B1          |           B0          |
 |b7:b6:b5:b4:b3:b2:b1:b0|b7:b6:b5:b4:b3:b2:b1:b0|z1:z0|
 |        T2       |        T1       |        T0       |
 ```
-Where:       `bX` represents a bit from `b`, `BX` represents a byte from `b`, `zX` represents a zeroed pad bit, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string.
+where `bX` represents a bit from `b`, `BX` represents a byte from `b`, `zX` represents a zeroed pad bit, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string.
 
 Alignment on a four-character (24-bit) boundary requires one pad character this becomes:
-
-#### Diagram 4
 
 ```text
 |           B1          |           B0          |
@@ -358,22 +348,18 @@ Alignment on a four-character (24-bit) boundary requires one pad character this 
 |        T2       |        T1       |        T0       |========P0=======|
 
 ```
-where `bX` represents a bit from `b`, `BX` represents a byte from `b`, `zX` represents a zeroed pad bit, `PX` represents a trailing pad character, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string. We see that Base64 conversion effectively left shifts `a` by two bits plus one pad character. In other words, the Base64 conversion of `b` is no longer right-aligned with respect to the trailing Base64 character.
+where `PX` represents a trailing pad character. We see that Base64 conversion effectively left shifts `b` by two bits plus one pad character. In other words, the Base64 conversion of `b` is no longer right-aligned with respect to the trailing Base64 character.
 
 Finally, `c` requires exactly four Base64 characters to capture all of its twenty-four bits of information. There are no pad characters required.
-
-#### Diagram 5
 
 ```text
 |           C0          |           C1          |           C2          |
 |c7:c6:c5:c4:c3:c2:c1:c0|c7:c6:c5:c4:c3:c2:c1:c0|c7:c6:c5:c4:c3:c2:c1:c0|
 |        T3       |        T2       |        T1       |        T0       |
 ```
-Where:        `cX` represents a bit from `c`, `CX` represents a byte from `c`, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string. There are no bit shifts because there are no pad bits nor pad characters needed, and the resulting Base64 conversion is right aligned with respect to the trailing Base64 character.
+where `cX` represents a bit from `c`, `CX` represents a byte from `c`, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string. There are no bit shifts because there are no pad bits nor pad characters needed, and the resulting Base64 conversion is right aligned with respect to the trailing Base64 character.
 
 Suppose `a + b` now is concatenated into a three-byte composition in the naive Binary domain before Base64 encoding the concatenated whole. 
-
-#### Diagram 6
 
 ```text
 |           A0          |           B1          |           B0          |
@@ -381,11 +367,9 @@ Suppose `a + b` now is concatenated into a three-byte composition in the naive B
 |        T3       |        T2       |        T1       |        T0       |
 ```
 
-The least significant two bits of `A0` are encoded into the same character, `T2` as the four most significant four bits of `B1`. Therefore, a Text domain parser would be unable to cleanly de-concatenate on a character-by-character basis the conversion of `a + b` into separate Text domain Primitives. Therefore, standard (naive) binary to Base64 conversion does not satisfy the Composability constraint.
+The least significant two bits of `A0` are encoded into the same character, `T2`, as the most significant four bits of `B1`. Therefore, a Text domain parser would be unable to cleanly de-concatenate on a character-by-character basis the conversion of `a + b` into separate Text domain Primitives. Therefore, standard (naive) binary to Base64 conversion does not satisfy the Composability constraint.
 
 Starting instead in the Text domain with Primitives `u` and `v` of lengths 1 and 3 characters, respectively, these two Primitives can be concatenated as `u + v` in the Text domain and then converted as a whole to naive binary. 
-
-#### Diagram 7
 
 ```text
 |        U0       |        V2       |        V1       |        V0       |
@@ -397,23 +381,23 @@ All six bits of information in `U0` are  included in `B2` along with the least s
 
 The Composability property is satisfied only if each Primitive in the ‘T’ Domain is an integer multiple of four Base64 characters (24 bits) and each Primitive in the ‘B’ Domain is an integer multiple of three bytes (24 bits). Each of either four Base64 text characters or three binary bytes captures 24 bits of information. Twenty-four is the least common multiple of six and eight. Therefore, in order to cleanly capture integer multiples of twenty-four bits of information, Primitive lengths must be integer multiples of either four Base64 text characters or three binary bytes in their respective Domains. Given that the constraint of alignment on 24-bit boundaries in either Text domain or Binary domain is satisfied, the conversion of concatenated Primitives in one Domain never results in the same byte or character in the converted Domain sharing bits from two adjacent Primitives. This constraint of 24-bit alignment, therefore, satisfies the Composability property.
 
-To elaborate, when converting Streams made up of concatenated Primitives back and forth between the ‘T’ and ‘B’ Domains, the converted results will not align on byte or character boundaries at the end of each Primitive unless the Primitives themselves are integer multiples of twenty-four bits of information. In other words, all Primitives must be aligned on 24-bit boundaries to satisfy the Composability property. This means that the length of any Primitive in the ‘B’ Domain must be an integer multiple of three binary bytes with a minimum length of three binary bytes. Likewise, this means that the length of any Primitive in the ‘T’ Domain must  be an integer multiple of 4 Base64 characters with a minimum length of four Base64 characters.
+To elaborate, when converting Streams made up of concatenated Primitives back and forth between the ‘T’ and ‘B’ Domains, the converted results will not align on byte or character boundaries at the end of each Primitive unless the Primitives themselves are integer multiples of twenty-four bits of information. In other words, all Primitives must be aligned on 24-bit boundaries to satisfy the Composability property. This means that the length of any Primitive in the ‘B’ Domain must be an integer multiple of three binary bytes with a minimum length of three binary bytes. Likewise, this means that the length of any Primitive in the ‘T’ Domain must  be an integer multiple of four Base64 characters with a minimum length of four Base64 characters.
 
-### Stable Framing Codes in the text domain
+#### Stable Framing Codes in the text domain
 
 There are many coding schemes that could satisfy the Composability constraint of alignment on 24-bit boundaries. The main reason for using a ‘T’ Domain-centric encoding is higher usability, readability, or human friendliness. A primary design goal of CESR is to select an encoding approach that provides high usability, readability, or human friendliness in the ‘T’ domain. This type of usability goal simply is not realizable in the ‘B’ Domain. The ‘B’ Domain's purpose is merely to provide convenient compactness at scale. Usability in the ‘T’ Domain is maximized when the type portion of the prepended framing code and its postpended value are Stable, i.e., ‘invariant’. 
 
-#### Stable type encoding
+##### Stable type encoding
 
 Stable type coding makes it much easier to recognize Primitives of a given type when debugging source, reading Messages, or documents in the ‘T’ domain that include encoded Primitives. This is true even when those Primitives have different lengths or values. For Primitive types that have fixed lengths, i.e., all Primitives of that type have the same length, Stable type coding aids not only visual type but visual size recognition.
 
 The usability of Stable type coding is maximized when the type portion appears first in the Framing code. Stability also requires that for a given type, the type coding portion must consume a fixed integer number of characters in the ‘T’ Domain. To clarify, as used here, Stable type coding in the ‘T’ Domain never shares information bits with either length or value coding in any given Framing code character and appears first in the Framing code. Stable type coding in the ‘T’ domain translates to Stable type coding in the ‘B’ Domain except that the type coding portion of the Framing code may not respect byte boundaries. This is an acceptable tradeoff because binary-domain parsing tools easily accommodate bit fields and bit shifts while text-domain parsing tools do not. Generally, Text domain parsing tools only process whole characters. This is another reason to impose a stability constraint on the ‘T’ Domain type coding instead of the ‘B’ Domain.
 
-#### Stable value encoding
+##### Stable value encoding
 
 A secondary usability constraint is recognizable or readable Stable value coding in the Text, ‘T’, domain. Not all Primitives benefit from Stable value coding. Any representation of a value that is a long random string of characters is essentially unreadable or recognizable versus some other representation. Bit shifts of the value, as long as they are static, do not change the readability. This is not true, however, of values that are small numbers. Base64 encodings of small numbers are readable. for example, the numerical sequence of decimal numbers, `0, 1, 2`, is recognizable as the sequence of Base64 characters, `A, B, C`. Thus, all else equal, readable Stable value encodings also contribute to usability, at least in some cases.
 
-### Code characters and lead bytes
+#### Code characters and lead bytes
 
 There are two ways to provide the required alignment on 24-bit boundaries to satisfy the Composability property. One is to post-pad, with trailing pad characters, `=`, the Text domain encoding to ensure that the ‘T’ Domain Primitive has a total size (length) that is an integer multiple of 4. This is what naive Base64 encoding does. The other way is to pre-pad leading bytes of zeros to the raw binary value before conversion to Base64 to ensure the total size of the raw binary value with pre-pad bytes is an integer multiple of 3 bytes. This ensures that the size in characters of the Base64 conversion of the pre-padded raw binary is an integer multiple of 4 characters.
 
@@ -429,7 +413,7 @@ Similarly, a 64-byte raw binary value needs 2 lead bytes to make the combination
 
 In summary, there are two possibilities for CESR's coding scheme to ensure a composable 24-bit alignment. The first is to add trailing pad characters post-conversion. The second is to add leading pad bytes pre-conversion. Because of the greater readability of the value portion of both the fully qualified Text, ‘T’, or fully qualified Binary, ‘B’, Domain representations, the second approach was chosen for CESR.
 
-### Multiple code table approach
+#### Multiple code table approach
 
 The design goals for CESR Framing codes include minimizing the Framing code size for the most frequently used (most popular) codes while also supporting a sufficiently comprehensive set of codes for all foreseeable current and future applications. This requires a high degree of both flexibility and extensibility. This is best achieved with multiple code tables each with a different coding scheme that is optimized for a different set of features instead of a single one-size-fits-all scheme. A specification that supports multiple coding schemes may appear on the surface to be much more complex to implement but careful design of the coding schemes can reduce implementation complexity by using a relatively simple single integrated parse and conversion table. Parsing in any given Domain given Stable type codes may then be implemented with a single function that simply reads the appropriate type selector in the table to know how to parse and convert the rest of the Primitive.
 
