@@ -111,7 +111,7 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 [[def: Domain ]]
 
-~ The Primitives that are defined in CESR inhabit three different domains each with a different abstract representation – Text (T), Binary (B) and Raw binary (R).
+~ The Primitives that are defined in CESR inhabit three different domains each with a different abstract representation – Text (T), Binary (B) and Raw binary \(R\).
 
 [[def: Primitive]]
 
@@ -192,7 +192,7 @@ https://github.com/trustoverip/tswg-cesr-specification/issues/12
 
 ### Composability
 
-An encoding has Composability when any set of self-framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss. Essentially, Composability provides round-trippable lossless conversion between Text and Binary domain representations of any set of concatenated Primitives when converted as a set not merely individually. The property enables a Stream processor to safely convert en-masse a Stream in the  Text domain to an equivalent Stream in the Binary domain  for compact transmission that may be safely converted back to Text domain en-masse by a Stream processor at the other end for further processing or archival storage. The use of Count codes as independently composable groups enables hierarchical compositions. Such a hierarchically composable encoding protocol enables pipelining (multiplexing and de-multiplexing) of complex Streams in either text or compact binary. This allows management at scale for high-bandwidth applications that benefit from core affinity off-loading of Streams [[ref: Affinity].
+An encoding has Composability when any set of self-framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss. Essentially, Composability provides round-trippable lossless conversion between Text and Binary domain representations of any set of concatenated Primitives when converted as a set not merely individually. The property enables a Stream processor to safely convert en-masse a Stream in the  Text domain to an equivalent Stream in the Binary domain  for compact transmission that may be safely converted back to Text domain en-masse by a Stream processor at the other end for further processing or archival storage. The use of Count codes as independently composable groups enables hierarchical compositions. Such a hierarchically composable encoding protocol enables pipelining (multiplexing and de-multiplexing) of complex Streams in either text or compact binary. This allows management at scale for high-bandwidth applications that benefit from core affinity off-loading of Streams [[ref: Affinity]].
 
 ### Abstract domain representations
 
@@ -221,26 +221,6 @@ Given these transformations, a complete a circuit of transformations can be comp
 ##### Examples of circuits of transformations
 
 ###### Example 1
-Starting in the ‘R’ Domain, a circuit that crosses into the ‘T' and ‘B’ Domains can be traversed and then crossed back into the ‘R’ Domain as follows:
-
-```text
-R->T(R)->T->B(T)->B->R(B)->R
-```
-
-##### Example 2
-Likewise, starting in the ‘R’ Domain, a circuit that crosses into the ‘B’ and ‘T’ Domains and then crossed back into the ‘R’ Domain as follows:
-
-```text
-R->B(R)->B->T(B)->T->R(T)->R
-```
-
-Concatenation composability property
-
-Let `+` represent concatenation. Concatenation is associative and may be applied to any two Primitives or any two groups or sets of concatenated Primitives. 
-
-##### Examples of circuits of transformations
-
-###### Example 1
 
 Starting in the ‘R’ Domain, a circuit that crosses into the ‘T' and ‘B’ Domains can be traversed and then crossed back into the ‘R’ Domain as follows:
 
@@ -256,9 +236,45 @@ Likewise, starting in the ‘R’ Domain, a circuit that crosses into the ‘B�
 R->B(R)->B->T(B)->T->R(T)->R
 ```
 
-Concatenation composability property
+#### Concatenation composability property
 
-Let `+` represent concatenation. Concatenation is associative and may be applied to any two Primitives or any two groups or sets of concatenated Primitives. 
+Let `+` represent concatenation. Concatenation is associative and may be applied to any two Primitives or any two groups or sets of concatenated Primitives. For example:
+
+```text
+t[0] + t[1] + t[2] + t[3] = (t[0] + t[1]) + (t[2] + t[3])
+```
+
+If we let `cat(x[k])` denote the concatenation of all elements of a set of indexed primitives `x[k]` where each element is indexed by a unique value of `k`. Given the indexed representation, we can express the transformation between domains of a concatenated set of primitives as follows:
+
+Let `T(cat(b[k]))` denote the concrete transformation of a given concatenated set of primitives, `cat(b[k])` from the *B* domain to the *T* domain.
+
+Let `B(cat(t[k]))` denote the concrete transformation of a given concatenated set of primitives, `cat(t[k])` from the *T* domain to the *B* domain.
+
+The *concatenation composability property* or *composability* for short, between *T* and *B* is expressed as follows:
+
+Given a set of primitives `b[k]` and `t[k]` and transformations `T(B)` and `B(T)` such that `t[k] = T(b[k])` and `b[k] = B(t[k])` for all `k`, then `T(B)` and `B(T)` are jointly concatenation composable if and only if,
+
+```text
+T(cat(b[k]))=cat(T(b[k])) and B(cat(t[k]))=cat(B(t[k])) for all k.
+```
+
+Basically, *composability* (over concatenation) means that the transformation of a set (as a whole) of concatenated primitives is equal to the concatenation of the set of individually transformed primitives.
+
+For example, suppose we have two primitives in the text domain, namely, `t[0]` and `t[1]` that each transforms, respectively, to primitives in the binary domain, namely, `b[0]` and `b[1]`. The transformation duals, `B(T)` and `T(B)`, are composable if and only if,
+
+```text
+B(t[0] + t[1]) = B(t[0]) + B(t[1]) = b[0] + b[1]
+```
+
+and
+
+```text
+T(b[0] + b[1]) = T(b[0]) + T(b[1]) = t[0] + t[1].
+```
+
+The *composability* property defined above allows us to create arbitrary compositions of primitives via concatenation in either the *T* or *B* domain and then convert the composition en masse to the other domain and then de-concatenate the result without loss. The self-framing property of the primitives enables de-concatenation.
+
+The *composability* property is an essential building block for streaming in either domain. The use of framing primitives that count or group other primitives enables multiplexing and demultiplexing of arbitrary groups of primitives for pipelining and/or on or offloading of streams. The text domain representation of a stream enables better usability (readability), and the binary domain representation of a stream enables better compactness. In addition, pipelined hierarchical composition codes allow efficient conversion or off-loading for concurrent processing of composed (concatenated) groups of primitives in a stream without having to individually parse each primitive before off-loading.
 
 ### Concrete domain representations
 
@@ -293,6 +309,7 @@ And finally, for `c` below:
 ```text
 |           C2          |           C1          |           C0          |
 |c7:c6:c5:c4:c3:c2:c1:c0|c7:c6:c5:c4:c3:c2:c1:c0|c7:c6:c5:c4:c3:c2:c1:c0|
+```
 
 ## Conversions
 
