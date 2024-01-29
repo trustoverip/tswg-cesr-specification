@@ -389,33 +389,33 @@ There are many coding schemes that could satisfy the Composability constraint of
 
 ##### Stable type encoding
 
-Stable type coding makes it much easier to recognize Primitives of a given type when debugging source, reading Messages, or documents in the ‘T’ domain that include encoded Primitives. This is true even when those Primitives have different lengths or values. For Primitive types that have fixed lengths, i.e., all Primitives of that type have the same length, Stable type coding aids not only visual type but visual size recognition.
+Stable type coding makes it much easier to recognize Primitives of a given type when debugging source, reading Messages, or documents in the ‘T’ domain that include encoded Primitives. This is true even when those Primitives have different lengths or values. For Primitive types that have fixed lengths, i.e., all Primitives of that type have the same length, Stable type coding aids visual type and visual size recognition. Stable type coding means that the leading characters that determine the type do not change when any other portion of the primitive changes.
 
 The usability of Stable type coding is maximized when the type portion appears first in the Framing code. Stability also requires that for a given type, the type coding portion must consume a fixed integer number of characters in the ‘T’ Domain. To clarify, as used here, Stable type coding in the ‘T’ Domain never shares information bits with either length or value coding in any given Framing code character and appears first in the Framing code. Stable type coding in the ‘T’ domain translates to Stable type coding in the ‘B’ Domain except that the type coding portion of the Framing code may not respect byte boundaries. This is an acceptable tradeoff because binary-domain parsing tools easily accommodate bit fields and bit shifts while text-domain parsing tools do not. Generally, Text domain parsing tools only process whole characters. This is another reason to impose a stability constraint on the ‘T’ Domain type coding instead of the ‘B’ Domain.
 
 ##### Stable value encoding
 
-A secondary usability constraint is recognizable or readable Stable value coding in the Text, ‘T’, domain. Not all Primitives benefit from Stable value coding. Any representation of a value that is a long random string of characters is essentially unreadable or recognizable versus some other representation. Bit shifts of the value, as long as they are static, do not change the readability. This is not true, however, of values that are small numbers. Base64 encodings of small numbers are readable. for example, the numerical sequence of decimal numbers, `0, 1, 2`, is recognizable as the sequence of Base64 characters, `A, B, C`. Thus, all else equal, readable Stable value encodings also contribute to usability, at least in some cases.
+A secondary usability constraint is recognizable or readable Stable value coding in the Text, ‘T’, domain. Stable value encoding means that the trailing Base64 characters that encode the primitive value are right aligned. This means one can manually confirm values are the same. Not all Primitives benefit from Stable value coding. Any representation of a value that is a long random string of characters is essentially unreadable or recognizable versus some other representation. Consequently, bit shifts of the value that result in leading or trailing zero pads, as long as they are static, do not change the readability. This is not true, however, of values that are small numbers. Base64 encodings of small numbers are readable. for example, the numerical sequence of decimal numbers, `0, 1, 2`, is recognizable as the sequence of Base64 characters, `A, B, C`. Thus, all else equal, readable Stable value encodings also contribute to usability, at least in some cases.  The combination of stable leading type encoding and stable trailing value encoding means that any zero padding must appear in the middle of the primitive, after the type code, but before the value.
 
 #### Code characters and lead bytes
 
-There are two ways to provide the required alignment on 24-bit boundaries to satisfy the Composability property. One is to post-pad, with trailing pad characters, `=`, the Text domain encoding to ensure that the ‘T’ Domain Primitive has a total size (length) that is an integer multiple of 4. This is what naive Base64 encoding does. The other way is to pre-pad leading bytes of zeros to the raw binary value before conversion to Base64 to ensure the total size of the raw binary value with pre-pad bytes is an integer multiple of 3 bytes. This ensures that the size in characters of the Base64 conversion of the pre-padded raw binary is an integer multiple of 4 characters.
+There are two ways to provide the required alignment on 24-bit boundaries to satisfy the Composability property. One is to post-pad (with trailing pad characters, `=`) the Text domain encoding to ensure that the ‘T’ Domain Primitive has a total size (length) that is an integer multiple of 4. This is what naive Base64 encoding does. The other way is to pre-pad leading bytes of zeros to the raw binary value before conversion to Base64 to ensure the total size of the raw binary value with pre-pad bytes is an integer multiple of 3 bytes. This ensures that the size in characters of the Base64 conversion of the pre-padded raw binary is an integer multiple of 4 characters. This means that, effectively, value padding shows up as a mid-pad relative to the full primitive with a prepended type code.
 
-Given the second approach, there is one of two options that depend on the specific code. In the first option, an appropriate number of text characters that result from the conversion of a porting of the leading pre-pad zero bytes are replaced with the appropriate number of code characters. In the second option, the code characters are pre-pended to the conversion with leading zeros intact. In the second option, the length of the pre-pended type code must also, thereby, be an integer multiple of 4 characters. In either option, the total length of the ‘T’ Domain Primitive with code is an integer multiple of 4 characters.
+Given pre-padded values, one of two options is available that depends on the specific code. In the first option, an appropriate number of text characters that result from the conversion of a porting of the leading pre-pad zero bytes are replaced with the appropriate number of code characters. In the second option, the code characters are pre-pended to the conversion with leading zeros intact. In the second option, the length of the pre-pended type code must also, thereby, be an integer multiple of 4 characters. In either option, the total length of the ‘T’ Domain Primitive with code is an integer multiple of 4 characters.
 
-The first option may be more compact in some cases than the second. The second option may be easier to compute in some cases. The most significant advantage of the second option is that the value portion of is Stable and more readable both in the Text, ‘T’, Domain and in the Binary, ‘B’, Domain because the value portion is not shifted by the Base64 conversion as it is with the first option.
+The first option may be more compact in some cases than the second. The second option may be easier to compute in some cases. The most significant advantage of the second option is that the value portion is Stable and more readable both in the Text, ‘T’, Domain and in the Binary, ‘B’, Domain because the value portion is not shifted by the Base64 conversion as it is with the first option.
 
-In order to avoid confusion with the use of the term `pad character`, when pre-padding with bytes that are not replaced later, the term `lead bytes` is used. The term pad may be confusing not merely because both ways use a type of padding but it is also true that the number of pad characters when padding post-conversion equals the number of lead bytes when padding pre-conversion.
+In order to avoid confusion with the use of the term 'pad character' when pre-padding with bytes that are not replaced later, the term 'lead bytes' is used. The term pad may be confusing not merely because both ways use a type of padding, but it is also true that the number of pad characters when padding post-conversion equals the number of lead bytes when padding pre-conversion.
 
-Suppose that the raw binary value is 32 bytes in length. The next higher integer multiple of 3 is 33 bytes. Thus 1 additional leading pad byte is needed to make the size (length in byte) of raw binary an integer multiple of 3. The 1 lead byte makes that combination a total of 33 bytes in length. The resultant Base64 converted value will be 44 characters in length, which is an integer multiple of 4 characters. In contrast, recall that when we convert a 32-byte raw binary value to Base64 the converted value will have 1 trailing pad character. In both cases, the resultant length in Base64 is 44 characters.
+Suppose that the raw binary value is 32 bytes in length. The next higher integer multiple of 3 is 33 bytes. Thus 1 additional leading pad byte is needed to make the size (length in byte) of raw binary an integer multiple of 3. The 1 lead byte makes that combination a total of 33 bytes in length. The resultant Base64 converted value will be 44 characters in length, which is an integer multiple of 4 characters. In contrast, recall that when we convert a 32-byte raw binary value to Base64, the converted value will have 1 trailing pad character. In both cases, the resultant length in Base64 is 44 characters.
 
-Similarly, a 64-byte raw binary value needs 2 lead bytes to make the combination 66 bytes in length where 66 is the next integer multiple of 3 greater than 64. When converted the result is 88 characters in length. The number of pad characters added on the result of the Base64 conversion of a 64-byte raw binary is also 2.
+Similarly, a 64-byte raw binary value needs 2 lead bytes to make the combination 66 bytes in length, where 66 is the next integer multiple of 3 greater than 64. When converted, the result is 88 characters in length. The number of pad characters added on the result of the Base64 conversion of a 64-byte raw binary is also 2.
 
 In summary, there are two possibilities for CESR's coding scheme to ensure a composable 24-bit alignment. The first is to add trailing pad characters post-conversion. The second is to add leading pad bytes pre-conversion. Because of the greater readability of the value portion of both the fully qualified Text, ‘T’, or fully qualified Binary, ‘B’, Domain representations, the second approach was chosen for CESR.
 
 #### Multiple code table approach
 
-The design goals for CESR Framing codes include minimizing the Framing code size for the most frequently used (most popular) codes while also supporting a sufficiently comprehensive set of codes for all foreseeable current and future applications. This requires a high degree of both flexibility and extensibility. This is best achieved with multiple code tables each with a different coding scheme that is optimized for a different set of features instead of a single one-size-fits-all scheme. A specification that supports multiple coding schemes may appear on the surface to be much more complex to implement but careful design of the coding schemes can reduce implementation complexity by using a relatively simple single integrated parse and conversion table. Parsing in any given Domain given Stable type codes may then be implemented with a single function that simply reads the appropriate type selector in the table to know how to parse and convert the rest of the Primitive.
+The design goals for CESR Framing codes include minimizing the Framing code size for the most frequently used (most popular) codes while also supporting a sufficiently comprehensive set of codes for all foreseeable current and future applications. This requires a high degree of both flexibility and extensibility. This is best achieved with multiple code tables with a different coding scheme optimized for a different set of features instead of a single one-size-fits-all scheme. A specification that supports multiple coding schemes may appear on the surface to be much more complex to implement, but careful design of the coding schemes can reduce implementation complexity by using a relatively simple single integrated parse and conversion table. Parsing in any given Domain given Stable type codes may then be implemented with a single function that simply reads the appropriate type selector in the table to know how to parse and convert the rest of the Primitive.
 
 ## Text coding scheme design 
 
@@ -429,16 +429,15 @@ Recall that when the length of a given naive binary string is not an integer mul
 
 With standard Base64 conversion that employs pad characters, the Text domain representation that results from the individual conversion of a set of binary strings when concatenated in the Text domain after conversion and stripping off pad characters is not necessarily equivalent to the Text domain representation that results from converting en-masse to text the concatenation of the same set of binary strings and then stripping off pad characters. In the latter case, knowledge of the set of binary strings is lost because the resultant conversion may have bits from two binary bytes concatenated in one text character. Restated, the problem with standard Base64 is that it does not preserve byte boundaries after the en-masse conversion of concatenated binary strings. Consequently, standard (naive) Base64 does not provide two-way or true Composability as defined above.
 
-To elaborate, the number of pad characters appended with standard Base64 encoding is a function of the length of the binary string. Let ‘N’ be the length in bytes of the binary string. When `N mod 3 = 1`, then there are 8 bits in the remainder that must be encoded into Base64. Recall from the examples above that a single byte (8 bits) requires two Base64 characters. The first encodes 6 bits and the second the remaining 2 bits for a total of 8 bits. The last character is selected such that its non-coding 4 bits are zero. Thus, two additional pad characters are required to pad out the resulting conversion so that its length is an integer multiple of 4 Base64 characters. Furthermore, when `N mod 3 = 1`, then the addition of 2 more zeroed bytes to the length of the binary string such that `M = N + 2` would result in `M mod 3 = 0` or equivalently `N + 2 mod 3 = 0`.
+To elaborate, the number of pad characters appended with standard Base64 encoding is a function of the length of the binary string. Let `N` be the length in bytes of the binary string. When `N mod 3 = 1`, then there are 8 bits in the remainder that must be encoded into Base64. Recall from the examples above that a single byte (8 bits) requires two Base64 characters. The first encodes 6 bits and the second the remaining 2 bits for a total of 8 bits. The last character is selected such that its non-coding 4 bits are zero. Thus, two additional pad characters are required to pad out the resulting conversion so that its length is an integer multiple of 4 Base64 characters. Furthermore, when `N mod 3 = 1`, then 2 more zeroed bytes added to the length of the binary string such that `M = N + 2` would result in `M mod 3 = 0` or equivalently `N + 2 mod 3 = 0`.
 
-Similarly, when `N mod 3 = 2`, then there are two bytes (16 bits) in the remainder that must be encoded into Base64. Recall from the examples above that two bytes (16 bits) require three Base64 characters. The first two encode 6 bits each (for 12 bits) and the third encodes the remaining 4 bits for a total of 16. The last character is selected such that its non-coding 2 bits are zero. Thus, one additional trailing pad character is required to pad out the resulting conversion so that its length is an integer multiple of 4 characters. Furthermore when
-`N mod 3 = 2`, then the addition of 1 more byte of zeros added to the length of the binary string such that `M = N + 1` would result in `M mod 3 = 0` or equivalently `N + 2 mod 3 = 0`. Thus, the number of leading pre-pad zeroed bytes needed to align the binary string on a 24-bit boundary is the same as the number of trailing pad characters needed to align the converted Base64 text string on a 24-bit boundary.
+Similarly, when `N mod 3 = 2`, then there are two bytes (16 bits) in the remainder that must be encoded into Base64. Recall from the examples above that two bytes (16 bits) require three Base64 characters. The first two encode 6 bits each (for 12 bits), and the third encodes the remaining 4 bits for a total of 16. The last character is selected such that its non-coding 2 bits are zero. Thus, one additional trailing pad character is required to pad out the resulting conversion so that its length is an integer multiple of 4 characters. Furthermore, when `N mod 3 = 2`, then the addition of 1 more byte of zeros added to the length of the binary string such that `M = N + 1` would result in `M mod 3 = 0` or equivalently `N + 2 mod 3 = 0`. Thus, the number of leading pre-pad zeroed bytes needed to align the binary string on a 24-bit boundary is the same as the number of trailing pad characters needed to align the converted Base64 text string on a 24-bit boundary.
 
-Finally, when `N mod 3 = 0`, then the binary string is aligned on a 24-bit boundary and no trailing pad characters are required to ensure the length of the Base64 conversion is an integer multiple of 4 characters. Likewise, no leading pad bytes are required to ensure the length of the binary string is an integer multiple of 3 bytes.
+Finally, when `N mod 3 = 0`, then the binary string is already aligned on a 24-bit boundary and no trailing pad characters are required to ensure the length of the Base64 conversion is an integer multiple of 4 characters. Likewise, no leading pad bytes are required to ensure the length of the binary string is an integer multiple of 3 bytes.
 
 Thus, in all three cases, the number of trailing post-pad characters, if any, needed to align the converted Base64 text string on a 24-bit boundary is the same as the number of leading pre-pad bytes, if any, needed to align the binary string on a 24-bit boundary.
 
-The number of required trailing Base64 post-pad characters or equivalently the number of leading pre-pad zeroed bytes to ensure 24 bit alignment may be computed with the following formula:
+The number of required trailing Base64 post-pad characters or, equivalently the number of leading pre-pad zeroed bytes to ensure 24-bit alignment may be computed with the following formula:
 
 `ps = (3 - (N mod 3)) mod 3)`, where `ps` is the pad size (pre-pad bytes or post-pad characters) and `N` is the size in bytes of the binary string.
 
@@ -448,7 +447,7 @@ The pad size computation is also useful for computing the size of the text codes
 
 #### Example of pad size computation
 
-Let ‘M’ be a non-negative integer-valued variable then :
+Let `M` be a non-negative integer-valued variable then :
 
 |   Pad Size   |  Code Size  |
 |:------------:|------------:|
@@ -456,13 +455,13 @@ Let ‘M’ be a non-negative integer-valued variable then :
 |1|4•M + 1|
 |2|4•M + 2|
 
-The minimum code sizes are 1, 2, and 4 characters for pad sizes of 1, 2, and 0 characters with ‘M’ equaling 0, 0, and 1 respectively. By increasing ‘M’, there are larger code sizes for a given pad size.
+The minimum code sizes are 4, 1, and 2 characters for pad sizes of 0, 1, and 2 characters with minimum `M` equaling 1, 0, and 0, respectively. By increasing `M`, there are larger code sizes for a given pad size.
 
-### Pre-Padding before conversion
+### Pre-padding before conversion
 
 Returning to the examples above, observe what happens when the binary strings are pre-padded with zeroed leading pad bytes of the appropriate length given by `ps = (3 - (N mod 3)) mod 3)` where `ps` is the number of leading pad bytes and `N` is the length of the raw binary string before padding is prepended.
 
-#### One-byte pre-padding
+#### Pre-padding a one-byte value
 
 For the one-byte raw binary string `a`, `ps` is two. The pre-padded conversion results in the following:
 
@@ -473,7 +472,7 @@ For the one-byte raw binary string `a`, `ps` is two. The pre-padded conversion r
 ```
 where `ZX` represents a zeroed pre-pad byte, `zX` represents a zeroed pre-pad bit, `AX` represents a byte from `a`, `aX` represents a bit from `a`, and `TX` represents a Base64 character that results from the Base64 conversion of the pre-padded `a`.
 
-It is noteworthy that the first two (i.e., `ps`) characters of the conversion, namely `T3T2`, does not include any bits of information from `a`. This also means that `T3T2` can be modified after conversion without impacting the appearance or value of the converted `a` that appears solely in `T1T0`, i.e., there is no overlap. Moreover, the resulting Base64 conversion of `a` is right aligned with respect to the trailing Base64 character. This means that the numerical values for `a` from such an unshifted Base64 conversion can be ‘read’ and understood.  This also means that a text-based parser on a character-by-character basis can cleanly process `T3T2` separate from the Base64 encoding of `a` that appears in `T1T0`. Given this separation, `T3T2` can be replaced with two-character Base64 textual type code `S1S0` as follows:
+It is noteworthy that the first two (i.e., `ps`) characters of the conversion, namely `T3T2`, do not include any bits of information from `a`. This also means that `T3T2` can be modified after conversion without impacting the appearance or value of the converted `a` that appears solely in `T1T0`, i.e., there is no overlap. Moreover, the resulting Base64 conversion of `a` is right aligned with respect to the trailing Base64 character. This means that the numerical values for `a` from such an unshifted Base64 conversion can be ‘read’ and understood.  This also means that a text-based parser on a character-by-character basis can cleanly process `T3T2` separate from the Base64 encoding of `a` that appears in `T1T0`. Given this separation, `T3T2` can be replaced with two-character Base64 textual type code `S1S0` as follows:
 
 ```text
 |           Z1          |           Z0          |           A0          |
@@ -495,7 +494,7 @@ where `CX` represents a Base64 code character replacing one of the `TX`, `cX` is
 
 Stripping off `U1U0` leaves `a` in its original state. It is noteworthy that the code characters (only) are effectively left shifted 4 bits after conversion. The code characters `S1S0` can be recovered as the first two characters that are obtained from simply converting `U1U0` only back to Base64.
 
-#### Two-byte pre-padding
+#### pre-padding a two-byte value
 
 For the two-byte raw binary string `b`, `ps` is one. The resultant four-character Base64 encoded Primitive would be `S0T2T1T0`.
 
@@ -510,7 +509,7 @@ where `SX` represents a Base64 code character replacing one of the `TX`, `sX` is
 
 Stripping off `U0` leaves `b` in its original state. It is noteworthy is that the code character (only) is effectively left shifted 2 bits after conversion. The code character `S0` can be recovered as the first character obtained from simply converting `U0` only to Base64.
 
-#### Three-byte pre-padding
+#### pre-padding a three-byte value
 
 For the three-byte raw binary string `c`, `ps` is zero. So pre-padding is not needed.
 ```text
@@ -520,7 +519,7 @@ For the three-byte raw binary string `c`, `ps` is zero. So pre-padding is not ne
 ```
 where `cX` represents a bit from `c`, `CX` represents a byte from `c`, and `TX` represents a non-pad character from the converted Base64 text representing one hextet of information from the converted binary string. There are no bit shifts because there are no pad bits nor pad characters needed, and the resulting Base64 conversion is right aligned with respect to the trailing Base64 character.
 
-Without pad characters, however, there is no room to hold a type code. Consequently, any text type code is just prepended to the conversion. The prepended type code must  be an integer multiple of four Base64 characters. Let `S3S2S1S0` be the type code, then the full Primitive with code and converted raw binary is given by the eight-character Base64 string `S3S2S1S0T3T2T1T0`.
+Without pad characters, however, there is no room to hold a type code. Consequently, any text type code is just prepended to the conversion. The prepended type code must be an integer multiple of four Base64 characters. Let `S3S2S1S0` be the type code, then the full Primitive with code and converted raw binary is given by the eight-character Base64 string `S3S2S1S0T3T2T1T0`.
 
 When `S3S2S1S0T3T2T1T0` is converted back to binary, there is no overlap or bit shifting because both the code and raw binary `c` are each separately aligned on twenty-four-bit boundaries.
 
@@ -534,39 +533,39 @@ Suppose that two-byte raw binary numbers are to be encoded into CESR using the p
 | ("M", 0x0001) | "MAAB" | 0x300001 |
 | ("M", 0xffff) | "MP__" | 0x30ffff |
 
-With this approach, both the Binary domain and Text domain representations are as compact as possible for a fully qualified Primitive that satisfies the Composability property. The Text domain representation has a Stable readable code and a Stable readable value. The Binary domain is value right aligned. The Text domain representation consists of 4 text printable characters from the Base64 set of characters, and the Binary domain representation consists of 3 bytes. Both are able to be parsed in each Domain along character/byte boundaries respectively. A parser reads the first character/byte and then processes that value to get an index into a lookup table that it uses to find how many remaining characters/bytes to extract from the Stream. This makes the Primitive self-framing.
+With this approach, both the Binary domain and Text domain representations are as compact as possible for a fully qualified Primitive that satisfies the Composability property. The Text domain representation has a Stable readable code and a Stable readable value. The Binary domain is value right aligned. The Text domain representation consists of 4 text printable characters from the Base64 set of characters, and the Binary domain representation consists of 3 bytes. Both can be parsed in each Domain along character/byte boundaries, respectively. A parser reads the first character/byte and then processes that value to get an index into a lookup table that it uses to find how many remaining characters/bytes to extract from the Stream. This makes the Primitive self-framing.
 
 ### Count or Group Framing codes
 
 As mentioned above, one of the primary advantages of composable encoding is that special framing codes can be specified to support groups of Primitives. Grouping enables pipelining. Other suitable terms for these special Framing codes  are Group codes or Count codes for short. These are suitable terms because these Framing codes can be used to count characters or bytes in a group of Primitives when parsing and offloading a Stream of CESR Primitives. A group of Primitives may be recursively composed into a group of groups.
 
-A Count code is its own composable Primitive, and its length, therefore, must  be an integer multiple of four characters in the Text domain or equivalently an integer multiple of three bytes in the Binary domain. To clarify, a Count code is a special Primitive that does not include a raw binary value, only its text code. Because a Count code's raw binary element value is empty and its length is an integer multiple of four characters (three bytes), its pad size is always 0.
+A Count code is its own composable Primitive, and its length, therefore, shall be an integer multiple of four characters in the Text domain or, equivalently, an integer multiple of three bytes in the Binary domain. To clarify, a Count code is a special Primitive that does not include a raw binary value, only its text code. Because a Count code's raw binary element value is empty and its length is an integer multiple of four characters (three bytes), its pad size is always 0.
 
-To elaborate, Count codes can be used as separators to better organize a Stream of Primitives or to interleave non-native (non-CESR) serializations. Count codes enable the grouping together of any combination of Primitives, groups of Primitives, or non-native serializations to optimize pipelining and offloading.
+To elaborate, Count codes can be used as separators to better organize a Stream of Primitives or to interleave non-native (non-CESR) serializations. Count codes enable grouping any combination of Primitives, groups of Primitives, or non-native serializations to optimize pipelining and offloading.
 
 ###  Interleaved non-CESR serializations
 
-As mentioned above, one extremely useful property of CESR is that special Count codes enable CESR to be interleaved with other serializations. Many applications use JSON [[ref: JSON]] [[spec: RFC4627]], CBOR [[ref: CBOR]] [[spec: RFC8949]], or MsgPack (MGPK) [[ref: MGPK]] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. With respect to field map serializations, CESR Primitives may appear in two different contexts. The first context is as a delimited text Primitive inside of a field map serialization. The delimited text may be either the key or value of a (key, value) pair. The second context is as a standalone serialization that is interleaved with field map serializations in a stream. Special CESR Count codes enable support for the second context of interleaving standalone CESR with other serializations.
+As mentioned above, one extremely useful property of CESR is that special Count codes enable CESR to be interleaved with other serializations. Many applications use JSON [[ref: JSON]] [[spec: RFC4627]], CBOR [[ref: CBOR]] [[spec: RFC8949]], or MsgPack (MGPK) [[ref: MGPK]] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. With respect to field map serializations, CESR Primitives may appear in two different contexts. The first context is as a delimited text Primitive inside of a field map serialization. The delimited text may be either the key or value of a (key, value) pair. The second context is a standalone serialization interleaved with field map serializations in a stream. Special CESR Count codes enable support for the second context of interleaving standalone CESR with other serializations.
 
 ### Cold start stream parsing problem
 
 After a cold start, a Stream processor looks for framing information to know how to parse groups of elements in the Stream. If that framing information is ambiguous, then the parser may become confused and require yet another cold start. While processing a given Stream, a parser may become confused, especially if a portion of the Stream is malformed in some way. This usually requires flushing the Stream and forcing a cold start to resynchronize the parser to subsequent Stream elements. A re-synchronization mechanism that does not require flushing the in-transit buffers but merely skipping to the next well-defined Stream element boundary in order to execute a cold start is a better option. Good cold start re-synchronization is essential to robust performant Stream processing.
 
-For example, in Transmission Control Protocol (TCP), a cold start usually means closing and then reopening the TCP connection. This flushes the TCP buffers and sends a signal to the other end of the Stream that may be interpreted as a restart or cold start. In User Datagram Protocol (UDP), each packet is framed individually but a Stream may be segmented into multiple packets.  So a cold start may require an explicit ack or nack to force a restart.
+For example, in Transmission Control Protocol (TCP), a cold start usually means closing and then reopening the TCP connection. This flushes the TCP buffers and sends a signal to the other end of the Stream that may be interpreted as a restart or cold start. In the User Datagram Protocol (UDP), each packet is framed individually, but a Stream may be segmented into multiple packets.  So, a cold start may require an explicit ack or nack to force a restart.
 
-Special CESR Count codes support re-synchronization at each boundary between interleaved CESR and other serializations like JSON, CBOR, or MGPK.
+Special CESR Count codes support re-synchronization at each boundary between interleaved CESR and other serializations (like JSON, CBOR, or MGPK).
 
 #### Performant resynchronization with unique start bits
 
-Given the popularity of three specific serializations, namely, JSON, CBOR, and MGPK, more fine-grained serialization boundary detection for interleaving CESR may be highly beneficial for both performance and robustness reasons. One way to provide this is by selecting the Count code start bits such that there is always a unique (mutually distinct) set of start bits at each interleaved boundary between CESR, JSON, CBOR, and MGPK.
+A CESR stream parser supports three specific interleaved serializations, namely, JSON, CBOR, and MGPK. To make the parser more performant and robust, fine-grained serialization boundary detection may be highly beneficial for interleaving these serializations in a CESR stream. One way to provide this is by selecting the Count code start bits such that there is always a unique (mutually distinct) set of start bits at each interleaved boundary between CESR, JSON, CBOR, and MGPK.
 
 Furthermore, it may also be highly beneficial to support in-stride switching between interleaved CESR text-domain Streams and CESR Binary domain Streams. In other words, the start bits for Count codes in both the ‘T’ Domain and the ‘B’ Domain should be unique. This would provide the analogous equivalent of a UTF Byte Order Mark (BOM) [[ref: BOM]]. Recall that a BOM enables a parser of UTF-encoded documents to determine if the UTF codes are big-endian or little-endian [[ref: BOM]]. In the CESR case, an analogous feature would enable a Stream parser to know if a Count code, along with its associated counted group of Primitives, is expressed in the ‘T’ or ‘B’ Domain. Together these impose the constraint that the boundary start bits for interleaved text CESR, binary CESR, JSON, CBOR, and MGPK be mutually distinct.
 
-Amongst the codes for map objects in the JSON, CBOR, and MGPK, only the first three bits are fixed and not dependent on mapping size. In JSON, a serialized mapping object always starts with `{`. This is encoded as `0x7b`. the first three bits are `0b011`. In CBOR, the first three bits of the major type of its serialized mapping object are `0b101`. In MGPK (MsgPack), there are three different mapping object codes. The FixMap code starts with `0b100`. Both the Map16 code and Map32 code start with `0b110`.
+Amongst the codes for map objects in the JSON, CBOR, and MGPK, only the first three bits are fixed and not dependent on mapping size. In JSON, a serialized mapping object always starts with `{`. This is encoded as `0x7b`. the first three bits are `0b011`. In CBOR, the first three bits of the major type of its serialized mapping object are `0b101`. In MGPK (MsgPack), there are three different mapping object codes. The FixMap code starts with `0b100`. Both the Map16 and Map32 codes start with `0b110`.
 
-There is a set of four used starting tritets (3 bits) in numeric order of `0b011`, `0b100`, `0b101`, and `0b110`. This leaves four unused tritets, namely, `0b000`, `0b001`, `0b010`, and `0b111`, that are potential candidates for the CESR Count code start bits. In Base64, there are two codes that satisfy the constraints. The first is the dash character, `-`, encoded as `0x2d`. Its first three bits are `0b001`. The second is the underscore character,`_`, encoded as `0x5f`. Its first three bits are `0b010`. Both of these are distinct from the starting tritets of any of the JSON, CBOR, and MGPK encodings above. Moreover, the starting tritet of the corresponding binary encodings of `-` and `_` is `0b111`, which is also distinct from all the others. To elaborate, Base64 uses `-` in position 62 or `0x3E` (hex) and uses `_` in position 63 or `0x3F` (hex), both of which have starting tritet of `0b111`
+Therefore the JSON, CBOR, and MGPK encodings consume four starting tritets (3 bits) that are in numeric order  `0b011`, `0b100`, `0b101`, and `0b110`. This leaves four unused tritets, namely, `0b000`, `0b001`, `0b010`, and `0b111`. These latter are potential candidates for the CESR Count code start bits. In Base64, there are two codes that satisfy the constraints. The first is the dash character, `-`, encoded as `0x2d`. Its first three bits are `0b001`. The second is the underscore character,`_`, encoded as `0x5f`. Its first three bits are `0b010`. Both of these are distinct from the starting tritets of any of the JSON, CBOR, and MGPK encodings above. Moreover, the starting tritet of the corresponding binary encodings of `-` and `_` is `0b111`, which is also distinct from all the others. To elaborate, Base64 uses `-` in position 62 or `0x3E` (hex) and uses `_` in position 63 or `0x3F` (hex), both of which have starting tritet of `0b111`
 
-Two different Base64 characters, `-` and `_`,  can be used for the first character of any Count code in the ‘T’ Domain. This also means there can be two different classes of Count codes. Using Count codes in this way also provides a BOM-like capability that enables a parser to determine if the Count code itself is expressed in either the ‘T’ or ‘B’ Domain. To clarify, if a Stream group starts with the tritet `0b111`, then the Stream frame is ‘B’ Domain CESR, and a Stream parser would thereby know how to convert the first sextet of the Stream group to determine which of the two Count codes is being used, `0x3E` or `0x3F`. If, on the other hand, the Count  code starts with either of the tritets `0b001` or `0b010`, then the Count code is expressed in the ‘T’ domain, and a Stream parser likewise would thereby know how to convert the first character (octet) of the Count code to determine which Count code is being used for that group. Otherwise, if a Stream starts with `0b011`, then it is  JSON, with either `0b100` or `0b110`, then it is MGPK, and with `0b101`, then it is CBOR.
+Consequently, two different Base64 characters, `-` and `_`,  can be used for the first character of any Count code in the ‘T’ Domain. This also means there can be two different classes of Count codes. Using Count codes in this way also provides a BOM-like capability that enables a parser to determine if the Count code itself is expressed in either the ‘T’ or ‘B’ Domain. To clarify, if a Stream group starts with the tritet `0b111`, then the Stream frame is ‘B’ Domain CESR, and a Stream parser would thereby know how to convert the first sextet of the Stream group to determine which of the two Count codes is being used, `0x3E` or `0x3F`. If, on the other hand, the Count code starts with either of the tritets `0b001` or `0b010`, then the Count code is expressed in the ‘T’ domain, and a Stream parser likewise would thereby know how to convert the first character (octet) of the Count code to determine which Count code is being used for that group. Otherwise, if a Stream starts with `0b011`, then it is  JSON. If it starts with `0b101`, then it is CBOR. If it starts with either `0b100` or `0b110`, then it is MGPK.
 
 This is summarized in the following table:
 
@@ -585,7 +584,7 @@ This is summarized in the following table:
 
 #### Stream parsing rules
 
-Given this set of tritets (3 bits), a requirement for a well-formed Stream start and restart can be expressed.
+Given this set of tritets (3 bits), a well-formed Stream start and restart requirement can be expressed.
 
 Each stream must start (restart) with one of seven cases:
 
@@ -597,15 +596,15 @@ Each stream must start (restart) with one of seven cases:
 6. A CBOR encoded mapping.
 7. A MGPK encoded mapping.
 
-A parser merely needs to examine the first tritet (3 bits) of the first byte of the Stream start to determine which one of the seven it is. When the first tritet is a Count code, then the remainder of the Count code itself will include the additional information needed to parse the attached group. When the first tritet indicates its JSON, CBOR, or MGPK, then the mapping's first field must be a Version string that provides the additional information needed to fully parse the associated encoded field map serialization.
+A parser merely needs to examine the first tritet (3 bits) of the first byte of the Stream start to determine which one of the seven it is. When the first tritet is a Count code, then the remainder of the Count code itself will include the additional information needed to parse the attached group. When the first tritet indicates its JSON, CBOR, or MGPK, then the mapping's first field must be a Version string that provides the additional information needed to parse the associated encoded field map serialization fully.
 
 The Stream must resume with a frame starting byte that begins with one of the 7 tritets, either another Count code expressed in the ‘T’ or ‘B’ Domain or a new JSON, CBOR, or MGPK encoded mapping.
 
 This provides an extremely compact and elegant Stream parsing formula that generalizes not only support for CESR Composability but also support for interleaved CESR with three of the most popular field map serializations.
 
-### Compact fixed size codes
+### Compact fixed-size codes
 
-As mentioned above, CESR uses a multiple-code table design that enables both size-optimized text codes for the most popular Primitive types and extensible universal support for all other Primitive types. Modern cryptographic suites support limited sets of raw binary Primitives with fixed (not variable) sizes. The design aesthetic is based on the understanding that there is minimally sufficient cryptographic strength and more cryptographic strength just wastes computation and bandwidth. Cryptographic strength is measured in bits of entropy which also corresponds to the number of trials that must be attempted to succeed in a brute-force attack. The accepted minimum for cryptographic strength is 128 bits of entropy or equivalently `2**128` (2 raised to the 128th power) brute force trials. The size in bytes of a given raw binary Primitive for a given modern cryptographic suite is usually directly related to this minimum strength of 128 bits (16 bytes).
+As mentioned above, CESR uses a multiple-code table design that enables both size-optimized text codes for the most popular Primitive types and extensible universal support for all other Primitive types. Modern cryptographic suites support limited sets of raw binary Primitives with fixed (not variable) sizes. The design aesthetic is based on the understanding that there is minimally sufficient cryptographic strength and more cryptographic strength just wastes computation and bandwidth. Cryptographic strength is measured in bits of entropy, which also corresponds to the number of trials that must be attempted to succeed in a brute-force attack. The accepted minimum for cryptographic strength is 128 bits of entropy or equivalently `2**128` (2 raised to the 128th power) brute force trials. The size in bytes of a given raw binary Primitive for a given modern cryptographic suite is usually directly related to this minimum strength of 128 bits (16 bytes).
 
 For example, the raw binary Primitives from the well-known [[ref: NaCL]] ECC (Elliptic Curve Cryptography) library all satisfy this 128-bit strength goal. In particular, the digital signing public key raw binary Primitives for EdDSA are 256 bits (32 bytes) in length because well-known algorithms can reduce the number of trials to brute force invert an ECC public key to get the private key by the square root of the number of scalar multiplications which is also related to the size of both the private key and public key coordinates (discrete logarithm problem [[ref: DLog]]). Therefore, 256-bit (32-byte) ECC keys are needed to achieve 128 bits of cryptographic strength. In general, the size of a given raw binary Primitive is typically some multiple of 128 bits of cryptographic strength. This is also true for the associated EdDSA raw binary signatures which are 512 bits (64 bytes) in length.
 
@@ -627,15 +626,15 @@ A 64-byte raw binary value has a pad size of 2 characters.
 
 Therefore, the minimal text code size is 2 characters for 64-byte raw binary cryptographic material and all other raw binary material values whose pad size is 1 character. For example, a 16-byte raw binary value also has a pad size of 2 characters.
 
-For all other cryptographic material values whose pad size is 0, such as the 33-byte ECDSA public keys then, the minimum size text code is 4 characters. So the minimally sized text code tables are 1, 2, and 4 characters, respectively.
+For all other cryptographic material values whose pad size is 0, such as the 33-byte ECDSA public keys then, the minimum size text code is 4 characters. So, the minimally sized text code tables are 1, 2, and 4 characters, respectively.
 
 Given that a given cryptographic Primitive type has a known fixed raw binary size, then that Primitive type and size can be encoded efficiently with just the type information. The size is given by the type.
 
-For example, an Ed25519 (EdDSA) raw public key is always 32 bytes so knowing that the type is `Ed25519 public key` implies the size of 32 bytes and a pad size of 1 character that, therefore, may be encoded with a 1-character text code. Likewise, an Ed25519 (EdDSA) signature is always 64 bytes, so knowing that the type is `Ed25519 signature` implies the size of 64 bytes and a pad size of 2 characters that, therefore, may be encoded with a 2-character text code.
+For example, an Ed25519 (EdDSA) raw public key is always 32 bytes, so knowing that the type is `Ed25519 public key` implies the size of 32 bytes and a pad size of 1 character that, therefore, may be encoded with a 1-character text code. Likewise, an Ed25519 (EdDSA) signature is always 64 bytes, so knowing that the type is `Ed25519 signature` implies the size of 64 bytes and a pad size of 2 characters that, therefore, may be encoded with a 2-character text code.
 
 ### Code table selectors
 
-In order to parse a Stream of Primitives with types from multiple text code tables efficiently, the first character in the text code must determine which code table to use, either a default code table or a code table selector character when not the default code table. Thus the 1-character text code table must do double duty. It must provide selectors for the different text code tables and also provide type codes for the most popular Primitives that have a pad size of 1 that appears as the default code table. There are 64 Base64 characters (64 values). Only 12 tables are needed to support all the codes and code formats needed for the foreseeable future. Therefore, only 12 of those characters need to be dedicated as code table selectors, which leaves 52 characters that may be used for the 1-character type codes in the default table. This gives a total of 13 type code tables consisting of the dual purpose 1 character type or selector code table and 12 other tables.
+In order to parse a Stream of Primitives with types from multiple text code tables efficiently, the first character in the text code must determine which code table to use, either a default code table or a code table selector character when not the default code table. Thus, the 1-character text code table must do double duty. It must provide selectors for the different text code tables and also provide type codes for the most popular Primitives that have a pad size of 1 that appears as the default code table. There are 64 Base64 characters (64 values). Only 12 tables are needed to support all the codes and code formats needed for the foreseeable future. Therefore, only 12 of those characters need to be dedicated as code table selectors, which leaves 52 characters that may be used for the 1-character type codes in the default table. This gives a total of 13 type code tables consisting of the dual purpose 1 character type or selector code table and 12 other tables.
 
 As described above, the selector characters for the Count code tables that best support interleaved JSON, CBOR, and MGPK are `-` and `_`. The numerals `0` through `9` are used each to serve as a selector for the other tables. That leaves the letters `A` to `Z` and `a` to `z` as single character selectors. This provides 52 unique type codes for fixed-length Primitive types with raw binary values that have a pad size of 1.
 
@@ -643,61 +642,61 @@ To clarify, the first character of any Primitive is either a selector or a 1-cha
 
 ## Table types
 
-There are two major types of tables – for codes of fixed length raw sizes and the other for codes with variable length raw sizes.
+There are two major types of code tables: codes for fixed-length raw sizes and codes for variable-length raw sizes.
 
-### Tables for codes with fixed length raw sizes  
+### Tables of codes for fixed-length raw sizes  
 
-#### Small fixed raw size tables
+#### Small fixed-length raw-size tables
 
 There are two special tables that are dedicated to the most popular fixed-size raw binary Cryptographic primitive types. These are the most compact, so they optimize bandwidth but only provide a small number of total types. In both of these, the text code size equals the number of pad characters, i.e., the pad size.
 
-##### One-character fixed raw size table
+##### One-character fixed-length raw-size table
 
 The one-character type code table does not have a selector character per se but uses as type codes the non-selector characters `A` - `Z` and `a` - `z`. This provides 52 unique type codes for fixed-size raw binary values with a pad size of 1.
 
-##### Two-character fixed raw size table
+##### Two-character fixed-length raw size table
 
 The two-character type code table uses the selector `0` as its first character. The second character is the type code. This provides 64 unique type codes for fixed-size raw binary values that have a pad size of 2.
 
-#### Large fixed raw size tables
+#### Large fixed-length raw-size tables
 
-The three tables in this group are for large fixed raw-size Primitives. These three tables use 0, 1, or 2 lead bytes as appropriate for a pad size of 0, 1, or 2 for a given fixed raw binary value. The text code size for all three tables is 4 characters. The selector character not only encodes the table but also implicitly encodes the number of lead bytes. The 3 remaining characters is each type code in each table, providing 262,144 unique types. This should provide enough type codes to accommodate all fixed raw-size Primitive types for the foreseeable future.
+The three tables in this group are for large fixed raw-size Primitives. These three tables use 0, 1, or 2 lead bytes as appropriate for a pad size of 0, 1, or 2 for a given fixed raw binary value. The text code size for all three tables is 4 characters. The selector character not only encodes the table but also implicitly encodes the number of lead bytes. The 3 remaining characters are each type code in each table, providing 262,144 unique types. This should provide enough type codes to accommodate all fixed raw-size Primitive types for the foreseeable future.
 
-##### Large Fixed Raw Size Table With 0 Lead Bytes
+##### Large fixed-length raw-size table with 0 Lead Bytes
 
 This table uses `1` as its first character or selector. The remaining 3 characters provide the type of each code. Only fixed-size raw binaries with a pad size of 0 are encoded with this table. The 3-character type code provides a total of 262,144 unique type code values (`262144 = 64**3`) for fixed-size raw binary Primitives with a pad size of 0.
 
-##### Large fixed raw size table with 1 lead byte
+##### Large fixed-length raw-size table with 1 lead byte
 
 This table uses `2` as its first character or selector. The remaining 3 characters provide the type of each code. Only fixed-size raw binaries with a pad size of 1 are encoded with this table. The 3-character type code provides a total of 262,144 unique type code values (`262144 = 64**3`). Together with the 52 values from the 1-character code table above, there are 262,196 type codes for fixed-size raw binary Primitives with a pad size of 1.
 
-##### Large fixed raw size table with 2 lead bytes
+##### Large fixed-length raw-size table with 2 lead bytes
 
 This table uses `3` as its first character or selector. The remaining 3 characters provide the type of each code. Only fixed-size raw binaries with a pad size of 2 are encoded with this table. The 3-character type code provides a total of 262,144 unique type code values (`262144 = 64**3`). Together with the 64 values from the 2-character code table above (selector `0`), there are 262,208 type codes for fixed-size raw binary Primitives with a pad size of 2.
 
-### Tables for codes with variable length raw sizes  
+### Tables for codes with variable-length raw-sizes  
 
-#### Small variable raw size tables
+#### Small variable-length raw-size tables
 
 Although many Primitives have fixed raw binary sizes, especially those for modern cryptographic suites such as keys, signatures, and digests, there are other Primitives that benefit from variable sizings such as either encrypted material or legacy cryptographic material types found in the GNU Privacy Guard (GPG) or Open Secure Sockets Layer (OpenSSL) libraries (like the Rivest-Shamir-Adleman (RSA) algorithm. Furthermore, CESR is meant to support not merely cryptographic material types but other basic types, such as generic text strings and numbers. These basic non-cryptographic types may also benefit from variable-size codes.
 
 The three tables in this group are for small variable raw-size Primitives. These three tables use 0, 1, or 2 lead bytes as appropriate given the pad size of 0, 1, or 2 for a given variable size raw binary value. The text code size for all three tables is 4 characters.  The first character is the selector, the second character is the type, and the last two characters provide the size of the value as a Base64 encoded integer. The number of unique type codes in each table is, therefore, 64. A given type code is repeated in each table for the same type so that all that differs between codes of the same type in each table is the number of lead bytes needed to align a given variable length on a 24-bit boundary. To clarify, what is different in each table is the number of lead bytes needed to achieve 24-bit alignment for a given variable length. Thus, the selector not only encodes for which type table but also implicitly encodes the number of lead bytes. The variable size is measured in quadlets of 4 characters each in the ‘T’ Domain and equivalently in triplets of 3 bytes each in the ‘B’ Domain. Thus, computing the number of characters when parsing or off-loading in the ‘T’ Domain means multiplying the variable size by 4. Computing the number of bytes when parsing or off-loading in the ‘B’ domain means multiplying the variable size by 3. The two Base64 size characters provide value lengths in quadlets/triplets from 0 to 4095 (`64**2 -1`). This corresponds to value lengths of up to 16,380 characters (`4095 * 4`) or 12,285 bytes (`4095 * 3`).
 
-##### Small variable raw size table with 0 lead bytes
+##### Small variable-length raw-size table with 0 lead bytes
 
 This table uses `4` as its first character or selector. The second character provides the type. The final two characters provide the size of the value in quadlets/triplets as a Base64 encoded integer. Only raw binaries with a pad size of 0 are encoded with this table. The 1-character type code provides a total of 64 unique type code values. The maximum length of the value provided by the 2 size characters is 4095 quadlets of characters in the ‘T’ Domain and triplets of bytes in the ‘B’ Domain. All are raw binary Primitives with a pad size of 0 that each includes 0 lead bytes.
 
-##### Small variable raw size table with 1 lead byte
+##### Small variable-length raw-size table with 1 lead byte
 
 This table uses `5` as its first character or selector. The second character provides the type. The final two characters provide the size of the value in quadlets/triplets as a Base64 encoded integer. Only raw binaries with a pad size of 1 are encoded with this table. The 1-character type code provides a total of 64 unique type code values. The maximum length of the value provided by the 2 size characters is 4095 quadlets of characters in the ‘T’ Domain and triplets of bytes in the ‘B’ Domain. All are raw binary Primitives with a pad size of 1 that each includes 1 lead byte.
 
-##### Small variable raw size table with 2 lead bytes
+##### Small variable-length raw-size table with 2 lead bytes
 
 This table uses `6` as its first character or selector. The second character provides the type. The final two characters provide the size of the value in quadlets/triplets as a Base64 encoded integer. Only raw binaries with a pad size of 0 are encoded with this table. The 1-character type code provides a total of 64 unique type code values. The maximum length of the value provided by the 2 size characters is 4095 quadlets of characters in the ‘T’ Domain and triplets of bytes in the ‘B’ Domain. All are raw binary Primitives with a pad size of 2 that each includes 2 lead bytes.
 
-#### Large variable raw size tables 
+#### Large variable-length raw-size tables 
 
-Many legacy cryptographic libraries such as OpenSSL and GPG support any variable-sized Primitive for keys, signatures, and digests such as RSA. Although this approach is often criticized for providing too much flexibility, many legacy applications depend on this degree of flexibility. Consequently, these large variable raw size tables provide a sufficiently expansive set of tables with enough types and sizes to accommodate all the legacy cryptographic libraries as well as all the variable-sized non-cryptographic raw Primitive types for the foreseeable future .
+Many legacy cryptographic libraries such as OpenSSL and GPG support any variable-sized Primitive for keys, signatures, and digests such as RSA. Although this approach is often criticized for providing too much flexibility, many legacy applications depend on this degree of flexibility. Consequently, these large variable raw size tables provide a sufficiently expansive set of tables with enough types and sizes to accommodate all the legacy cryptographic libraries as well as all the variable-sized non-cryptographic raw Primitive types for the foreseeable future.
 
 ::: issue
 https://github.com/trustoverip/tswg-cesr-specification/issues/14
@@ -705,23 +704,25 @@ https://github.com/trustoverip/tswg-cesr-specification/issues/14
 
 The three tables in this group are for large variable raw size Primitives. These three large variable raw size tables use 0, 1, or 2 lead bytes as appropriate for the associated pad size of 0, 1, or 2 for a given variable-sized raw binary value. The text code size for all three tables is 8 characters. As a special case, the first 62 entries in these tables represent that same crypto suite type as the 62 entries in the small variable raw size tables above. This allows one type to use a smaller 4-character text code when the raw size is small enough.
 
-The first character is the selector, the next three characters provide the type, and the last four characters provide the size of the value as a Base64 encoded integer. With 3 characters for each unique type code, each table provides 262,144 unique type codes. This should be enough type codes to accommodate all fixed raw size Primitive types for the foreseeable future.  A given type code is repeated in each table for the same type. What is different for each table is the number of lead bytes needed to align a given length on a 24-bit boundary. The selector not only encodes the table but also implicitly encodes the number of lead bytes. The variable size is measured in quadlets of 4 characters each in the ‘T’ Domain and equivalently in triplets of 3 bytes each in the B’ Domain. Thus, computing the number of characters when parsing or off-loading in the ‘T’ Domain means multiplying the variable size by 4. Likewise computing the number of bytes when parsing or off-loading in the ‘B’ Domain means multiplying the variable size by 3. The four Base64 size characters provide value lengths in quadlets/triplets from 0 to 16,777,215 (`64**4 -1`). This corresponds to value lengths of up to 67,108,860 characters (`16777215 * 4`) or 50,331,645 bytes (`16777215 * 3`).
+The first character is the selector, the next three characters provide the type, and the last four characters provide the size of the value as a Base64 encoded integer. With 3 characters for each unique type code, each table provides 262,144 unique type codes. This should be enough type codes to accommodate all fixed raw size Primitive types for the foreseeable future.  A given type code is repeated in each table for the same type. What is different for each table is the number of lead bytes needed to align a given length on a 24-bit boundary. The selector not only encodes the table but also implicitly encodes the number of lead bytes. The variable size is measured in quadlets of 4 characters each in the ‘T’ Domain and equivalently in triplets of 3 bytes each in the B’ Domain. Thus, computing the number of characters when parsing or off-loading in the ‘T’ Domain means multiplying the variable size by 4. Likewise, computing the number of bytes when parsing or off-loading in the ‘B’ Domain means multiplying the variable size by 3. The four Base64 size characters provide value lengths in quadlets/triplets from 0 to 16,777,215 (`64**4 -1`). This corresponds to value lengths of up to 67,108,860 characters (`16777215 * 4`) or 50,331,645 bytes (`16777215 * 3`).
 
-##### Large variable raw size table With 0 lead bytes
+##### Large variable-length raw-size table With 0 lead bytes
 
 This table uses `7` as its first character or selector. The next three characters provide the type. The final four characters provide the size of the value in quadlets/triplets as a Base64 encoded integer. Only raw binaries with a pad size of 0 are encoded with this table. The 3-character type code provides a total of 262,144 unique type code values. The maximum length of the value provided by the 4 size characters is 16,777,215 quadlets of characters in the ‘T’ Domain and triplets of bytes in the ‘B’ domain. All are raw binary Primitives with pad size of 0 that each includes 0 lead bytes.
 
-##### Large variable raw size table with 1 lead byte
+##### Large variable-length raw-size table with 1 lead byte
 
 This table uses `8` as its first character or selector. The next three characters provide the type. The final four characters provide the size of the value in quadlets/triplets as a Base64 encoded integer. Only raw binaries with a pad size of 1 are encoded with this table. The 3-character type code provides a total of 262,144 unique type code values. The maximum length of the value provided by the 4 size characters is 16,777,215 quadlets of characters in the ‘T’ domain and triplets of bytes in the ‘B’ domain. All are raw binary Primitives with a pad size of 1 that each includes 1 lead byte.
 
-##### Large variable raw size table with 2 lead bytes
+##### Large variable-length raw-size table with 2 lead bytes
 
 This table uses `9` as its first character or selector. The next three characters provide the type. The final four characters provide the size of the value in quadlets/triplets as a Base64 encoded integer. Only raw binaries with a pad size of 2 are encoded with this table. The 3-character type code provides a total of 262,144 unique type code values. The maximum length of the value provided by the 4 size characters is 16,777,215 quadlets of characters in the ‘T’ domain and triplets of bytes in the ‘B’ domain. All are raw binary Primitives with a pad size of 2 that each includes 2 lead bytes.
 
 ### Count code tables
 
-There may be as many at 13 Count code tables, but only three are currently specified. These three are the small count, four-character table, the large count, eight-character table, and the eight-character protocol genus and version table. Because Count codes only count quadlets/triplets or the number of Primitives or groups of Primitives, Count codes have no value component but have only type and size components. Because Primitives already are guaranteed to be composable, Count codes do not need to account for pad size as long as the Count code itself is aligned on a 24-bit boundary. The Count code type indicates the type of Primitive or group being counted and the size indicates either how many of that type are in the group or the number of quadlets/triplets consumed by that group. Both Count code tables use the first two characters as a nested set of selectors. The first selector uses`-` as the initial selector for Count codes. The next character is either a selector for another Count code table or is the type for the small Count code table. When the second character is numeral `0` - `9` or the letters `-` or `_` , then it is a secondary Count code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it is a unique Count code type. This results in a total of 52 single-character Count code types.
+There may be as many at 13 Count code tables, but only three are currently specified. These three are the small count, four-character table, the large count, eight-character table, and the eight-character protocol genus and version table. Each Count code shall be aligned on a 24-bit boundary. Count codes have no value component but have only type and size components. The size component counts quadlets/triplets in the following group. Moreover, because Primitives are already guaranteed to be composable, Count codes do not need to account for pad size as long as the Count code itself is aligned on a 24-bit boundary. The Count code type indicates the type of Primitive or group being counted, and the size indicates either how many quadlets/triplets are consumed by that group. Count code tables use the first two characters as a nested set of selectors. The first selector uses the `-` character for the initial selector. The next character is either a selector for another Count code table or is the type for the small Count code table. When the second character is numeral `0` - `9` or the letters `-` or `_` , then it is a secondary Count code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it is a unique single-character Count code. This results in a total of 52 single-character Count codes.
+
+All count codes except the genus/version code table (see below) are pipelineable because they count the number of quadlets/triplets in the count group. A quadlet is four Base64 characters in the *text* domain. A triplet is three B2 bytes in the *binary* domain. The count is invariant in either domain. This allows a stream parser to extract the count number of characters/bytes in a group from the stream without parsing the contents of the group. By making all count codes pipelineable, the stream parser can be optimized in a granular way. This includes granular core affinity.
 
 ::: issue
 https://github.com/trustoverip/tswg-cesr-specification/issues/15
@@ -733,19 +734,24 @@ Codes in the small Count code table are each four characters long. The first cha
 
 #### Large count code table
 
-Codes in the large Count code table are each 8 characters long. The first two characters are the selectors `-`0. The next two characters are the Count code type. the last four characters are the count size as a Base64 encoded integer. With two characters for type, there are 4096 unique large-count code types. A four-character size provides counts from 0 to 16,777,215 (`64**4 - 1`).
+Codes in the large Count code table are each 8 characters long. The first two characters are the selectors `-0`. The next character is the Count code type. the last five characters are the count size as a Base64 encoded integer. With one character for type, there are 64 unique large-count code types. A five-character size provides counts from 0 to 1,073,741,823 (`64**5 - 1`). These correspond to groups of size `1,073,741,823 * 4 =  4,294,967,292` characters or `1,073,741,823 * 3 = 3,221,225,469` bytes.
 
 ### Protocol genus and version table
 
-The protocol genus/version table is special because its codes modify the following Count code group. A protocol genus and version code itself does not provide a count of the following quadlets or triplets but modifies the protocol genus and Version of all the following Count codes until another protocol and genus Count code is provided. Consequently, a protocol genus and version code must only appear at the top level of any count group. In other words, a protocol genus and version code must not be nested inside any other Count code.
+The protocol genus/version table is special because its codes modify the Count code groups that appear at the top level of the stream or the Count code groups that appear inside special enclosing count code groups. A protocol genus and version code itself does not provide a count of the following quadlets or triplets but modifies the protocol genus and Version of all the following Count codes that either appear at the top level until another protocol and genus Count code is provided or are inside a special enclosing count code group. There are three general-purpose special enclosing count codes that allow an embedded genus/version table code. These are defined below. These are special because they must be universal across all genera of cound code tables.
 
-The purpose of this table is twofold. First, it allows CESR to be used for different protocols and protocol stacks, where each protocol may have its own dedicated set of code tables. The only table that all protocols must share is the protocol genus and version table (protocol table for short) in the set Count code tables. All other entries in all other tables may vary by protocol. Secondly, for a given protocol genus, a protocol genus and version code provides the Version of that given protocol's table set. This allows versioning of the CESR code tables for a given protocol.
+The purpose of the protocol genus/version table is twofold. First, it allows CESR to be used for different protocols and protocol stacks, where each protocol may have its own dedicated set of code tables. The only table that all protocols must share is the protocol genus and version table (protocol table for short) and . All other entries in all other tables may vary by protocol. Secondly, for a given protocol genus, a protocol genus and version code provide the Version of that given protocol's table set. This allows versioning of the CESR code tables for a given protocol.
 
-The format for a protocol genus and version code is as follows: `--GGGVVV` where `GGG` represents the protocol genus and `VVV` is the version of that protocol genus. The genus uses three Base64 characters for a possible total of 262,144 different protocol genera. The Version also uses three Base64 characters which can be used in a protocol genus-specific manner. One suggested approach is to use one character for each of the three components of a semantic version of the form `major.minor.patch` [[ref: SEMVER]]. This provides 64 major Versions, where each major version has up to 64 minor Versions, and where each minor Version in turn, has up to 64 patches.
+The format for a protocol genus and version code is as follows: `--GGGVVV` where `GGG` represents the protocol genus and `VVV` is the version of that protocol genus. The genus uses three Base64 characters for a possible total of 262,144 different protocol genera. The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the version of the protocol genus. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The version part supports up to 64 major versions with  4096 minor versions per major version.
+
+Any addition of a new code to the code table is backward breaking in at least one direction, so it's a feature change in at least one direction. New implementations with the new codes can accept streams from old implementations, but old ones will break if they receive the new ones. A major change means a code's meaning has changed. This means it breaks in both directions, i.e., sender and receiver. A minor change happens when a code is added; this only breaks backward compatibility when a new sender sends to an old receiver, but a new sender will still correctly process a stream sent from an old receiver. Since code additions will be commonly compared to code changes, it is beneficial to have more room for minor vs. major versions.
+
+
 
 ### OpCode tables
 
 The `_` selector is reserved for the yet-to-be-defined opcode table or tables. Opcodes are meant to provide Stream processing instructions that are more general and flexible than simply concatenated Primitives or groups of Primitives. A yet-to-be-determined stack-based virtual machine could be executed using a set of opcodes that provides Primitive, groups of Primitives , or stream processing instructions. This would enable highly customizable uses for CESR.
+
 
 ### Selector codes and encoding scheme design
 
@@ -753,32 +759,71 @@ The `_` selector is reserved for the yet-to-be-defined opcode table or tables. O
 
 The following table summarizes the ‘T’ Domain coding schemes by selector code for the 13 code tables defined above:
 
-##### Table 1
+##### Encoding Scheme Table
 
-|  Selector |  Selector | Type Chars | Value Size Chars | Code Size | Lead Bytes | Pad Size | Format |
+|  Universal Selector |  Selector | Type Chars | Value Size Chars | Code Size | Lead Bytes | Pad Size | Format |
 |:---------:|:---------:|:----:|:---:|:---:|:---:|:---:|--------------:|
 |           |           |      |     |     |     |     |               |
 |`[A-Z,a-z]`|           | `1*` |  0  |  1  |  0  |  1  |         `$&&&`|
-|     `0`   |           |   1  |  0  |  2  |  0  |  2  |         `0$&&`|
-|     `1`   |           |   3  |  0  |  4  |  0  |  0  |     `1$$$&&&&`|
-|     `2`   |           |   3  |  0  |  4  |  1  |  1  |     `2$$$%&&&`|
-|     `3 `  |           |   3  |  0  |  4  |  2  |  2  |     `3$$$%%&&`|
-|     `4`   |           |   1  |  2  |  4  |  0  |  0  |     `4$##&&&&`|
-|     `5`   |           |   1  |  2  |  4  |  1  |  1  |     `5$##%&&&`|
-|     `6`   |           |   1  |  2  |  4  |  2  |  2  |     `6$##%%&&`|
-|     `7`   |           |   3  |  4  |  8  |  0  |  0  | `7$$$####&&&&`|
-|     `8`   |           |   3  |  4  |  8  |  1  |  1  | `8$$$####%&&&`|
-|     `9`   |           |   3  |  4  |  8  |  2  |  2  | `9$$$####%%&&`|
-|     `-`   |`[A-Z,a-z]`| `1*` |  0  |  4  |  0  |  0  |         `-$##`|
-|     `-`   |     `0`   |   2  |  0  |  8  |  0  |  0  |     `-0$$####`|
-|     `-`   |     `-`   |   2  |  0  |  8  |  0  |  0  |     `--$$$###`|
-|     `_`   |           |  TBD | TBD | TBD | TBD | TBD |            `_`|
+|     `0`   |           |   1  |  0  |  2  |  0  |  2  |         `*$&&`|
+|     `1`   |           |   3  |  0  |  4  |  0  |  0  |     `*$$$&&&&`|
+|     `2`   |           |   3  |  0  |  4  |  1  |  1  |     `*$$$%&&&`|
+|     `3 `  |           |   3  |  0  |  4  |  2  |  2  |     `*$$$%%&&`|
+|     `4`   |           |   1  |  2  |  4  |  0  |  0  |     `*$##&&&&`|
+|     `5`   |           |   1  |  2  |  4  |  1  |  1  |     `*$##%&&&`|
+|     `6`   |           |   1  |  2  |  4  |  2  |  2  |     `*$##%%&&`|
+|     `7`   |           |   3  |  4  |  8  |  0  |  0  | `*$$$####&&&&`|
+|     `8`   |           |   3  |  4  |  8  |  1  |  1  | `*$$$####%&&&`|
+|     `9`   |           |   3  |  4  |  8  |  2  |  2  | `*$$$####%%&&`|
+|     `-`   |`[A-Z,a-z]`| `1*` |  0  |  4  |  0  |  0  |         `*$##`|
+|     `-`   |     `0`   |   2  |  0  |  8  |  0  |  0  |     `**$#####`|
+|     `-`   |     `-`   |   2  |  0  |  8  |  0  |  0  |     `**$$$###`|
+|     `_`   |           |  TBD | TBD | TBD | TBD | TBD |            `*`|
 
 
 Encoding scheme symbols
 The following table defines the meaning of the symbols used in the encoding scheme table:
 
-##### Table 2
+##### Encoding Scheme Symbols
+
+|  Symbol |  Description  |
+|:---:|:-----|
+|   |   |
+| `*` | selector-code character also provides the type |
+| `$` | type-code character from  subset of Base64  `[A-Z,a-z,0-9,-,_]` |
+| `%` | lead byte where pre-converted binary includes the number of lead bytes shown |
+| `#` | Base64 digit as part of a base 64 integer. When part of primitive determines the number of following quadlets or triplets. When part of a count code determines the count of the following primitives or groups of primitives |
+| `&` | Base64 value characters that represent the converted raw binary value.  The actual number of characters is determined by the prepended text code.  Shown is the minimum number of value characters. |
+| `TBD` | to be determined, reserved for future  |
+
+
+### Special context-specific code tables
+
+The set of tables above provides the basic or master encoding schemes. These coding schemes constitute the basic or master set of code tables. This basic or master set, however, may be extended with context-specific code tables. The context in which a Primitive occurs may provide an additional implicit selector that is not part of the actual explicit text code. This allows context-specific coding schemes that would otherwise conflict with the basic or master encoding schemes and tables.
+
+#### Indexed codes
+
+Currently, there is only one context-specific coding scheme, that is, for indexed signatures. A common use case is thresholded multi-signature schemes. A threshold-satisficing subset of signatures belonging to an ordered set or list of public keys may be provided as part of a Stream of Primitives. One way to compactly associate each signature with its public key is to include in the text code for that signature the index into the ordered set of public keys.
+
+A popular signature raw binary size is 64 bytes, which has a pad size of 2. This gives two code characters for a compact text code. The first character is the selector and type code. The second character is the Base64 encoded integer index.  By using a similar dual selector type code character scheme as above, where the selectors are the numbers `0-9` and `-` and `_`. Then there are 52 type codes given by the letters `A- Z` and `a-z`. The index has 64 values which support up to 64 members in the public key list. A selector can be used to select a large text code with more characters dedicated to larger indices. Some applications of CESR, like KERI, need dual-indexed signatures (i.e., each signature has two indices) to support pre-rotation with partial or reserved participants in a rotation. With partial rotation, a given signature may contribute to the signing threshold for two different thresholds, each on two different lists of keys where the associated key may appear at a different location in each list. For 64-byte signatures, the Ed25519 and ECDSA secp256k1 schemes have entries in the table. For dual-indexed codes, the next larger code size that aligns a 64-byte signature on a 24-bit boundary is 6 characters. The table provides entries for dual-indexed 64-byte signatures. The code includes one selector character, one type character, and two each of two-character indices.
+
+A new signature scheme based on Ed448 with 114-byte signatures is also supported. These signatures have a pad size of zero, so they require a four-character text code. The first character is the selector `0`, the second character is the type with 64 values, and the last two characters each provide a one-character index as a Base64 encoded integer with 64 different values. A big Version code consumes eight characters with one character for the selector, one for the type, and three characters for each of the dual indices.
+
+##### Indexed code table
+
+The associated indexed schemes are provided in the following table:
+
+|  Selector | Type Chars | Index Chars | Ondex Chars | Code Size | Lead Bytes | Pad Size |     Format    |
+|:---------:|:----------:|:-----------:|:-----------:|:---------:|:----------:|:--------:|--------------:|
+|           |            |             |             |           |            |          |               |
+|`[A-Z,a-z]`|  `1*`      |     1       |      0      |      2    |      0     |      2   |         `$#&&`|
+|     `0`   |   1        |     1       |      1      |      4    |      0     |      0   |     `0$##&&&&`|
+|     `2`   |   1        |     2       |      2      |      6    |      0     |      2   |   `0$####&&&&`|
+|     `3`   |   1        |     3       |      3      |      6    |      0     |      0   | `0$######&&&&`|
+
+##### Encoding scheme format symbol table
+
+The following table defines the meaning of the symbols used in the Indexed Code table:
 
 |  Symbol |  Description  |
 |:---:|:----:|
@@ -786,7 +831,7 @@ The following table defines the meaning of the symbols used in the encoding sche
 | `*` | selector-code character also provides the type |
 | `$` | type-code character from subset of Base64  `[A-Z,a-z,0-9,-,_]` |
 | `%` | lead byte where pre-converted binary includes the number of lead bytes shown |
-| `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following quadlets or triplets. When part of a Count code determines the count of the following Primitives or groups of Primitives |
+| `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following quadlets or triplets. When part of a Count code determines the count of following Primitives or groups of Primitives |
 | `&` | Base64 value characters that represent the converted raw binary value.  The actual number of characters is determined by the prepended text code.  Shown is the minimum number of value characters. |
 | `TBD` | to be determined, reserved for future  |
 
@@ -851,43 +896,7 @@ The following table includes both labels of parts shown in the columns in the Pa
 | *rs* | raw size in bytes (derived) of binary value where *rs is derived from `R(T)` |
 | *bs* | binary size in bytes (derived) where where *bs = ls + rs* |
 
-### Special context-specific code tables
 
-The set of tables above provides the basic or master encoding schemes. These coding schemes constitute the basic or master set of code tables. This basic or master set, however, may be extended with context-specific code tables. The context in which a Primitive occurs may provide an additional implicit selector that is not part of the actual explicit text code. This allows context-specific coding schemes that would otherwise conflict with the basic or master encoding schemes and tables.
-
-#### Indexed codes
-
-Currently, there is only one context-specific coding scheme, that is, for indexed signatures. A common use case is thresholded multi-signature schemes. A threshold-satisficing subset of signatures belonging to an ordered set or list of public keys may be provided as part of a Stream of Primitives. One way to compactly associated each signature with its public key is to include in the text code for that signature the index into the ordered set of public keys.
-
-A popular signature raw binary size is 64 bytes which has a pad size of 2. This gives two code characters for a compact text code. The first character is the selector and type code. The second character is the Base64 encoded integer index.  By using a similar dual selector type code character scheme as above, where the selectors are the numbers `0-9` and `-` and `_`. Then there are 52 type codes given by the letters `A- Z` and `a-z`. The index has 64 values which support up to 64 members in the public key list. A selector can be used to select a large text code with more characters dedicated to larger indices. Some applications of CESR, like KERI, have the need for dual-indexed signatures (i.e., each signature has two indices) in order to support pre-rotation with partial or reserved participants in a rotation. With partial rotation, a given signature may contribute to the signing threshold for two different thresholds, each on two different lists of keys where the associated key may appear at a different location in each list. For 64-byte signatures, the Ed25519 and ECDSA secp256k1 schemes have entries in the table. For dual-indexed codes, the next larger code size that aligns a 64-byte signature on a 24-bit boundary is 6 characters. The table provides entries for dual-indexed 64-byte signatures. The code includes one selector character, one type character, and two each of two-character indices.
-
-A new signature scheme based on Ed448 with 114-byte signatures is also supported. These signatures have a pad size of zero so require a four-character text code. The first character is the selector `0`, the second character is the type with 64 values, and the last two characters each provide a one-character index as a Base64 encoded integer with 64 different values. A big Version code consumes eight characters with one character for the selector, one for the type, and three characters for each of the dual indices.
-
-##### Indexed code table
-
-The associated indexed schemes are provided in the following table:
-
-|  Selector | Type Chars | Index Chars | Ondex Chars | Code Size | Lead Bytes | Pad Size |     Format    |
-|:---------:|:----------:|:-----------:|:-----------:|:---------:|:----------:|:--------:|--------------:|
-|           |            |             |             |           |            |          |               |
-|`[A-Z,a-z]`|  `1*`      |     1       |      0      |      2    |      0     |      2   |         `$#&&`|
-|     `0`   |   1        |     1       |      1      |      4    |      0     |      0   |     `0$##&&&&`|
-|     `2`   |   1        |     2       |      2      |      6    |      0     |      2   |   `0$####&&&&`|
-|     `3`   |   1        |     3       |      3      |      6    |      0     |      0   | `0$######&&&&`|
-
-##### Encoding scheme format symbol table
-
-The following table defines the meaning of the symbols used in the Indexed Code table:
-
-|  Symbol |  Description  |
-|:---:|:----:|
-|   |   |
-| `*` | selector-code character also provides the type |
-| `$` | type-code character from subset of Base64  `[A-Z,a-z,0-9,-,_]` |
-| `%` | lead byte where pre-converted binary includes the number of lead bytes shown |
-| `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following quadlets or triplets. When part of a Count code determines the count of following Primitives or groups of Primitives |
-| `&` | Base64 value characters that represent the converted raw binary value.  The actual number of characters is determined by the prepended text code.  Shown is the minimum number of value characters. |
-| `TBD` | to be determined, reserved for future  |
 
 
 [//]: # (\backmatter)
@@ -897,30 +906,153 @@ The following table defines the meaning of the symbols used in the Indexed Code 
 
 ## Annex
 
-### KERI Protocol Stack Code Tables
-
-#### Code table entry policy 
+### Code table entry policy 
 
 The policy for placing entries into the tables in general is in order of first needed first-entered basis. In addition, the compact code tables prioritize entries that satisfy the requirement that the associated cryptographic operations maintain at least 128 bits of cryptographic strength. This precludes the entry of many weak cryptographic suites into the compact tables. CESR's compact code table includes only best-of-class cryptographic operations along with common non-cryptographic Primitive types. At the time of this writing, there is the expectation that the National Institute of Standards and Technology (NIST) soon will  approve standardized post-quantum resistant cryptographic operations. When that happens, codes for the most appropriate post-quantum operations will be added. For example, Falcon appears to be one of the leading candidates with open-source code already available.
 
-#### Master code table
+### Table format
+The tables below have the following format:
 
-This master table includes both the Primitive and Count code types. The types are separated by headers. The table has 5 columns. These are as follows:
+Each table has 5 columns. These are as follows:
 
 1) The Base64 stable (hard) text code itself.
 2) A description of what is encoded or appended to the code.
 3) The length in characters of the code.
-4) the length in characters of the count portion of the code
+4) The length in characters of the count portion of the code
 5) The length in characters of the fully qualified primitive, including code and its appended material or the number of elements in the group. This is empty when variable length.
+
+### Universal Code tables
+All code tables for every protocol genus/version shall implement the following tables:
+
+#### Universal Code table genus/version codes
 
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
-|            | **Basic One Character Codes**     |             |              |              |
+|            |  **Universal Genus Version Codes** |      |        |      |
+|`--AAA###`  | KERI/ACDC stack code table at genus `AAA`  |      8      |       5      |       8     |
+
+####  Universal Code table genus/version codes that allow genus/version override
+
+All genera shall have the following codes in their count code table. Should the first group code embedded in each of these groups be a genus/version code then the parser shall switch code tables to the code table given by that genus/version code
+
+|   Code     | Description                       | Code Length | Count Length | Total Length |
+|:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
+|            |  **Counter Codes** |     |        |       |
+|            |  **Universal counter codes that allow genus/version override** |       |        |        | 
+|   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets  |      4      |       2      |       4      |
+| `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0A#####` | Message + attachments group  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-C##`   | Attachments only group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0C#####` | Attachments only group  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+
+####  Universal Code table genus/version codes that do not allow genus/version override
+All genera shall have the following codes in their count code table.
+
+|   Code     | Description                       | Code Length | Count Length | Total Length |
+|:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
+|            |  **Universal counter codes that do not allow genus/version override** |     |      |    | 
+|   `-D##`   | Datagram Stream Segment up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0D#####` | Datagram Stream Segment  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-E##`   | ESSR  wrapper  signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0E#####` | ESSR wrapper signable  up to 1,073,741,823 quadlets/triplets  |      8      |       5      |       8      |
+|   `-F##`   | CESR native message top-level fixed field signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0F#####` | CESR native message top-level fixed field signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-G##`   | CESR native message top-level field map signable up to 4,095 quadlets/triplets    |      4      |       2      |       4      |
+| `-0G#####` | CESR native message top-level field map signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-H##`   | Generic field map mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0H#####` | Generic field map mixed types  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-I##`   | Generic list mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0I#####` | Generic list mixed types  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+
+
+### KERI/ACDC protocol stack tables
+These tables are specific to the KERI/ACDC protocol genus.
+
+#### KERI/ACDC protocol genus version table
+
+|   Code     | Description                       | Code Length | Count Length | Total Length |
+|:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
+|            |  **Universal Genus Version Codes** |      |        |      |
+|`--AAABAA`  | KERI/ACDC protocol stack code table at genus `AAA` and version `1.00` |      8      |       5      |       8     |
+|`--AAACAA`  | KERI/ACDC protocol stack code table at genus `AAA` and version `2.00` |      8      |       5      |       8     |
+
+
+#### Master code table for genus/version `--AAACAA` (KERI/ACDC protocol stack version 2.00)
+
+This master table includes both the primitive and count code types for the KERI/ACDC protocol stack. This table only provides the codes for the KERI/ACDC protocol stack code table genus `AAA` at version 2.00 given by the genus/version code =  `--AAACAA` KERI/ACDC 2.00.  It is anticipated that the code tables for the KERI/ACDC/TSP protocol stack will not change much in the future after 2.00. Hopefully, there will never be a version 3.00 because 2.00 was designed properly.
+
+This master table includes both the Primitive and Count code types. The types are separated by headers. 
+
+
+|   Code     | Description                       | Code Length | Count Length | Total Length |
+|:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
+|            |  **Counter Codes** |     |        |       |
+|            |  **Universal Genus Version Codes** |      |        |      |
+|`--AAABAA`  | KERI/ACDC protocol stack code table at genus `AAA` and version `1.00` |      8      |       5      |       8     |
+|`--AAACAA`  | KERI/ACDC protocol stack code table at genus `AAA` and version `2.00` |      8      |       5      |       8     |
+|            |  **Universal counter codes that allow genus/version override** |       |        |        | 
+|   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets  |      4      |       2      |       4      |
+| `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0A#####` | Message + attachments group  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-C##`   | Attachments only group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0C#####` | Attachments only group  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|            |  **Universal counter codes that do not allow genus/version override** |     |      |    | 
+|   `-D##`   | Datagram Stream Segment up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0D#####` | Datagram Stream Segment  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-E##`   | ESSR  wrapper  signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0E#####` | ESSR  wrapper signable  up to 1,073,741,823 quadlets/triplets  |      8      |       5      |       8      |
+|   `-F##`   | CESR native message top-level fixed field signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0F#####` | CESR native message top-level fixed field signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-G##`   | CESR native message top-level field map signable up to 4,095 quadlets/triplets    |      4      |       2      |       4      |
+| `-0G#####` | CESR native message top-level field map signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-H##`   | Generic field map mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0H#####` | Generic field map mixed types  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-I##`   | Generic list mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `-0I#####` | Generic list mixed types  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|            |  **Genus Specific Counter Codes** |             |             |              | 
+|   `-J##`   | Indexed controller signature group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0J#####` | Indexed controller signature group   up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-K##`   | Indexed witness signature group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0K#####` | Indexed witness signature group  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-L##`   | Nontransferable identifier receipt couples pre+sig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0L#####` | Nontransferable identifier receipt couples pre+sig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-M##`   | Transferable identifier receipt quadruples pre+snu+dig+sig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0M#####` | Transferable identifier receipt quadruples pre+snu+dig+sig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-N##`   | First seen replay couples fnu+dt up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0N#####` | First seen replay couples fnu+dt up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-O##`   | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0O#####` | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-P##`   | Transferable last indexed sig group pre+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0P#####` | Transferable last indexed sig group pre+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-Q##`   | Issuer/Delegator/Transaction event seal source couple snu+dig  up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0Q#####` | Issuer/Delegator/Transaction event seal source couple snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-R##`   | Anchoring event seal source triple pre+snu+dig  up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0R#####` | Anchoring event seal source triple pre+snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-S##`   | Pathed material group path+mixed-types up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0S#####` | Pathed material group path+mixed-types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-T##`   | SAD path signature group path+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0T#####` | SAD path signature group path+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-U##`   | SAD root path signature group rootpath+path-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0U#####` | SAD root path signature group rootpath+path-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-V##`   | Digest seal singles `dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0V#####` |Digest seal singles `dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-W##`   | Merkle Tree Root seal singles `rdig`  up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0W#####` | Merkle Tree Root seal singles `rdig`  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-X##`   | Backer registrar identifier seal couples `brid+dig`  up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0X#####` | Backer registrar identifier seal couples `brid+dig`  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-Z##`   | ESSR (TSP) Payload `version+messagtype+...`  up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0Z#####` |  ESSR (TSP) Payload `version+messagtype+...` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|            |  **Operation Codes**   |             |              |              |
+|   `_`      |      Reserved  TBD  |             |              |              |
+|            |  **Primitive Matter Codes**  |             |              |              |
+|            |  **Basic One Character Codes**  |             |              |              |
 |     `A`    | Seed of Ed25519 private key       |      1      |              |      44      |
 |     `B`    | Ed25519 non-transferable prefix public verification key |      1      |              |      44      |
-|     `C`    | X25519 public encryption key.     |      1      |              |      44      |
+|     `C`    | X25519 public encryption key, may be converted from Ed25519 public key    |      1      |              |      44      |
 |     `D`    | Ed25519 public verification key   |      1      |              |      44      |
-|     `E`    | Blake3-256 Digest                 |      1      |              |      44      |
+|     `E`    | Blake3-256 Digest                 |      1      |              |     44       |
 |     `F`    | Blake2b-256 Digest                |      1      |              |      44      |
 |     `G`    | Blake2s-256 Digest                |      1      |              |      44      |
 |     `H`    | SHA3-256 Digest                   |      1      |              |      44      |
@@ -929,55 +1061,81 @@ This master table includes both the Primitive and Count code types. The types ar
 |     `K`    | Seed of Ed448 private key         |      1      |              |      76      |
 |     `L`    | X448 public encryption key        |      1      |              |      76      |
 |     `M`    | Short number 2 byte b2            |      1      |              |       4      |
-|     `N`    | Big number 4 byte b2              |      1      |              |       12     |
-|     `O`    | X25519 private decryption key     |      1      |              |       44     |
-|     `P`    | X25519 124 char b64 Cipher of 44 char qb64 Seed     |      1      |              |      124     |
-|            | **Basic Two Character Codes**     |             |              |              |
-|    `0A`    | Random salt, seed, private key, or sequence number of length 128 bits |      2      |              |      24      |
+|     `N`    | Big number 8 byte b2              |      1      |              |       12     |
+|     `O`    | X25519 private decryption key/seed may be converted from Ed25519 key/seed     |      1      |              |       44     |
+|     `P`    | X25519 124 char qb64 Cipher of 44 char qb64 Seed     |      1      |              |      124     |
+|     `Q`    | ECDSA secp256r1 256 bit random Seed for private key    |      1      |              |      44     |
+|     `R`    | Tall 5 byte b2 number  |      1      |              |      8     |
+|     `S`    | Large 11 byte b2 number    |      1      |              |      16     |
+|     `T`    | Great 14 byte b2 number  |      1      |              |      20     |
+|     `U`    | Vast 17 byte b2 number    |      1      |              |      24     |
+|     `V`    | Label1 as one char (bytes) field map label lead size 1  |      1      |              |      4    |
+|     `W`    | Label2 as two char (bytes) field map label lead size 0  |      1      |              |      4    |
+|     `X`    | Tag3 3 B64 encoded chars for field tag or packet type, semver, trait like 'DND'    |      1      |              |      4    |
+|     `Y`    | Tag7 7 B64 encoded chars for field tag or packet kind and version KERIVVV    |      1      |              |      8   |
+|     `Z`    | Blinding factor 256 bits, Cryptographic strength deterministically generated from random salt  |      1      |              |      44  |         
+|  **Basic Two Character Codes**    |             |              |              |
+|    `0A`    | Random salt, seed, nonce, private key, or sequence number of length 128 bits |      2      |              |      24      |
 |    `0B`    | Ed25519 signature                 |      2      |              |      88      |
 |    `0C`    | ECDSA secp256k1 signature         |      2      |              |      88      |
 |    `0D`    | Blake3-512 Digest                 |      2      |              |      88      |
 |    `0E`    | Blake2b-512 Digest                |      2      |              |      88      |
 |    `0F`    | SHA3-512 Digest                   |      2      |              |      88      |
 |    `0G`    | SHA2-512 Digest                   |      2      |              |      88      |
-|    `0H`    | Long value of length 32 bits      |      2      |              |       8      |
-|            | **Basic Four Character Codes**    |             |              |              |
+|    `0H`    | Long number 4 byte b2      |      2      |              |       8      |
+|    `0I`    | ECDSA secp256r1 signature      |      2      |              |       88      |
+|    `0J`    | Tag1 1 B64 encoded char with pre pad for  field tag |      1      |              |      4    |
+|    `0K`    | Tag2 2 B64 encoded chars for field tag or version VV or trait like 'EO'    |      2      |              |       4     |
+|    `0L`    | Tag5 5 B64 encoded chars with pre pad for field tag     |      2      |              |       8     |
+|    `0M`    | Tag6 6 B64 encoded chars for field tag or protocol kind version like KERIVV (KERI 1.1) or KKKVVV   |      2      |              |       8     |
+|            |  **Basic Four Character Codes**   |             |              |              |
 |   `1AAA`   | ECDSA secp256k1 non-transferable prefix public verification key   |      4      |              |      48      |
 |   `1AAB`   | ECDSA secp256k1 public verification or encryption key |      4      |              |      48      |
 |   `1AAC`   | Ed448 non-transferable prefix public verification key |      4      |              |      80      |
 |   `1AAD`   | Ed448 public verification key     |      4      |              |      80      |
 |   `1AAE`   | Ed448 signature                   |      4      |              |      156     |
-|   `1AAF`   | Tag Base64 4 chars or 3 byte number  |      4      |              |      8       |
+|   `1AAF`   | Tag4 4 B64 encoded chars for field tag or message kind   |      4      |              |      8       |
 |   `1AAG`   | DateTime Base64 custom encoded 32 char ISO-8601 DateTime |      4      |              |      36      |
 |   `1AAH`   | X25519 100 char b64 Cipher of 24 char qb64 Salt |      4      |              |      100      |
-|            | **Small Variable Raw Size Codes** |             |              |              |
+|   `1AAI`   | ECDSA secp256r1 verification key non-transferable, basic derivation |      4      |              |      48      |
+|   `1AAJ`   | ECDSA secp256r1 verification or encryption key, basic derivation |      4      |              |     48     |
+|   `1AAK`   | Null None or empty value |      4      |              |      4      |
+|   `1AAL`   | Yes truthy boolean value  |      4      |              |      8      |
+|   `1AAM`   | No falsey boolean value  |      4      |              |      8      |
+|            |  **Variable Raw Size Codes**   |             |              |              |
 |   `4A`     | String Base64 Only Lead Size 0      |      4      |      2        |            |
 |   `5A`     | String Base64 Only Lead Size 1      |      4      |      2        |            |
 |   `6A`     | String Base64 Only Lead Size 2      |      4      |      2        |            |
-|   `4B`     | Bytes Lead Size 0                  |      4      |      2        |            |
-|   `5B`     | Bytes Lead Size 1                  |      4      |      2        |            |
-|   `6B`     | Bytes Lead Size 2                  |      4      |      2        |            |
-|            | **Large Variable Raw Size Codes**  |             |              |              |
 |   `7AAA`   | String Big Base64 Only Lead Size 0 |      8      |      4        |            |
 |   `8AAA`   | String Big Base64 Only Lead Size 1 |      8      |      4        |            |
 |   `7AAA`   | String Big Base64 Only Lead Size 2 |      8      |      4        |            |
+|   `4B`     | Bytes Lead Size 0                  |      4      |      2        |            |
+|   `5B`     | Bytes Lead Size 1                  |      4      |      2        |            |
+|   `6B`     | Bytes Lead Size 2                  |      4      |      2        |            |
 |   `7AAB`   | Bytes Big Lead Size 0              |      8      |      4        |            |
 |   `8AAB`   | Bytes Big Lead Size 1              |      8      |      4        |            |
 |   `9AAB`   | Bytes Big Lead Size 2              |      8      |      4        |            |
-|            | **Counter Four Character Codes**   |             |              |              |
-|   `-A##`   | Count of attached qualified Base64 indexed controller signatures |      4      |       2      |       4      |
-|   `-B##`   | Count of attached qualified Base64 indexed witness signatures    |      4      |       2      |       4      |
-|   `-C##`   | Count of attached qualified Base64 nontransferable identifier receipt couples  pre+sig |      4      |       2      |       4      |
-|   `-D##`   | Count of attached qualified Base64 transferable identifier receipt quadruples  pre+snu+dig+sig   |      4      |       2      |       4      |
-|   `-E##`   | Count of attached qualified Base64 first seen replay couples fn+dt |      4      |       2      |       4      |
-|   `-F##`   | Count of attached qualified Base64 transferable indexed sig groups pre+snu+dig + idx sig group|      4      |       2      |       4      |
-|   `-V##`   | Count of total attached grouped material qualified Base64 4 char quadlets |      4      |       2      |       4      |
-|            | **Counter Eight Character Codes** |             |              |              |
-| `-0V#####` | Count of total attached grouped material qualified Base64 4 char quadlets |      8      |       5      |       8      |
-|            | **Protocol Genus Version Codes**    |             |              |             |
-|`--AAA###`  | KERI ACDC protocol stack  version      |      8      |       5      |       8     |
+|   `4C`     | X25519 sealed box cipher bytes of sniffable plaintext lead size 0 |      4      |      2        |            |
+|   `5C`     | X25519 sealed box cipher bytes of sniffable plaintext lead size 1 |      4      |      2        |            |
+|   `6C`     | X25519 sealed box cipher bytes of sniffable plaintext lead size 2 |      4      |      2        |            |
+|   `7AAC`   | X25519 sealed box cipher bytes of sniffable plaintext big lead size 0 |      8      |      4        |            |
+|   `8AAC`   | X25519 sealed box cipher bytes of sniffable plaintext big lead size 1 |      8      |      4        |            |
+|   `9AAC`   | X25519 sealed box cipher bytes of sniffable plaintext big lead size 2 |      8      |      4        |            |
+|   `4D`     | X25519 sealed box cipher bytes of QB64 plaintext lead size 0 |      4      |      2        |            |
+|   `5D`     | X25519 sealed box cipher bytes of QB64 plaintext lead size 1 |      4      |      2        |            |
+|   `6D`     | X25519 sealed box cipher bytes of QB64 plaintext lead size 2 |      4      |      2        |            |
+|   `7AAD`   | X25519 sealed box cipher bytes of QB64 plaintext big lead size 0 |      8      |      4        |            |
+|   `8AAD`   | X25519 sealed box cipher bytes of QB64 plaintext big lead size 1 |      8      |      4        |            |
+|   `9AAD`   | X25519 sealed box cipher bytes of QB64 plaintext big lead size 2 |      8      |      4        |            |
+|   `4E`     | X25519 sealed box cipher bytes of QB2 plaintext lead size 0 |      4      |      2        |            |
+|   `5E`     | X25519 sealed box cipher bytes of QB2 plaintext lead size 1 |      4      |      2        |            |
+|   `6E`     | X25519 sealed box cipher bytes of QB2 plaintext lead size 2 |      4      |      2        |            |
+|   `7AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 0 |      8      |      4        |            |
+|   `8AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 1 |      8      |      4        |            |
+|   `9AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 2 |      8      |      4        |            |
 
-#### Indexed code table
+
+#### Indexed code table for genus/version `--AAACAA` (KERI/ACDC protocol stack version 2.00)
 
 |   Code    | Description                            | Code Length | Index Length | Ondex Length | Total Length |
 |:---------:|:---------------------------------------|:-----------:|:------------:|:------------:|:------------:|
@@ -998,9 +1156,10 @@ This master table includes both the Primitive and Count code types. The types ar
 |`3A######` | Ed448 indexed signature  big dual      |      8      |       3      |       3      |      160     |
 |`3B######` | Ed448 indexed signature  big curr only |      8      |       3      |       3      |      160     |
 
-#### Count code tables
+
 
 #### Examples
+
 The tables above include complex groups that maybe composed of other groups. For example, consider the counter attachment group with code `-F##` where `##` is replaced by the two-character Base64 count of the number of complex groups. This is known as the TransIndexedSigGroups counter.  Within the complex group are one or more attached
 groups where each group consists of a triple pre+snu+dig followed by a ControllerIdxSigs group that in turn, consists of a counter code `-A##` followed by one or more
 indexed signature Primitives.
