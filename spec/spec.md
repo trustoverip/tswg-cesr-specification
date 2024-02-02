@@ -940,8 +940,8 @@ All genera shall have the following codes in their Count Code table. Should the 
 
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
-|            |  Counter Codes |     |        |       |
-|            |  Universal Counter codes that allow genus/version override |       |        |        | 
+|            |  Count Codes |     |        |       |
+|            |  Universal Count Codes that allow genus/version override |       |        |        | 
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
@@ -955,7 +955,7 @@ All genera shall have the following codes in their Count Code table.
 
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
-|            |  Universal Counter codes that do not allow genus/version override |     |      |    | 
+|            |  Universal Count Codes that do not allow genus/version override |     |      |    | 
 |   `-D##`   | Datagram Stream Segment up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `-0D#####` | Datagram Stream Segment up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-E##`   | ESSR wrapper signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
@@ -991,18 +991,18 @@ This master table includes both the Primitive and Count Code types. The types ar
 
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
-|            | Counter Codes |     |        |       |
+|            | Count Codes |     |        |       |
 |            |  Universal Genus Version Codes |      |        |      |
 |`--AAABAA`  | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00` |      8      |       5      |       8     |
 |`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00` |      8      |       5      |       8     |
-|            |  Universal Counter Codes that allow genus/version override |       |        |        | 
+|            |  Universal Count Codes that allow genus/version override |       |        |        | 
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `-0A#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-C##`   | Attachments only group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `-0C#####` | Attachments only group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|            |  Universal Counter Codes that do not allow genus/version override |     |      |    | 
+|            |  Universal Count Codes that do not allow genus/version override |     |      |    | 
 |   `-D##`   | Datagram Stream Segment up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `-0D#####` | Datagram Stream Segment up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-E##`   | ESSR wrapper signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
@@ -1015,7 +1015,7 @@ This master table includes both the Primitive and Count Code types. The types ar
 | `-0H#####` | Generic field map mixed type  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-I##`   | Generic list mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `-0I#####` | Generic list mixed types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|            |  Genus Specific Counter Codes |             |             |              | 
+|            |  Genus Specific Count Codes |             |             |              | 
 |   `-J##`   | Indexed controller signature group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0J#####` | Indexed controller signature group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-K##`   | Indexed witness signature group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
@@ -1165,18 +1165,18 @@ This master table includes both the Primitive and Count Code types. The types ar
 #### Examples
 
 The tables above include complex groups that maybe composed of other groups. For example, consider the counter attachment group with code `-F##` where `##` is replaced by the two-character Base64 count of the number of complex groups. This is known as the TransIndexedSigGroups counter.  Within the complex group are one or more attached
-groups where each group consists of a triple pre+snu+dig followed by a ControllerIdxSigs group that in turn, consists of a Counter Code `-A##` followed by one or more indexed signature Primitives.
+groups where each group consists of a triple pre+snu+dig followed by a ControllerIdxSigs group that in turn, consists of a Count Code `-A##` followed by one or more indexed signature Primitives.
 
 The following example details how a complex nested group may appear.
 
 The example has only one group that includes nested groups. The example is annotated with comments, spaces, and line feeds for clarity.
 
 ```text
--FAB     # Trans Indexed Sig Groups Counter Code 1 following group
+-FAB     # Trans Indexed Sig Groups Count Code 1 following group
 E_T2_p83_gRSuAYvGhqV3S0JzYEF2dIa-OCPLbIhBO7Y    # trans prefix of signer for sigs
 -EAB0AAAAAAAAAAAAAAAAAAAAAAB    # sequence number of est event of signer's public keys for sigs
 EwmQtlcszNoEIDfqD-Zih3N6o5B3humRKvBBln2juTEM    # digest of est event of signer's public keys for sigs
--AAD     # Controller Indexed Sigs Counter Code 3 following sigs
+-AAD     # Controller Indexed Sigs Count Code 3 following sigs
 AA5267UlFg1jHee4Dauht77SzGl8WUC_0oimYG5If3SdIOSzWM8Qs9SFajAilQcozXJVnbkY5stG_K4NbKdNB4AQ # sig 0
 ABBgeqntZW3Gu4HL0h3odYz6LaZ_SMfmITL-Btoq_7OZFe3L16jmOe49Ur108wH7mnBaq2E_0U0N0c5vgrJtDpAQ # sig 1
 ACTD7NDX93ZGTkZBBuSeSGsAQ7u0hngpNTZTK_Um7rUZGnLRNJvo5oOnnC1J2iBQHuxoq8PyjdT3BHS2LiPrs2Cg # sig 2
@@ -1505,7 +1505,7 @@ The SAD Path language was chosen over alternatives such as JSONPtr and JSONPath 
 This specification adds 2 Counter Four Character Codes to the Master Code Table and uses 1 Small Variable Raw Size Code Type and 1 Large Variable Raw Size Code Type from the Master Code Table (each of which have 3 code entries).
 
 #### Counter Four Character Codes
-The SAD Path Signature Counter Code is represented by the four-character code `-J##`.  The first two characters reserve this code for attaching the couplet (SAD Path, Signature Group).  The second two characters represent the count in hexadecimal of the SAD path signatures are in this attachment.  The path is attached in the T domain using the codes described in the next section.  The signature group is from either a transferable identifier or a non-transferable identifier and therefore attached using the CESR codes `-F##` or `-C##`, respectively, as described above.
+The SAD Path Signature Count Code is represented by the four-character code `-J##`.  The first two characters reserve this code for attaching the couplet (SAD Path, Signature Group).  The second two characters represent the count in hexadecimal of the SAD path signatures are in this attachment.  The path is attached in the T domain using the codes described in the next section.  The signature group is from either a transferable identifier or a non-transferable identifier and therefore attached using the CESR codes `-F##` or `-C##`, respectively, as described above.
 
 #### Variable Size Codes
 The code `A` is reserved as a Small Variable Raw Size Code and `AAA` as a Large Variable Raw Size Code for Base64 URL safe strings.  SAD Paths are Base64 URL safe strings and so leverage these codes when encoded in the CESR T domain.  To account for the variable nature of path strings, the variable size types reserve 3 codes each with prefix indicators of lead byte size used for adjusting the T domain encoding to multiples of 4 characters and the B domain to multiples of 3 bytes.  For the Small codes the prefix indicators are `4`, `5` and `6` representing 0, 1 and 2 lead bytes respectively and for Large codes the prefix indicators are `7`, `8`, and `9` representing 0, 1 and 2 lead bytes respectively.  The resulting 6 code entries are displayed in the table that follows.
@@ -1527,7 +1527,7 @@ The additions to the Master Code Table of CESR is shown below:
 |   9AAA####   | String Base64 Only with 2 Lead Bytes                                                  |      4      |       4      |       8      |
 
 #### SAD Path Signature Attachments
-CESR defines several Counter Codes for attaching signatures to serialized CESR event Messages.  For KERI event Messages, the signatures in the attachments apply to the entire serialized content of the KERI event Message.  As all KERI event Messages are SADs, the same rules for signing a KERI event Message applies to signing SADs for SAD Path Signatures.  A brief review of CESR signatures for transferable and non-transferable identifiers follows.  In addition, signatures on nested content must be specified.
+CESR defines several Count Codes for attaching signatures to serialized CESR event Messages.  For KERI event Messages, the signatures in the attachments apply to the entire serialized content of the KERI event Message.  As all KERI event Messages are SADs, the same rules for signing a KERI event Message applies to signing SADs for SAD Path Signatures.  A brief review of CESR signatures for transferable and non-transferable identifiers follows.  In addition, signatures on nested content must be specified.
 
 ##### Signing SAD Content
 
@@ -1546,16 +1546,16 @@ The same serialized encoding format must be used when nesting a SAD in another S
 Each attached signature is accompanied by a SAD Path that indicates the content that is signed.  The path must resolve within the enveloping SAD to either a nested SAD (map) or a SAID (string) of an externally provided SAD.  This of course, includes a root path that resolves to the enveloping SAD itself.
 
 ##### Signatures with Non-Transferable Identifiers
-Non-transferable identifiers only ever have one public key.  In addition, the identifier prefix is identical to the qualified cryptographic material of the public key and therefore no Key Event Log ( KEL) is required to validate the signature of a non-transferable identifier [[ref: KERI]].  The attachment code for witness receipt couplets, used for SAD Path Signatures, takes this into account.  The four-character Counter Code `-C##` is used for non-transferable identifiers and contains the signing identifier prefix and the signature.  Since the verification key can be extracted from the identifier prefix and the identifier cannot be rotated, all that is required to validate the signature is the identifier prefix, the data signed and the signature.
+Non-transferable identifiers only ever have one public key.  In addition, the identifier prefix is identical to the qualified cryptographic material of the public key and therefore no Key Event Log ( KEL) is required to validate the signature of a non-transferable identifier [[ref: KERI]].  The attachment code for witness receipt couplets, used for SAD Path Signatures, takes this into account.  The four-character Count Code `-C##` is used for non-transferable identifiers and contains the signing identifier prefix and the signature.  Since the verification key can be extracted from the identifier prefix and the identifier cannot be rotated, all that is required to validate the signature is the identifier prefix, the data signed and the signature.
 
 ##### Signatures with Transferable Identifiers
-Transferable identifiers require full KEL resolution and verification to determine the correct public key used to sign some content [[ref: KERI]].  In addition, the attachment code used for transferable identifiers, `-F##` must specify the location in the KEL at which point the signature was generated.  To accomplish this, this Counter Code includes the identifier prefix, the sequence number of the event in the KEL, the digest of the event in the KEL and the indexed signatures (transferable identifiers support multiple public/private keys and require index signatures).  Using all the values, the signature(s) can be verified by retrieving the KEL of the identifier prefix and determine the key state at the sequence number along with validating the digest of the event against the actual event.  Then using the key(s) at the determined key state, validate the signature(s).
+Transferable identifiers require full KEL resolution and verification to determine the correct public key used to sign some content [[ref: KERI]].  In addition, the attachment code used for transferable identifiers, `-F##` must specify the location in the KEL at which point the signature was generated.  To accomplish this, this Count Code includes the identifier prefix, the sequence number of the event in the KEL, the digest of the event in the KEL and the indexed signatures (transferable identifiers support multiple public/private keys and require index signatures).  Using all the values, the signature(s) can be verified by retrieving the KEL of the identifier prefix and determine the key state at the sequence number along with validating the digest of the event against the actual event.  Then using the key(s) at the determined key state, validate the signature(s).
 
 #### Additional Count Codes
 This specification adds two Counter Four Character Codes to the CESR Master Code Table for attaching and grouping transposable signatures on SAD and nested SAD content.  The first code (`-J##`) is reserved for attaching a SAD path and the associated signatures on the content at the resolution of the SAD Path (either a SAD or its associated SAID).  The second reserved code (`-K##`) is for grouping all SAD Path signature groups under a root path for a given SAD.  The root path in the second grouping code provides signature attachment transposability for embedding SAD content in other Messages.
 
 ##### SAD Path Signature Group
-The SAD Path Signature Group provides a four-character Counter Code, `-J##`, for attaching an encoded Variable Length SAD Path along with either a transferable index signature group or non-transferable identifier receipt couplets.  The SAD Path identifies the content that this attachment is signing.  The path must resolve to either a nested SAD (map) or a SAID (string) of an externally provided SAD within the context of the SAD and root path against which this attachment is applied.  Using the following ACDC SAD embedded in a KERI `exn` Message:
+The SAD Path Signature Group provides a four-character Count Code, `-J##`, for attaching an encoded Variable Length SAD Path along with either a transferable index signature group or non-transferable identifier receipt couplets.  The SAD Path identifies the content that this attachment is signing.  The path must resolve to either a nested SAD (map) or a SAID (string) of an externally provided SAD within the context of the SAD and root path against which this attachment is applied.  Using the following ACDC SAD embedded in a KERI `exn` Message:
 
 ```json
 {
@@ -1603,13 +1603,13 @@ ACTD7NDX93ZGTkZBBuSeSGsAQ7u0hngpNTZTK_Um7rUZGnLRNJvo5oOnnC1J2iBQHuxoq8PyjdT3BHS2
 
 | code | description |
 | --- | ----------- |
-|-JAB| SAD path signature group Counter Code 1 following the group |
+|-JAB| SAD path signature group Count Code 1 following the group |
 |6AAEAAA-a-credential| encoded SAD path designation|
-|-FAB| Trans Indexed Sig Groups Counter Code 1 following group|
+|-FAB| Trans Indexed Sig Groups Count Code 1 following group|
 |E_T2_p83_gRSuAYvGhqV3S0JzYEF2dIa-OCPLbIhBO7Y|trans prefix of signer for sigs|
 |-EAB0AAAAAAAAAAAAAAAAAAAAAAB|sequence number of est event of signer's public keys for sigs|
 |EwmQtlcszNoEIDfqD-Zih3N6o5B3humRKvBBln2juTEM| digest of est event of signer's public keys for sigs|
-|-AAD|Controller Indexed Sigs Counter Code 3 following sigs |
+|-AAD|Controller Indexed Sigs Count Code 3 following sigs |
 |AA5267...4AQ| sig 0 |
 |ABBgeq...pAQ| sig 1 |
 |ACTD7N...2Cg| sig 2 |
@@ -1628,14 +1628,14 @@ BmMfUwIOywRkyc5GyQXfgDA4UOAMvjvnXcaK9G939ArM
 
 | code | description |
 | --- | ----------- |
-| -JAB | SAD path signature group Counter Code 1 following the group |
+| -JAB | SAD path signature group Count Code 1 following the group |
 | 5AABAA-a | encoded SAD path designation |
 | -CAB  | NonTrans witness receipt couplet |
 | BmMfUwIOywRkyc5GyQXfgDA4UOAMvjvnXcaK9G939ArM | non-trans prefix of signer of sig |
 | 0BT7b5... aBg | sig |
 
 ##### SAD Path Groups
-The SAD Path Group provides a four-character Counter Code, `-K##`, for attaching encoded Variable Length root SAD Path along with 1 or more SAD Path Signature Groups.  The root SAD Path identifies the root context against which the paths in all included SAD Path Signature Groups are resolved.  When parsing a SAD Path Group, if the root path is the single `-` character, all SAD paths are treated as absolute paths.  Otherwise, the root path is prepended to the SAD paths in each of the SAD Path Signature Groups.  Given the following snippet of a SAD Path Group:
+The SAD Path Group provides a four-character Count Code, `-K##`, for attaching encoded Variable Length root SAD Path along with 1 or more SAD Path Signature Groups.  The root SAD Path identifies the root context against which the paths in all included SAD Path Signature Groups are resolved.  When parsing a SAD Path Group, if the root path is the single `-` character, all SAD paths are treated as absolute paths.  Otherwise, the root path is prepended to the SAD paths in each of the SAD Path Signature Groups.  Given the following snippet of a SAD Path Group:
 
 ```
 -KAB6AABAAA--JAB5AABAA-a...
