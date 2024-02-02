@@ -111,7 +111,7 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 [[def: Domain ]]
 
-~ The Primitives that are defined in CESR inhabit three different Domains each with a different abstract representation – Text (T), Binary (B) and Raw binary \(R\).
+~ a representation of a primitive either Text (T), Binary (B) or Raw binary \(R\).
 
 [[def: Primitive]]
 
