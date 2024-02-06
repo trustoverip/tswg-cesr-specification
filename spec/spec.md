@@ -151,7 +151,7 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 [[def: Stream]]
 
-~ a CESR Stream is any set of concatenated Primitives, concatenated groups of Primitives or hierarchically composed groups of Primitives.
+~ any set of concatenated Primitives, concatenated groups of Primitives or hierarchically composed groups of Primitives.
 
 [[def: Version String]]
 
