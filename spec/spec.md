@@ -111,7 +111,7 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 [[def: Domain ]]
 
-~ The Primitives that are defined in CESR inhabit three different Domains each with a different abstract representation – Text (T), Binary (B) and Raw binary \(R\).
+~ a representation of a Primitive either Text (T), Binary (B) or Raw binary \(R\).
 
 [[def: Primitive]]
 
@@ -147,11 +147,7 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 [[def: Variable Length]]
 
-~ todo
-
-::: issue
-https://github.com/trustoverip/tswg-cesr-specification/issues/17
-:::
+~ a type of count code allowing for vaiable size signatures or attachments which can be parsed to get the full size
 
 [[def: Stream]]
 
