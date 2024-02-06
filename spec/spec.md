@@ -159,19 +159,11 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 [[ref: Tritet]]
 
-~ todo 
-
-::: issue
-https://github.com/trustoverip/tswg-cesr-specification/issues/11
-:::
+~ 3 bits. See [Performant resynchronization with unique start bits](#performant-resynchronization-with-unique-start-bits)
 
 [[ref: Quadlet]]
 
-~ todo 
-
-::: issue
-https://github.com/trustoverip/tswg-cesr-specification/issues/12
-:::
+~ a group of 4 characters in the _T_ domain and equivalently in triplets of 3 bytes each in the _B_ domain used to define variable size.
 
 [[ref: Stable]]
 
