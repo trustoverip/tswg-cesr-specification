@@ -13,6 +13,8 @@ Composable Event Streaming Representation (CESR)
 
 **Editors:**
 
+- [Kevin Griffin](https://github.com/m00sey), [GLEIF](https://gleif.org/)
+
 **Contributors:**
 
 **Participate:**
