@@ -923,7 +923,7 @@ All code tables for every protocol genus/version shall implement the following t
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAA###` | KERI/ACDC stack code table at genus `AAA` |      8      |       5      |       8     |
+|`--AAA###` | KERI/ACDC stack code table at genus `AAA` |      8      |       3      |       8     |
 
 #### Universal Code table genus/version codes that allow genus/version override
 
