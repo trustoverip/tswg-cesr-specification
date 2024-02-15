@@ -576,6 +576,10 @@ This is summarized in the following table:
 |0b110|MGPK (Map16, Map32)| |
 |0b111|CESR ‘B’ domain Count Code or Op Code| |
 
+::: note 
+The above table implies a normative requirement that all serializations of MGPK, CBOR, JSON in CESR be top level field maps.  Serializations of these formats that aren't top level field maps are undefined and will most likely lead to a stream that won't decode.
+:::
+
 #### Stream parsing rules
 
 Given this set of Tritets (3 bits), a well-formed Stream start and restart requirement can be expressed.
