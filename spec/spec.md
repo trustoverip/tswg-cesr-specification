@@ -639,7 +639,16 @@ To clarify, the first character of any Primitive is either a selector or a 1-cha
 
 ## Table types
 
-There are two major types of code tables: codes for fixed-length raw sizes and codes for variable-length raw sizes.
+The tables in CESR consist of:
+* Two major types for raw CESR primitives:
+	* fixed-length raw size primitives 
+	* variable-length raw size primitives
+* Count code tables for grouping primitives
+* Protocol genus and version tables for use in differentiating between genus and versions of protocols encoded in CESR
+* Opcode tables that are not yet specified but may be used for advanced decentralized applications in the future
+* Some special context specific code tables (and space for future tables) for use in various contexts, like easy indexing into arrays of primitives
+
+The sections below explain these table types, the code selectors that differentiate these types, and how to use these tables to decode a given CESR stream.
 
 ### Tables of codes for fixed-length raw sizes  
 
@@ -677,7 +686,9 @@ This table uses `3` as its first character or selector. The remaining 3 characte
 
 Although many Primitives have fixed raw binary sizes, especially those for modern cryptographic suites such as keys, signatures, and digests, there are other Primitives that benefit from variable sizings such as either encrypted material or legacy cryptographic material types found in the GNU Privacy Guard (GPG) or Open Secure Sockets Layer (OpenSSL) libraries (like the Rivest-Shamir-Adleman (RSA) algorithm. Furthermore, CESR is meant to support not merely cryptographic material types but other basic types, such as generic text strings and numbers. These basic non-cryptographic types may also benefit from variable-size codes.
 
-The three tables in this group are for small variable raw-size Primitives. These three tables use 0, 1, or 2 lead bytes as appropriate given the pad size of 0, 1, or 2 for a given variable size raw binary value. The text code size for all three tables is 4 characters.  The first character is the selector, the second character is the type, and the last two characters provide the size of the value as a Base64 encoded integer. The number of unique type codes in each table is, therefore, 64. A given type code is repeated in each table for the same type so that all that differs between codes of the same type in each table is the number of lead bytes needed to align a given variable length on a 24-bit boundary. To clarify, what is different in each table is the number of lead bytes needed to achieve 24-bit alignment for a given variable length. Thus, the selector not only encodes for which type table but also implicitly encodes the number of lead bytes. The variable size is measured in Quadlets of 4 characters each in the ‘T’ domain and equivalently in triplets of 3 bytes each in the ‘B’ domain. Thus, computing the number of characters when parsing or off-loading in the ‘T’ domain means multiplying the variable size by 4. Computing the number of bytes when parsing or off-loading in the ‘B’ domain means multiplying the variable size by 3. The two Base64 size characters provide value lengths in Quadlets/triplets from 0 to 4095 (`64**2 -1`). This corresponds to value lengths of up to 16,380 characters (`4095 * 4`) or 12,285 bytes (`4095 * 3`).
+The three tables in this group are for small variable raw-size Primitives. These three tables use 0, 1, or 2 lead bytes as appropriate given the pad size of 0, 1, or 2 for a given variable size raw binary value. The text code size for all three tables is 4 characters.  The first character is the selector, the second character is the type, and the last two characters provide the size of the value as a Base64 encoded integer.
+
+The number of unique type codes in each table is, therefore, 64. A given type code is repeated in each table for the same type so that all that differs between codes of the same type in each table is the number of lead bytes needed to align a given variable length on a 24-bit boundary. To clarify, what is different in each table is the number of lead bytes needed to achieve 24-bit alignment for a given variable length. Thus, the selector not only encodes for which type table but also implicitly encodes the number of lead bytes. The variable size is measured in Quadlets of 4 characters each in the ‘T’ domain and equivalently in triplets of 3 bytes each in the ‘B’ domain. Thus, computing the number of characters when parsing or off-loading in the ‘T’ domain means multiplying the variable size by 4. Computing the number of bytes when parsing or off-loading in the ‘B’ domain means multiplying the variable size by 3. The two Base64 size characters provide value lengths in Quadlets/triplets from 0 to 4095 (`64**2 -1`). This corresponds to value lengths of up to 16,380 characters (`4095 * 4`) or 12,285 bytes (`4095 * 3`).
 
 ##### Small variable-length raw-size table with 0 lead bytes
 
@@ -699,9 +710,9 @@ Many legacy cryptographic libraries such as OpenSSL and GPG support any variable
 https://github.com/trustoverip/tswg-cesr-specification/issues/14
 :::
 
-The three tables in this group are for large variable raw size Primitives. These three large variable raw size tables use 0, 1, or 2 lead bytes as appropriate for the associated pad size of 0, 1, or 2 for a given variable-sized raw binary value. The text code size for all three tables is 8 characters. As a special case, the first 62 entries in these tables represent that same crypto suite type as the 62 entries in the small variable raw size tables above. This allows one type to use a smaller 4-character text code when the raw size is small enough.
+The three tables in this group are for large variable raw size Primitives. These three large variable raw size tables use 0, 1, or 2 lead bytes as appropriate for the associated pad size of 0, 1, or 2 for a given variable-sized raw binary value. The text code size for all three tables is 8 characters. As a special case, the first 62 entries in these tables represent that same crypto suite type as the 62 entries in the small variable raw size tables above. This allows one type to use a smaller 4-character text code when the raw size is small enough. The first character is the selector, the next three characters provide the type, and the last four characters provide the size of the value as a Base64 encoded integer. 
 
-The first character is the selector, the next three characters provide the type, and the last four characters provide the size of the value as a Base64 encoded integer. With 3 characters for each unique type code, each table provides 262,144 unique type codes. This should be enough type codes to accommodate all fixed raw size Primitive types for the foreseeable future.  A given type code is repeated in each table for the same type. What is different for each table is the number of lead bytes needed to align a given length on a 24-bit boundary. The selector not only encodes the table but also implicitly encodes the number of lead bytes. The variable size is measured in quadlets of 4 characters each in the ‘T’ domain and equivalently in triplets of 3 bytes each in the B’ domain. Thus, computing the number of characters when parsing or off-loading in the ‘T’ domain means multiplying the variable size by 4. Likewise, computing the number of bytes when parsing or off-loading in the ‘B’ domain means multiplying the variable size by 3. The four Base64 size characters provide value lengths in Quadlets/triplets from 0 to 16,777,215 (`64**4 -1`). This corresponds to value lengths of up to 67,108,860 characters (`16777215 * 4`) or 50,331,645 bytes (`16777215 * 3`).
+With 3 characters for each unique type code, each table provides 262,144 unique type codes. This should be enough type codes to accommodate all fixed raw size Primitive types for the foreseeable future.  A given type code is repeated in each table for the same type. What is different for each table is the number of lead bytes needed to align a given length on a 24-bit boundary. The selector not only encodes the table but also implicitly encodes the number of lead bytes. The variable size is measured in quadlets of 4 characters each in the ‘T’ domain and equivalently in triplets of 3 bytes each in the B’ domain. Thus, computing the number of characters when parsing or off-loading in the ‘T’ domain means multiplying the variable size by 4. Likewise, computing the number of bytes when parsing or off-loading in the ‘B’ domain means multiplying the variable size by 3. The four Base64 size characters provide value lengths in Quadlets/triplets from 0 to 16,777,215 (`64**4 -1`). This corresponds to value lengths of up to 67,108,860 characters (`16777215 * 4`) or 50,331,645 bytes (`16777215 * 3`).
 
 ##### Large variable-length raw-size table with 0 lead bytes
 
@@ -717,7 +728,12 @@ This table uses `9` as its first character or selector. The next three character
 
 ### Count Code tables
 
-There may be as many at 13 Count Code tables, but only three are specified currently. These three are the small count, four-character table, the large count, eight-character table, and the eight-character protocol genus and version table. Each Count Code shall be aligned on a 24-bit boundary. Count Codes have no value component but have only type and size components. The size component counts Quadlets/triplets in the following group. Moreover, because Primitives are already guaranteed to be composable, Count Codes do not need to account for pad size as long as the Count Code itself is aligned on a 24-bit boundary. The Count Code type indicates the type of Primitive or group being counted, and the size indicates how many Quadlets/triplets are consumed by that group. Count Code tables use the first two characters as a nested set of selectors. The first selector uses the `-` character for the initial selector. The next character is either a selector for another Count Code table or is the type for the small Count Code table. When the second character is numeral `0` - `9` or the letters `-` or `_`, then it is a secondary Count Code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it is a unique single-character Count Code. This results in a total of 52 single-character Count Codes.
+There may be as many at 13 Count Code tables, but only three are specified currently. These three are:
+* The small count, four-character table
+* The large count, eight-character table
+* The eight-character protocol genus and version table. 
+
+Each Count Code shall be aligned on a 24-bit boundary. Count Codes have no value component but have only type and size components. The size component counts Quadlets/triplets in the following group. Moreover, because Primitives are already guaranteed to be composable, Count Codes do not need to account for pad size as long as the Count Code itself is aligned on a 24-bit boundary. The Count Code type indicates the type of Primitive or group being counted, and the size indicates how many Quadlets/triplets are consumed by that group. Count Code tables use the first two characters as a nested set of selectors. The first selector uses the `-` character for the initial selector. The next character is either a selector for another Count Code table or is the type for the small Count Code table. When the second character is numeral `0` - `9` or the letters `-` or `_`, then it is a secondary Count Code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it is a unique single-character Count Code. This results in a total of 52 single-character Count Codes.
 
 All Count Codes except the genus/version code table (see below) are pipelineable because they count the number of Quadlets/triplets in the count group. A Quadlet is four Base64 characters in the Text domain. A triplet is three B2 bytes in the Binary domain. The count is invariant in either Domain. This allows a stream parser to extract the count number of characters/bytes in a group from the Stream without parsing the contents of the group. By making all Count Codes pipelineable, the Stream parser can be optimized in a granular way. This includes granular core affinity.
 
@@ -725,11 +741,11 @@ All Count Codes except the genus/version code table (see below) are pipelineable
 https://github.com/trustoverip/tswg-cesr-specification/issues/15
 :::
 
-#### Small Count Code table
+##### Small Count Code table
 
 Codes in the small Count Code table are each four characters long. The first character is the selector `-`. The second character is the Count Code type. the last two characters are the count size as a Base64 encoded integer. The Count Code type must be a letter `A` - `Z` or `a` - `z`. If the second character is not a letter but is a numeral `0` - `9` or `-` or `_`, then it is a selector for a different Count Code table. The set of letters provides 52 unique Count Codes. A two-character size provides counts from 0 to 4095 (`64**2 - 1`).
 
-#### Large Count Code table
+##### Large Count Code table
 
 Codes in the large Count Code table are each 8 characters long. The first two characters are the selectors `-0`. The next character is the Count Code type. the last five characters are the count size as a Base64 encoded integer. With one character for type, there are 64 unique large-Count Code types. A five-character size provides counts from 0 to 1,073,741,823 (`64**5 - 1`). These correspond to groups of size `1,073,741,823 * 4 = 4,294,967,292` characters or `1,073,741,823 * 3 = 3,221,225,469` bytes.
 
@@ -739,6 +755,7 @@ The protocol genus/version table is special because its codes modify the Count C
 
 The purpose of the protocol genus/version table is twofold. First, it allows CESR to be used for different protocols and protocol stacks, where each protocol may have its own dedicated set of code tables. The only table that all protocols must share is the protocol genus and version table (protocol table for short) and. All other entries in all other tables may vary by protocol. Secondly, for a given protocol genus, a protocol genus and version code provide the Version of that given protocol's table set. This allows versioning of the CESR code tables for a given protocol.
 
+##### Protocol and genus version table
 The format for a protocol genus and version code is as follows: `--GGGVVV` where `GGG` represents the protocol genus and `VVV` is the Version of that protocol genus. The genus uses three Base64 characters for a possible total of 262,144 different protocol genera. The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the Version of the protocol genus. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The version part supports up to 64 major versions with 4096 minor versions per major version.
 
 Any addition of a new code to the code table is backward breaking in at least one direction, so it is a feature change in at least one direction. New implementations with the new codes can accept streams from old implementations, but old ones will break if they receive the new ones. A major change means a code's meaning has changed. This means it breaks in both directions, i.e., sender and receiver. A minor change happens when a code is added; this only breaks backward compatibility when a new sender sends to an old receiver, but a new sender will still correctly process a stream sent from an old receiver. Since code additions will be commonly compared to code changes, it is beneficial to have more room for minor vs. major versions.
@@ -747,40 +764,41 @@ Any addition of a new code to the code table is backward breaking in at least on
 
 ### OpCode tables
 
+##### Op Code table
 The `_` selector is reserved for the yet-to-be-defined opcode table or tables. Opcodes are meant to provide Stream processing instructions that are more general and flexible than simply concatenated Primitives or groups of Primitives. A yet-to-be-determined stack-based virtual machine could be executed using a set of opcodes that provides Primitive, groups of Primitives, or Stream processing instructions. This would enable highly customizable uses for CESR.
 
 
-### Selector codes and encoding scheme design
+### Summary of Selector code tables and encoding scheme design
 
 #### Encoding scheme table
 
-The following table summarizes the ‘T’ domain coding schemes by selector code for the 13 code tables defined above:
+The following table summarizes the ‘T’ domain coding schemes by selector code for the 15 code tables defined in the sections above:
 
 ##### Encoding Scheme Table
 
-| Universal Selector | Selector | Type Chars | Value Size Chars | Code Size | Lead Bytes | Pad Size | Format |
-|:---------:|:---------:|:----:|:---:|:---:|:---:|:---:|--------------:|
-|           |           |      |     |     |     |     |               |
-|`[A-Z,a-z]`|           | `1*` |  0  |  1  |  0  |  1  |         `$&&&`|
-|     `0`   |           |   1  |  0  |  2  |  0  |  2  |         `*$&&`|
-|     `1`   |           |   3  |  0  |  4  |  0  |  0  |     `*$$$&&&&`|
-|     `2`   |           |   3  |  0  |  4  |  1  |  1  |     `*$$$%&&&`|
-|     `3 `  |           |   3  |  0  |  4  |  2  |  2  |     `*$$$%%&&`|
-|     `4`   |           |   1  |  2  |  4  |  0  |  0  |     `*$##&&&&`|
-|     `5`   |           |   1  |  2  |  4  |  1  |  1  |     `*$##%&&&`|
-|     `6`   |           |   1  |  2  |  4  |  2  |  2  |     `*$##%%&&`|
-|     `7`   |           |   3  |  4  |  8  |  0  |  0  | `*$$$####&&&&`|
-|     `8`   |           |   3  |  4  |  8  |  1  |  1  | `*$$$####%&&&`|
-|     `9`   |           |   3  |  4  |  8  |  2  |  2  | `*$$$####%%&&`|
-|     `-`   |`[A-Z,a-z]`| `1*` |  0  |  4  |  0  |  0  |         `*$##`|
-|     `-`   |     `0`   |  2 |  0 |  8  |  0  |  0  |     `**$#####`|
-|     `-`   |     `-`   |   2 |  0  |  8  |  0  |  0  |     `**$$$###`|
-|     `_`   |           | TBD | TBD | TBD | TBD | TBD |            `*`|
+| Table | Universal Selector | Selector | Type Chars | Value Size Chars | Code Size | Lead Bytes | Pad Size | Format |
+|:-------------------------|:---------:|:---------:|:----:|:---:|:---:|:---:|:---:|--------------:|
+|  |           |           |      |     |     |     |     |               |
+| 1-char fixed |`[A-Z,a-z]`|           | `1*` |  0  |  1  |  0  |  1  |         `$&&&`|
+| 2-char fixed |     `0`   |           |   1  |  0  |  2  |  0  |  2  |         `*$&&`|
+| large fixed 0-char lead byte |     `1`   |           |   3  |  0  |  4  |  0  |  0  |     `*$$$&&&&`|
+| large fixed 1-char lead byte |     `2`   |           |   3  |  0  |  4  |  1  |  1  |     `*$$$%&&&`|
+| large fixed 2-char lead byte |     `3 `  |           |   3  |  0  |  4  |  2  |  2  |     `*$$$%%&&`|
+| small var 0-char lead byte |     `4`   |           |   1  |  2  |  4  |  0  |  0  |     `*$##&&&&`|
+| small var 1-char lead byte |     `5`   |           |   1  |  2  |  4  |  1  |  1  |     `*$##%&&&`|
+| small var 2-char lead byte |     `6`   |           |   1  |  2  |  4  |  2  |  2  |     `*$##%%&&`|
+| large var 0-char lead byte |     `7`   |           |   3  |  4  |  8  |  0  |  0  | `*$$$####&&&&`|
+| large var 1-char lead byte |     `8`   |           |   3  |  4  |  8  |  1  |  1  | `*$$$####%&&&`|
+| large var 2-char lead byte |     `9`   |           |   3  |  4  |  8  |  2  |  2  | `*$$$####%%&&`|
+| small cnt code |     `-`   |`[A-Z,a-z]`| `1*` |  0  |  4  |  0  |  0  |         `*$##`|
+| large code cnt|     `-`   |     `0`   |  2 |  0 |  8  |  0  |  0  |     `**$#####`|
+| proto + genus |     `-`   |     `-`   |   2 |  0  |  8  |  0  |  0  |     `**$$$###`|
+| op codes |     `_`   |           | TBD | TBD | TBD | TBD | TBD |            `*`|
 
 
 ##### Encoding scheme symbols
 
-The following table defines the meaning of the symbols used in the encoding scheme table:
+The following table defines the meaning of the symbols used in the encoding scheme table `Format` column above:
 
 ##### Encoding Scheme Symbols Table
 
@@ -792,7 +810,7 @@ The following table defines the meaning of the symbols used in the encoding sche
 | `%` | lead byte where pre-converted binary includes the number of lead bytes shown |
 | `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following Quadlets or triplets. When part of a Count Code determines the count of the following Primitives or groups of Primitives |
 | `&` | Base64 value characters that represent the converted raw binary value.  The actual number of characters is determined by the prepended text code.  Shown is the minimum number of value characters. |
-| `TBD` | to be determined, reserved for future |
+| `TBD` | to be determined, reserved for future use |
 
 
 ### Special context-specific code tables
