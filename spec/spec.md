@@ -557,7 +557,7 @@ Furthermore, it may also be highly beneficial to support in-stride switching bet
 
 Among the codes for map objects in JSON, CBOR, and MGPK, only the first three bits are fixed and not dependent on mapping size. 
 * In JSON, a serialized mapping object always starts with `{`. This is encoded as `0x7b`. the first three bits are `0b011`. 
-* In CBOR, the first three bits of the major type of its serialized mapping object are `0b101`. 
+* In CBOR, the first three bits of the major type of its serialized mapping object are `0b101` corresponding to the bits denoting map "Major Type 5" from the CBOR spec.
 * In MGPK, there are three different mapping object codes. The FixMap code starts with `0b100`. Both the Map16 and Map32 codes start with `0b110`.
 
 Therefore, the JSON, CBOR, and MGPK encodings consume four starting Tritets (3 bits) that are in numeric order `0b011`, `0b100`, `0b101`, and `0b110`. This leaves four unused Tritets, namely, `0b000`, `0b001`, `0b010`, and `0b111`. These latter are potential candidates for the CESR Count Code start bits. In Base64, there are two codes that satisfy the constraints. The first is the dash character, `-`, encoded as `0x2d`. Its first three bits are `0b001`. The second is the underscore character, `_`, encoded as `0x5f`. Its first three bits are `0b010`. Both of these are distinct from the starting Tritets of any of the JSON, CBOR, and MGPK encodings above. Moreover, the starting Tritet of the corresponding binary encodings of `-` and `_` is `0b111`, which is also distinct from all the others. To elaborate, Base64 uses `-` in position 62 or `0x3E` (hex) and uses `_` in position 63 or `0x3F` (hex), both of which have starting Tritet of `0b111`
@@ -575,7 +575,7 @@ This is summarized in the following table:
 |0b010|CESR ‘T’ domain Op Code|`_`|
 |0b011|JSON|`{`|
 |0b100|MGPK (FixMap)| |
-|0b101|CBOR| |
+|0b101|CBOR (Map "Major Type 5")| |
 |0b110|MGPK (Map16, Map32)| |
 |0b111|CESR ‘B’ domain Count Code or Op Code| |
 
