@@ -46,13 +46,13 @@ The foreword goes here.
 
 [//]: # (:::)
 
-The Composable Event Streaming Representation (CESR) is a dual text-binary encoding format that has the unique property of text-binary concatenation composability. This Composability property enables the round-trip conversion en-masse of concatenated Primitives between the text domain and binary domain while maintaining the separability of individual Primitives. This enables convenient usability in the text domain and compact transmission in the binary domain. CESR Primitives are self-framing. CESR supports self-framing Group Codes that enable stream processing and pipelining in both the text and binary domains. CESR supports composable text-binary encodings for general data types as well as suites of cryptographic material. Popular cryptographic material suites have compact encodings for efficiency, while less compact encodings provide sufficient extensibility to support all foreseeable types. CESR streams also support interleaved JSON, CBOR, and MGPK serializations. CESR is a universal encoding that uniquely provides dual text and binary domain representations via composable conversion. The CESR protocol is used by other protocols such as [[ref: KERI]].
+The Composable Event Streaming Representation (CESR) is a dual text-binary encoding format that has the unique property of text-binary concatenation composability. This Composability property enables the round-trip conversion en-masse of concatenated Primitives between the text domain and binary domain while maintaining the separability of individual Primitives. This enables convenient usability in the text domain and compact transmission in the binary domain. CESR Primitives are self-framing. CESR supports self-framing Group Codes that enable stream processing and pipelining in both the text and binary domains. CESR supports composable text-binary encodings for general data types as well as suites of cryptographic material. Popular cryptographic material suites have compact encodings for efficiency, while less compact encodings provide sufficient extensibility to support all foreseeable types. CESR streams also support interleaved JSON, CBOR, and MGPK serializations. CESR is a universal encoding that uniquely provides dual text and binary domain representations via composable conversion. The CESR protocol is used by other protocols such as [[1]].
 
 One way to better secure Internet communications is to use cryptographically verifiable Primitives and data structures inside Messages and in support of messaging protocols. Cryptographically verifiable Primitives provide essential building blocks for zero-trust computing and networking architectures. Traditionally, Cryptographic Primitives, including but not limited to digests, salts, seeds (private keys), public keys, and digital signatures, have been largely represented in some binary encoding. This limits their usability in domains or protocols that are human-centric or equivalently that only support ASCII text-printable characters [[ref: RFC20]]. These domains include source code, documents, system logs, audit logs, legally defensible archives, Ricardian contracts, and human-readable text documents of many types [[spec: RFC4627]].
 
-Generic binary-to-text, [[ref: Bin2Txt]], or simply textual encodings such as Base64 [[spec: RFC4648]], do not provide any information about the type or size of the underlying Cryptographic Primitive. Base64 only provides "value" information. More recently, [[ref: Base58Check]] was developed as a fit-for-purpose textual encoding of Cryptographic Primitives for shared distributed ledger applications that, in addition to value, may include information about the type and, in some cases, the size of the underlying Cryptographic Primitive [[ref: WIF]]. Each application, however, may use a non-interoperable type and optionally size encoding because a binary encoding may include as a subset some codes that are in the text-printable compatible subset of [[ref: ASCII]] such as ISO Latin-1, [[ref: Latin1]] or UTF-8, [[ref: UTF8]]. Interestingly, for a given Cryptographic Primitive, a text-printable type code from a binary code table could be found serendipitously from a set of binary encodings. This is the case for the Multicodec encodings, which are binary but include a subset of "serendipitous" ASCII codes. [[ref: MCTable]][[ref: MultiCodec]][[ref: IPFS]]. Indeed, some [[ref: Base58Check]] applications take advantage of the binary MultiCodec tables but only use serendipitous text-compatible type codes. Serendipitous text encodings in binary code tables do not generally work for any size or type. So, the serendipitous approach is not universally applicable and is no substitute for a true textual encoding protocol for Cryptographic Primitives.
+Generic binary-to-text, [[12]], or simply textual encodings such as Base64 [[spec: RFC4648]], do not provide any information about the type or size of the underlying Cryptographic Primitive. Base64 only provides "value" information. More recently, [[10]] was developed as a fit-for-purpose textual encoding of Cryptographic Primitives for shared distributed ledger applications that, in addition to value, may include information about the type and, in some cases, the size of the underlying Cryptographic Primitive [[11]]. Each application, however, may use a non-interoperable type and optionally size encoding because a binary encoding may include as a subset some codes that are in the text-printable compatible subset of [[2]] such as ISO Latin-1, [[14]] or UTF-8, [[13]]. Interestingly, for a given Cryptographic Primitive, a text-printable type code from a binary code table could be found serendipitously from a set of binary encodings. This is the case for the Multicodec encodings, which are binary but include a subset of "serendipitous" ASCII codes. [[8]][[7]][[ref: IPFS]]. Indeed, some [[10]] applications take advantage of the binary MultiCodec tables but only use serendipitous text-compatible type codes. Serendipitous text encodings in binary code tables do not generally work for any size or type. So, the serendipitous approach is not universally applicable and is no substitute for a true textual encoding protocol for Cryptographic Primitives.
 
-A textual encoding that includes type, size, and value is self-framing. A self-framing text Primitive may be parsed without needing any additional delimiting characters. Thus, a stream of concatenated Primitives may be individually parsed individually without the need to encapsulate the Primitives inside textual delimiters or envelopes and a textual self-framing encoding provides the core capability for a streaming text protocol like [[ref: STOMP]] or [[ref: RAET]]. Although a first-class textual encoding of Cryptographic Primitives is the primary motivation for the CESR protocol, CESR is sufficiently flexible and extensible to support other useful data types, such as integers of various sizes, floating-point numbers, date-times as well as generic text. Thus, the CESR protocol is generally useful to encode data structures of all types into text, not merely those that contain Cryptographic Primitives.
+A textual encoding that includes type, size, and value is self-framing. A self-framing text Primitive may be parsed without needing any additional delimiting characters. Thus, a stream of concatenated Primitives may be individually parsed individually without the need to encapsulate the Primitives inside textual delimiters or envelopes and a textual self-framing encoding provides the core capability for a streaming text protocol like [[15]] or [[16]]. Although a first-class textual encoding of Cryptographic Primitives is the primary motivation for the CESR protocol, CESR is sufficiently flexible and extensible to support other useful data types, such as integers of various sizes, floating-point numbers, date-times as well as generic text. Thus, the CESR protocol is generally useful to encode data structures of all types into text, not merely those that contain Cryptographic Primitives.
 
 Textual encodings have numerous usability advantages over binary encodings. The one advantage, however, of a binary encoding over text is compactness. An encoding protocol with the property called text-binary concatenation composability or, more succinctly, Composability enables both text's usability and binary's compactness. Composability may be the most uniquely innovative and useful feature of the CESR encoding protocol.
 
@@ -182,7 +182,7 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 ### Composability
 
-An encoding has Composability when any set of self-framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss. Essentially, Composability provides round-trippable lossless conversion between Text and Binary domain representations of any set of concatenated Primitives when converted as a set not merely individually. The property enables a Stream processor to safely convert en-masse a Stream in the Text domain to an equivalent Stream in the Binary domain for compact transmission that may be safely converted back to Text domain en-masse by a Stream processor at the other end for further processing or archival storage. The use of Count Codes as independently composable groups enables hierarchical compositions. Such a hierarchically composable encoding protocol enables pipelining (multiplexing and de-multiplexing) of complex Streams in either text or compact binary. This allows management at scale for high-bandwidth applications that benefit from core affinity off-loading of Streams [[ref: Affinity]].
+An encoding has Composability when any set of self-framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss. Essentially, Composability provides round-trippable lossless conversion between Text and Binary domain representations of any set of concatenated Primitives when converted as a set not merely individually. The property enables a Stream processor to safely convert en-masse a Stream in the Text domain to an equivalent Stream in the Binary domain for compact transmission that may be safely converted back to Text domain en-masse by a Stream processor at the other end for further processing or archival storage. The use of Count Codes as independently composable groups enables hierarchical compositions. Such a hierarchically composable encoding protocol enables pipelining (multiplexing and de-multiplexing) of complex Streams in either text or compact binary. This allows management at scale for high-bandwidth applications that benefit from core affinity off-loading of Streams [[17]].
 
 ### Abstract Domain representations
 
@@ -535,7 +535,7 @@ To elaborate, Count Codes can be used as separators to better organize a Stream 
 
 ### Interleaved non-CESR serializations
 
-As mentioned above, one extremely useful property of CESR is that special Count Codes enable CESR to be interleaved with other serializations. Many applications use JSON [[ref: JSON]] [[spec: RFC4627]], CBOR [[ref: CBOR]] [[spec: RFC8949]], or MessagePack (MGPK) [[ref: MGPK]] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. With respect to field map serializations, CESR Primitives may appear in two different contexts. The first context is as a delimited text Primitive inside of a field map serialization. The delimited text may be either the key or value of a (key, value) pair. The second context is a standalone serialization interleaved with field map serializations in a stream. Special CESR Count Codes enable support for the second context of interleaving standalone CESR with other serializations.
+As mentioned above, one extremely useful property of CESR is that special Count Codes enable CESR to be interleaved with other serializations. Many applications use JSON [[spec: RFC4627]] [[spec: RFC4627]], CBOR [[spec: RFC8949]] [[spec: RFC8949]], or MessagePack (MGPK) [[3]] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. With respect to field map serializations, CESR Primitives may appear in two different contexts. The first context is as a delimited text Primitive inside of a field map serialization. The delimited text may be either the key or value of a (key, value) pair. The second context is a standalone serialization interleaved with field map serializations in a stream. Special CESR Count Codes enable support for the second context of interleaving standalone CESR with other serializations.
 
 ### Cold start Stream parsing problem
 
@@ -549,7 +549,7 @@ Special CESR Count Codes support re-synchronization at each boundary between int
 
 A CESR Stream parser supports three specific interleaved serializations, namely, JSON, CBOR, and MGPK. To make the parser more performant and robust, fine-grained serialization boundary detection may be highly beneficial for interleaving these serializations in a CESR stream. One way to provide this is by selecting the Count Code start bits such that there is always a unique (mutually distinct) set of start bits at each interleaved boundary between CESR, JSON, CBOR, and MGPK.
 
-Furthermore, it may also be highly beneficial to support in-stride switching between interleaved CESR text-domain Streams and CESR Binary domain Streams. In other words, the start bits for Count Codes in both the ‘T’ domain and the ‘B’ domain should be unique. This would provide the analogous equivalent of a UTF Byte Order Mark (BOM) [[ref: BOM]]. Recall that a BOM enables a parser of UTF-encoded documents to determine if the UTF codes are big-endian or little-endian [[ref: BOM]]. In the CESR case, an analogous feature would enable a Stream parser to know if a Count Code, along with its associated counted group of Primitives, is expressed in the ‘T’ or ‘B’ domain. Together these impose the constraint that the boundary start bits for interleaved text CESR, binary CESR, JSON, CBOR, and MGPK be mutually distinct.
+Furthermore, it may also be highly beneficial to support in-stride switching between interleaved CESR text-domain Streams and CESR Binary domain Streams. In other words, the start bits for Count Codes in both the ‘T’ domain and the ‘B’ domain should be unique. This would provide the analogous equivalent of a UTF Byte Order Mark (BOM) [[4]]. Recall that a BOM enables a parser of UTF-encoded documents to determine if the UTF codes are big-endian or little-endian [[4]]. In the CESR case, an analogous feature would enable a Stream parser to know if a Count Code, along with its associated counted group of Primitives, is expressed in the ‘T’ or ‘B’ domain. Together these impose the constraint that the boundary start bits for interleaved text CESR, binary CESR, JSON, CBOR, and MGPK be mutually distinct.
 
 Among the codes for map objects in JSON, CBOR, and MGPK, only the first three bits are fixed and not dependent on mapping size. 
 * In JSON, a serialized mapping object always starts with `{`. This is encoded as `0x7b`. the first three bits are `0b011`. 
@@ -603,7 +603,7 @@ This provides an extremely compact and elegant Stream parsing formula that gener
 
 As mentioned above, CESR uses a multiple-code table design that enables both size-optimized text codes for the most popular Primitive types and extensible universal support for all other Primitive types. Modern cryptographic suites support limited sets of raw binary Primitives with fixed (not variable) sizes. The design aesthetic is based on the understanding that there is minimally sufficient cryptographic strength and more cryptographic strength just wastes computation and bandwidth. Cryptographic strength is measured in bits of entropy, which also corresponds to the number of trials that must be attempted to succeed in a brute-force attack. The accepted minimum for cryptographic strength is 128 bits of entropy or equivalently `2**128` (2 raised to the 128th power) brute force trials. The size in bytes of a given raw binary Primitive for a given modern cryptographic suite is usually directly related to this minimum strength of 128 bits (16 bytes).
 
-For example, the raw binary Primitives from the well-known [[ref: NaCL]] ECC (Elliptic Curve Cryptography) library all satisfy this 128-bit strength goal. In particular, the digital signing public key raw binary Primitives for EdDSA are 256 bits (32 bytes) in length because well-known algorithms can reduce the number of trials to brute force invert an ECC public key to get the private key by the square root of the number of scalar multiplications which is also related to the size of both the private key and public key coordinates (discrete logarithm problem [[ref: DLog]]). Therefore, 256-bit (32-byte) ECC keys are needed to achieve 128 bits of cryptographic strength. In general, the size of a given raw binary Primitive is typically some multiple of 128 bits of cryptographic strength. This is also true for the associated EdDSA raw binary signatures which are 512 bits (64 bytes) in length.
+For example, the raw binary Primitives from the well-known [[6]] ECC (Elliptic Curve Cryptography) library all satisfy this 128-bit strength goal. In particular, the digital signing public key raw binary Primitives for EdDSA are 256 bits (32 bytes) in length because well-known algorithms can reduce the number of trials to brute force invert an ECC public key to get the private key by the square root of the number of scalar multiplications which is also related to the size of both the private key and public key coordinates (discrete logarithm problem [[5]]). Therefore, 256-bit (32-byte) ECC keys are needed to achieve 128 bits of cryptographic strength. In general, the size of a given raw binary Primitive is typically some multiple of 128 bits of cryptographic strength. This is also true for the associated EdDSA raw binary signatures which are 512 bits (64 bytes) in length.
 
 Similar scale factors exist for cryptographic digests. A standard default Blake3 digest is 256 bits (32 bytes) in length in order to get 128 bits of cryptographic strength. This is also true of SHA3-256. The sweet spots for modern cryptographic raw Primitive lengths are 32 bytes for many digests as well as EdDSA public and private keys as well as ECDSA private keys. Likewise, 64 bytes is the sweet spot for EdDSA and ECDSA-secp256k1 signatures and 64-byte variants of the most popular digests. Therefore, optimized text code tables for these two sweet spots (32 and 64 bytes) would be highly advantageous.
 
@@ -1220,7 +1220,7 @@ The first four characters, `PPPP` indicate the protocol. Each genus of a given C
 
 The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the Version of the protocol specification. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
 
-The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[ref: CBOR]] [[ref: RFC8949]] [[ref: MGPK]] [[ref: CESR]]. The last one, CESR, is used to represent `CESR` when the field map is converted to an in-memory data object so that it might be converted more conveniently back to the appropriate serialization. The native CESR serialization of a field map does not need a serialization type. 
+The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[spec: RFC8949]] [[ref: RFC8949]] [[3]] [[ref: CESR]]. The last one, CESR, is used to represent `CESR` when the field map is converted to an in-memory data object so that it might be converted more conveniently back to the appropriate serialization. The native CESR serialization of a field map does not need a serialization type. 
 
 The next four characters, `BBBB`, provide in Base64 notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 64<sup>4</sup> = 2<sup>24</sup> = 16,777,216 characters in length. This is deemed generous enough for the vast majority of anticipated applications. For serializations that may exceed this size, a secure hash chain of Messages may be employed where the value of a field in one Message is the cryptographic digest, SAID of the following Message. The total size of the chain of Messages may, therefore, be some multiple of 2<sup>24</sup>.
 
@@ -1243,7 +1243,7 @@ The first four characters, `PPPP` indicate the protocol.
 
 The next two characters, `vv` provide the major and minor version numbers of the Version of the protocol specification in lowercase hexadecimal notation. The first `v` provides the major version number, and the second `v` provides the minor version number. For example, `01` indicates major version 0 and minor version 1 or in dotted-decimal notation `0.1`. Likewise, `1c` indicates major version 1 and minor version decimal 12 or in dotted-decimal notation `1.12`.
 
- The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[ref: CBOR]] [[ref: RFC8949]] [[ref: MGPK]] [[ref: CESR]]. 
+ The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[spec: RFC8949]] [[ref: RFC8949]] [[3]] [[ref: CESR]]. 
 
 The next six characters provide in lowercase hexadecimal notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 16<sup>6</sup> = 2<sup>24</sup> = 16,777,216 characters in length. For example, when the length of serialization is 384 decimal characters/bytes, the length part of the Version String has the value `000180`. The final character `_` is the Version String terminator. This enables later Versions of the protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String. 
 
@@ -1423,10 +1423,10 @@ To elaborate, this approach of deriving self-referential identifiers from the co
 
 SAD Path signatures are an extension to CESR that provide transposable cryptographic signature attachments on self-addressing data (SAD) [[ref: SAID]]. Any SAD, such as an Authentic Chained Data Container (ACDC) Verifiable Credential [[ref: ACDC]] for example, may be signed with a SAD Path Signature and streamed along with any other CESR content.  In addition, a signed SAD can be embedded inside another SAD and the SAD Path signature attachment can be transposed across envelope boundaries and streamed without losing any cryptographic integrity.
 
-CESR is a dual text-binary encoding format that has the unique property of text-binary concatenation composability. The CESR specification not only provides the definition of the streaming format but also the attachment codes needed for differentiating the types of cryptographic material (such as signatures) used as attachments on all event types for the KERI [[ref: KERI]]. While all KERI event Messages are SADs, there is a broad class of SADs that are not KERI events but that require signature attachments. ACDC Verifiable Credentials fit into this class of SADs. With more complex data structures represented as SADs, such as Verifiable Credentials, there is a need to provide signature attachments on nested subsets of SADs. Similar to indices in indexed controller signatures in KERI that specify the location of the public key that they represent, nested SAD signatures need a path mechanism to specify the exact location of the nested content that they are signing. SAD Path Signatures provide this mechanism with the CESR SAD Path Language and new CESR attachment codes are detailed in this specification.
+CESR is a dual text-binary encoding format that has the unique property of text-binary concatenation composability. The CESR specification not only provides the definition of the streaming format but also the attachment codes needed for differentiating the types of cryptographic material (such as signatures) used as attachments on all event types for the KERI [[1]]. While all KERI event Messages are SADs, there is a broad class of SADs that are not KERI events but that require signature attachments. ACDC Verifiable Credentials fit into this class of SADs. With more complex data structures represented as SADs, such as Verifiable Credentials, there is a need to provide signature attachments on nested subsets of SADs. Similar to indices in indexed controller signatures in KERI that specify the location of the public key that they represent, nested SAD signatures need a path mechanism to specify the exact location of the nested content that they are signing. SAD Path Signatures provide this mechanism with the CESR SAD Path Language and new CESR attachment codes are detailed in this specification.
 
 #### Streamable SADs
-A primary goal of SAD Path Signatures is to allow any signed SAD to be streamed inline with any other CESR content.  In support of that goal, SAD Path Signatures leverage CESR attachments to define a signature scheme that can be attached to any SAD content serialized as JSON [[ref: JSON]], MessagePack [[ref: MGPK]] or CBOR [[ref: CBOR]].  Using this capability, SADs signed with SAD Path Signatures can be streamed inline in either the Text (T) or Binary (B) domain alongside any other KERI event Message over, for example TCP or UDP.  In addition, signed SADs can be transported via HTTP as a CESR HTTP Request.
+A primary goal of SAD Path Signatures is to allow any signed SAD to be streamed inline with any other CESR content.  In support of that goal, SAD Path Signatures leverage CESR attachments to define a signature scheme that can be attached to any SAD content serialized as JSON [[spec: RFC4627]], MessagePack [[3]] or CBOR [[spec: RFC8949]].  Using this capability, SADs signed with SAD Path Signatures can be streamed inline in either the Text (T) or Binary (B) domain alongside any other KERI event Message over, for example TCP or UDP.  In addition, signed SADs can be transported via HTTP as a CESR HTTP Request.
 
 ::: issue
 https://github.com/trustoverip/tswg-cesr-specification/issues/29
@@ -1579,10 +1579,10 @@ The same serialized encoding format must be used when nesting a SAD in another S
 Each attached signature is accompanied by a SAD Path that indicates the content that is signed.  The path must resolve within the enveloping SAD to either a nested SAD (map) or a SAID (string) of an externally provided SAD.  This of course, includes a root path that resolves to the enveloping SAD itself.
 
 ##### Signatures with Non-Transferable Identifiers
-Non-transferable identifiers only ever have one public key.  In addition, the identifier prefix is identical to the qualified cryptographic material of the public key and therefore no Key Event Log ( KEL) is required to validate the signature of a non-transferable identifier [[ref: KERI]].  The attachment code for witness receipt couplets, used for SAD Path Signatures, takes this into account.  The four-character Count Code `-C##` is used for non-transferable identifiers and contains the signing identifier prefix and the signature.  Since the verification key can be extracted from the identifier prefix and the identifier cannot be rotated, all that is required to validate the signature is the identifier prefix, the data signed and the signature.
+Non-transferable identifiers only ever have one public key.  In addition, the identifier prefix is identical to the qualified cryptographic material of the public key and therefore no Key Event Log ( KEL) is required to validate the signature of a non-transferable identifier [[1]].  The attachment code for witness receipt couplets, used for SAD Path Signatures, takes this into account.  The four-character Count Code `-C##` is used for non-transferable identifiers and contains the signing identifier prefix and the signature.  Since the verification key can be extracted from the identifier prefix and the identifier cannot be rotated, all that is required to validate the signature is the identifier prefix, the data signed and the signature.
 
 ##### Signatures with Transferable Identifiers
-Transferable identifiers require full KEL resolution and verification to determine the correct public key used to sign some content [[ref: KERI]].  In addition, the attachment code used for transferable identifiers, `-F##` must specify the location in the KEL at which point the signature was generated.  To accomplish this, this Count Code includes the identifier prefix, the sequence number of the event in the KEL, the digest of the event in the KEL and the indexed signatures (transferable identifiers support multiple public/private keys and require index signatures).  Using all the values, the signature(s) can be verified by retrieving the KEL of the identifier prefix and determine the key state at the sequence number along with validating the digest of the event against the actual event.  Then using the key(s) at the determined key state, validate the signature(s).
+Transferable identifiers require full KEL resolution and verification to determine the correct public key used to sign some content [[1]].  In addition, the attachment code used for transferable identifiers, `-F##` must specify the location in the KEL at which point the signature was generated.  To accomplish this, this Count Code includes the identifier prefix, the sequence number of the event in the KEL, the digest of the event in the KEL and the indexed signatures (transferable identifiers support multiple public/private keys and require index signatures).  Using all the values, the signature(s) can be verified by retrieving the KEL of the identifier prefix and determine the key state at the sequence number along with validating the digest of the event against the actual event.  Then using the key(s) at the determined key state, validate the signature(s).
 
 #### Additional Count Codes
 This specification adds two Counter Four Character Codes to the CESR Master Code Table for attaching and grouping transposable signatures on SAD and nested SAD content.  The first code (`-J##`) is reserved for attaching a SAD path and the associated signatures on the content at the resolution of the SAD Path (either a SAD or its associated SAID).  The second reserved code (`-K##`) is for grouping all SAD Path signature groups under a root path for a given SAD.  The root path in the second grouping code provides signature attachment transposability for embedding SAD content in other Messages.
@@ -1871,87 +1871,55 @@ With this approach, credential presentation request and exchange protocols can b
 
 ## Bibliography
 
-[[def: KERI-WP]]
-
-~ https://arxiv.org/abs/1907.02143
-
-[[def: ASCII, RFC20]]
-
-~ https://www.rfc-editor.org/rfc/rfc20
-
-[[def: JSON]]
-
-~ [[ref: RFC4627]]
-
-[[def: CBOR]]
-
-~ [[ref: RFC8949]]
-
-[[def: MGPK]]
-
-~ https://github.com/msgpack/msgpack/blob/master/spec.md
-
-[[def: BOM, UTF Byte Order Mark]]
-
-~ https://en.wikipedia.org/wiki/Byte_order_mark
-
-[[def: DLog, Discrete Logarithm Problem]]
-  
-~ https://en.wikipedia.org/wiki/Discrete_logarithm
-
-[[def: NaCL]]
-
-~ https://nacl.cr.yp.to
-
-[[def: MultiCodec Multiformats Codecs, MultiCodec]]
-
-~ https://github.com/multiformats/multicodec
-
-[[def: MultiCodec Table, MCTable]]
-
-~ https://github.com/multiformats/multicodec/blob/master/table.csv
-
-[[def: IPFS MultiFormats, IPFS]]
-
-~ https://richardschneider.github.io/net-ipfs-core/api/Ipfs.Registry.HashingAlgorithm.html
-
-
-[[def: Base58Check Encoding, Base58Check]]
-
-~ https://en.bitcoin.it/wiki/Base58Check_encoding
-
-
-[[def: Wallet Import Format ECDSA Base58Check, WIF]]
-
-~ https://en.bitcoin.it/wiki/Wallet_import_format
-
-
-[[def: Binary to Text Encoding, Bin2Txt]]
-
-~ https://en.wikipedia.org/wiki/Binary-to-text_encoding
-
-[[def: UTF8, UTF-8 Unicode]]
-
-~ https://en.wikipedia.org/wiki/UTF-8
-
-[[def: Latin1]]
-
-~ https://en.wikipedia.org/wiki/ISO/IEC_8859-1
-
-[[def: Simple Text Oriented Messaging Protocol, STOMP]]
-
-~ https://stomp.github.io
-
-[[def: Reliable Asynchronous Event Transport, RAET]]
-
-~ https://github.com/RaetProtocol/raet
-
-[[def: Analysis of the Effect of Core Affinity on High-Throughput Flows, Affinity]]
-
-~ https://crd.lbl.gov/assets/Uploads/Nathan-NDM14.pdf
-
-[[def: Semantic Versioning, SEMVER]]
-
-~ https://semver.org
-
 [[spec]]
+
+[1]. KERI
+[1]: https://trustoverip.github.io/tswg-keri-specification/
+
+[2]. ASCII, RFC20
+[2]: https://www.rfc-editor.org/rfc/rfc20
+
+[3]. MGPK
+[3]: https://github.com/msgpack/msgpack/blob/master/spec.md
+
+[4]. BOM, UTF Byte Order Mark
+[4]: https://en.wikipedia.org/wiki/Byte_order_mark
+
+[5]. DLog, Discrete Logarithm Problem
+[5]: https://en.wikipedia.org/wiki/Discrete_logarithm
+
+[6]. NaCL
+[6]: https://nacl.cr.yp.to
+
+[7]. MultiCodec Multiformats Codecs, MultiCodec
+[7]: https://github.com/multiformats/multicodec
+
+[8]. MultiCodec Table, MCTable
+[8]: https://github.com/multiformats/multicodec/blob/master/table.csv
+
+[9]. IPFS MultiFormats, IPFS
+[9]: https://richardschneider.github.io/net-ipfs-core/api/Ipfs.Registry.HashingAlgorithm.html
+
+[10]. Base58Check Encoding, Base58Check
+[10]: https://en.bitcoin.it/wiki/Base58Check_encoding
+
+[11]. Wallet Import Format ECDSA Base58Check, WIF
+[11]: https://en.bitcoin.it/wiki/Wallet_import_format
+
+[12]. Binary to Text Encoding, Bin2Txt
+[12]: https://en.wikipedia.org/wiki/Binary-to-text_encoding
+
+[13]. UTF8, UTF-8 Unicode
+[13]: https://en.wikipedia.org/wiki/UTF-8
+
+[14]. Latin1
+[14]: https://en.wikipedia.org/wiki/ISO/IEC_8859-1
+
+[15]. Simple Text Oriented Messaging Protocol, STOMP
+[15]: https://stomp.github.io
+
+[16]. Reliable Asynchronous Event Transport, RAET
+[16]: https://github.com/RaetProtocol/raet
+
+[17]. Analysis of the Effect of Core Affinity on High-Throughput Flows, Affinity
+[17]: https://crd.lbl.gov/assets/Uploads/Nathan-NDM14.pdf
