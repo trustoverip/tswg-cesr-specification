@@ -1209,11 +1209,16 @@ https://github.com/trustoverip/tswg-cesr-specification/issues/16
 
 Non-CESR serializations, namely, JSON, CBOR, and MGPK when interleaved in a CESR Stream shall have a Version String as their first field with field label, `v` (lower case "v"). The Version String field value enables the Stream parser to use a regular expression parser to determine the type and length of the interleaved serialization.
 
-#### Version String field format
+##### Version 2.XX string field format
 
 The Version String, `v` field shall be the first field in any top-level field map of any interleaved JSON, CBOR, or MGPK serialization. It provides a regular expression target for determining a serialized field map's serialization format and size (character count) of its enclosing field map. A Stream parser may use the Version String to extract and deserialize (deterministically) any serialized Stream field maps. Each field map in a Stream may use a different serialization type from the JSON, CBOR, or MGPK set.
 
-The format of the Version String is `PPPPVVVKKKKBBBB_`. It is 16 characters in length and is divided into five parts: protocol, Version, serialization kind, serialization length, and terminator. 
+The format of the Version String is `PPPPVVVKKKKBBBB_`. It is 16 characters in length and is divided into five parts: 
+* Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
+* Version: `VVV` three character major minor version (described below)
+* Serialization kind: `KKKK` four character string of the types (`JSON`, `CBOR`, `MGPK`, `CESR`)
+* Serialization length: `BBBB` integer encoded in Base64
+* terminator character `_`
 
 The first four characters, `PPPP` indicate the protocol. Each genus of a given CESR code table set may support multiple protocols.  
 
@@ -1221,17 +1226,30 @@ The next three characters, `VVV`, provide in Base64 notation the major and minor
 
 The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[ref: CBOR]] [[ref: RFC8949]] [[ref: MGPK]] [[ref: CESR]]. The last one, CESR, is used to represent `CESR` when the field map is converted to an in-memory data object so that it might be converted more conveniently back to the appropriate serialization. The native CESR serialization of a field map does not need a serialization type. 
 
-The next four characters, `BBBB`, provide in Base64 notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 2<sup>24</sup> = 16,777,216 characters in length. This is deemed generous enough for the vast majority of anticipated applications. For serializations that may exceed this size, a secure hash chain of Messages may be employed where the value of a field in one Message is the cryptographic digest, SAID of the following Message. The total size of the chain of Messages may, therefore, be some multiple of 2<sup>24</sup>.
+The next four characters, `BBBB`, provide in Base64 notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 64<sup>4</sup> = 2<sup>24</sup> = 16,777,216 characters in length. This is deemed generous enough for the vast majority of anticipated applications. For serializations that may exceed this size, a secure hash chain of Messages may be employed where the value of a field in one Message is the cryptographic digest, SAID of the following Message. The total size of the chain of Messages may, therefore, be some multiple of 2<sup>24</sup>.
 
 The final character `_` is the Version String terminator. This enables later Versions of a protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String. 
 
 Although a given field map serialization kind may have characters or bytes such as field map delimiters or Framing Codes that appear before, i.e., prefix the Version String field in a serialization, the set of possible prefixes for each of the supported serialization kinds is sufficiently constrained by the allowed serialization protocols to guarantee that a regular expression can determine unambiguously the start of any ordered field map serialization that includes the Version String as the first field value. Given the length of the serialization provided by the Version String, a parser may then determine the end of the serialization to extract the full field map serialization from the Stream without first deserializing it. This enables performant Stream parsing and off-loading of Streams that include any or all of the supported serialization types.
 
-##### Legacy Version String field format
+##### Legacy Version 1.XX string field format
 
 Compliant Version 2.XX implementations shall support the old Version 1.XX Version String format to properly verify field maps created with 1.XX format events.
 
-The format of the Version String for version 1.XX is `PPPPvvKKKKllllll_`. It is 17 characters in length and is divided into five parts: protocol, Version, serialization kind, serialization length, and terminator. The first four characters, `PPPP` indicate the protocol.  The next two characters, `vv` provide the major and minor version numbers of the Version of the protocol specification in lowercase hexadecimal notation. The first `v` provides the major version number, and the second `v` provides the minor version number. For example, `01` indicates major version 0 and minor version 1 or in dotted-decimal notation `0.1`. Likewise, `1c` indicates major version 1 and minor version decimal 12 or in dotted-decimal notation `1.12`. The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[ref: CBOR]] [[ref: RFC8949]] [[ref: MGPK]] [[ref: CESR]]. The next six characters provide in lowercase hexadecimal notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 2<sup>24</sup> = 16,777,216 characters in length. For example, when the length of serialization is 384 decimal characters/bytes, the length part of the Version String has the value `000180`. The final character `_` is the Version String terminator. This enables later Versions of the protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String. 
+The format of the Version String for version 1.XX is `PPPPvvKKKKllllll_`. It is 17 characters in length and is divided into five parts: 
+* Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
+* Version: `vv` twocharacter major minor version (described below)
+* Serialization kind: `KKKK` four character string of the types (`JSON`, `CBOR`, `MGPK`, `CESR`)
+* Serialization length: `llllll` integer encoded in lowercase hexidecimal (Base 16) format
+* terminator character `_`
+
+The first four characters, `PPPP` indicate the protocol.  
+
+The next two characters, `vv` provide the major and minor version numbers of the Version of the protocol specification in lowercase hexadecimal notation. The first `v` provides the major version number, and the second `v` provides the minor version number. For example, `01` indicates major version 0 and minor version 1 or in dotted-decimal notation `0.1`. Likewise, `1c` indicates major version 1 and minor version decimal 12 or in dotted-decimal notation `1.12`.
+
+ The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[ref: CBOR]] [[ref: RFC8949]] [[ref: MGPK]] [[ref: CESR]]. 
+
+The next six characters provide in lowercase hexadecimal notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 16<sup>6</sup> = 2<sup>24</sup> = 16,777,216 characters in length. For example, when the length of serialization is 384 decimal characters/bytes, the length part of the Version String has the value `000180`. The final character `_` is the Version String terminator. This enables later Versions of the protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String. 
 
 
 ### Self-addressing identifier (SAID)
