@@ -1220,6 +1220,21 @@ The first four characters, `PPPP` indicate the protocol. Each genus of a given C
 
 The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the Version of the protocol specification. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
 
+::: warning non-canonical base64
+This is a non-canonical encoding using Base64 indicies. Most libraries will drop bits that aren't on a byte boundary using many rfc4648 compliant libraries if you just call decode on these characters naively.
+
+example) in python (with padding character for demonstration) our version 2.00 maps to "CAA" as above.
+```python
+>>> base64.urlsafe_b64decode("CAA=")
+b'\x08\x00'
+```
+
+Which is two bytes.  However, three base64 characters in this version scheme encode 18 bits.  base64 encoding works on 6-bit groupings so: `C -> 0b000010, A -> 0b000000, A -> 0b000000` which is two bytes + two bits when concatenated together.  In the python example above we get back `b'\x08\x00'` -> `'0b00001000 0b00000000'` which is two bytes (16 bits) in hexidecimal notation.  The canonical decoding by the library is stripping the last two bits per the RFC.  Implementers should thus use a library capable of getting the index of the b64 characters according to the scheme (for this version string only) and not those written to give canonical decodings.
+
+See https://datatracker.ietf.org/doc/html/rfc4648#section-3.5
+:::
+
+
 The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[spec: RFC8949]] [[ref: RFC8949]] [[3]] [[ref: CESR]]. The last one, CESR, is used to represent `CESR` when the field map is converted to an in-memory data object so that it might be converted more conveniently back to the appropriate serialization. The native CESR serialization of a field map does not need a serialization type. 
 
 The next four characters, `BBBB`, provide in Base64 notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 64<sup>4</sup> = 2<sup>24</sup> = 16,777,216 characters in length. This is deemed generous enough for the vast majority of anticipated applications. For serializations that may exceed this size, a secure hash chain of Messages may be employed where the value of a field in one Message is the cryptographic digest, SAID of the following Message. The total size of the chain of Messages may, therefore, be some multiple of 2<sup>24</sup>.
