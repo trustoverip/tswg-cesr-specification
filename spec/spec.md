@@ -1209,12 +1209,12 @@ Non-CESR serializations, namely, JSON, CBOR, and MGPK when interleaved in a CESR
 
 The Version String, `v` field shall be the first field in any top-level field map of any interleaved JSON, CBOR, or MGPK serialization. It provides a regular expression target for determining a serialized field map's serialization format and size (character count) of its enclosing field map. A Stream parser may use the Version String to extract and deserialize (deterministically) any serialized Stream field maps. Each field map in a Stream may use a different serialization type from the JSON, CBOR, or MGPK set.
 
-The format of the Version String is `PPPPVVVKKKKBBBB_`. It is 16 characters in length and is divided into five parts: 
+The format of the Version String is `PPPPVVVKKKKBBBB.`. It is 16 characters in length and is divided into five parts: 
 * Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
 * Version: `VVV` three character major minor version (described below)
 * Serialization kind: `KKKK` four character string of the types (`JSON`, `CBOR`, `MGPK`, `CESR`)
 * Serialization length: `BBBB` integer encoded in Base64
-* terminator character `_`
+* version 2.XX terminator character `.`
 
 The first four characters, `PPPP` indicate the protocol. Each genus of a given CESR code table set may support multiple protocols.  
 
@@ -1224,7 +1224,7 @@ The next four characters, `KKKK` indicate the serialization kind in uppercase. T
 
 The next four characters, `BBBB`, provide in Base64 notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 64<sup>4</sup> = 2<sup>24</sup> = 16,777,216 characters in length. This is deemed generous enough for the vast majority of anticipated applications. For serializations that may exceed this size, a secure hash chain of Messages may be employed where the value of a field in one Message is the cryptographic digest, SAID of the following Message. The total size of the chain of Messages may, therefore, be some multiple of 2<sup>24</sup>.
 
-The final character `_` is the Version String terminator. This enables later Versions of a protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String. 
+The final character `.` is the Version String terminator. This enables later Versions of a protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String. 
 
 Although a given field map serialization kind may have characters or bytes such as field map delimiters or Framing Codes that appear before, i.e., prefix the Version String field in a serialization, the set of possible prefixes for each of the supported serialization kinds is sufficiently constrained by the allowed serialization protocols to guarantee that a regular expression can determine unambiguously the start of any ordered field map serialization that includes the Version String as the first field value. Given the length of the serialization provided by the Version String, a parser may then determine the end of the serialization to extract the full field map serialization from the Stream without first deserializing it. This enables performant Stream parsing and off-loading of Streams that include any or all of the supported serialization types.
 
@@ -1237,7 +1237,7 @@ The format of the Version String for version 1.XX is `PPPPvvKKKKllllll_`. It is 
 * Version: `vv` twocharacter major minor version (described below)
 * Serialization kind: `KKKK` four character string of the types (`JSON`, `CBOR`, `MGPK`, `CESR`)
 * Serialization length: `llllll` integer encoded in lowercase hexidecimal (Base 16) format
-* terminator character `_`
+* legacy version terminator character `_`
 
 The first four characters, `PPPP` indicate the protocol.  
 
@@ -1568,7 +1568,7 @@ Signatures on SAD content require signing the serialized encoding format of the 
 
 ```json
  {
-     "v": "KERI10JSON00011c_"
+     "v": "KERICAAJSONAAQB."
  }
 ```
 
@@ -1592,7 +1592,7 @@ The SAD Path Signature Group provides a four-character Count Code, `-J##`, for a
 
 ```json
 {
-  "v": "KERI10JSON00011c_",
+  "v": "KERICAAJSONAAQB.",
   "t": "exn",
   "dt": "2020-08-22T17:50:12.988921+00:00",
   "r": "/credential/offer",
@@ -1678,7 +1678,7 @@ The root path is the single `-` character meaning that all subsequent SAD Paths 
 
 ```json
 {
-  "v": "ACDC10JSON00011c_",
+  "v": "ACDCCAAJSONAAQB.",
   "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
   "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
   "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
@@ -1702,7 +1702,7 @@ To support nesting of signed SAD content in other SAD content, the root path of 
 
 ```json
 {
-  "v": "KERI10JSON00011c_",
+  "v": "KERICAAJSONAAQB.",
   "t": "exn",
   "dt": "2020-08-22T17:50:12.988921+00:00",
   "r": "/credential/offer",
@@ -1749,7 +1749,7 @@ When signing nested SAD content, the serialization used at the time of signing i
 
 ```json
 {
-  "v": "ACDC10JSON00011c_",
+  "v": "ACDCCAAJSONAAQB.",
   "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
   "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
   "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
@@ -1772,7 +1772,7 @@ To sign the SAD located at the path `-a`, JSON serialization would be used becau
 
 ```json
 {
-  "v": "KERI10JSON00011c_",
+  "v": "KERICAAJSONAAQB.",
   "t": "exn",
   "dt": "2020-08-22T17:50:12.988921+00:00"
   "r": "/credential/apply"
@@ -1802,7 +1802,7 @@ Applying signatures to a SAD with SAIDs in place of fully expanded nested SAD co
 
 ```json
 {
-    "v": "ACDC10JSON00011c_",
+    "v": "ACDCCAAJSONAAQB.",
     "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
     "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
     "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
@@ -1844,7 +1844,7 @@ The three nested blocks of the `a` block `legalName`, `address` and `phone` are 
 
 ```json
 {
-   "v": "ACDC10JSON00011c_",
+   "v": "ACDCCAAJSONAAQB.",
    "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
    "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
    "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
