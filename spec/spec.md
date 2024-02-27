@@ -1185,7 +1185,7 @@ Legend:
 | `sig` | Signature |
 | `fn` | First seen number |
 | `idx` | Index |
-| `dt` | Datetime |
+| `dt` | DateTime |
 
 #### Examples
 
