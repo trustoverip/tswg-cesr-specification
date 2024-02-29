@@ -593,11 +593,11 @@ Each Stream must start (restart) with one of seven cases:
 6. A CBOR encoded mapping.
 7. A MGPK encoded mapping.
 
-A parser merely needs to examine the first Tritet (3 bits) of the first byte of the Stream start to determine which one of the seven it is. When the first Tritet is a Count Code, then the remainder of the Count Code itself will include the additional information needed to parse the attached group. When the first Tritet indicates its JSON, CBOR, or MGPK, then the mapping's first field must be a Version String that provides the additional information needed to parse the associated encoded field map serialization fully.
+A parser merely needs to examine the first Tritet (3 bits) of the first byte of the Stream start to determine which one of the seven it is. When the first Tritet is a Count Code, then the remainder of the Count Code itself will include the additional information needed to parse the attached group. When the first Tritet indicates, its JSON, CBOR, or MGPK, the mapping's first field must be a Version String that provides the additional information needed to parse the associated encoded field map serialization fully. See the Version String annex for the detailed syntax of the information that may be extracted with a regular expression search, given that the first Tritet indicates the following bytes in the stream belong to a JSON, CBOR, or MGPK field map serialization.
 
 The Stream must resume with a frame starting byte that begins with one of the 7 Tritets, either another Count Code expressed in the ‘T’ or ‘B’ domain or a new JSON, CBOR, or MGPK encoded mapping.
 
-This provides an extremely compact and elegant Stream parsing formula that generalizes not only support for CESR Composability but also support for interleaved CESR with three of the most popular field map serializations.
+This provides an extremely compact and elegant Stream parsing formula that generalizes support not only for CESR Composability but also for interleaved CESR with three of the most popular field map serializations.
 
 ### Compact fixed-size codes
 
@@ -1203,7 +1203,7 @@ https://github.com/trustoverip/tswg-cesr-specification/issues/16
 
 ### Version String field
 
-Non-CESR serializations, namely, JSON, CBOR, and MGPK when interleaved in a CESR Stream shall have a Version String as their first field with field label, `v` (lower case "v"). The Version String field value enables the Stream parser to use a regular expression parser to determine the type and length of the interleaved serialization.
+Non-CESR serializations, namely, JSON, CBOR, and MGPK when interleaved in a CESR Stream shall have a Version String as their first field with field label, `v` (lower case "v"). The Version String field value enables the Stream parser to use a regular expression parser to determine the type and length of the interleaved serialization. See the section on cold start stream processing section above for more detail on how a stream parser detects when to perform a regular expression search for a version string in a JSON, CBOR, or MGPK serialization interleaved in a CESR stream.
 
 ##### Version 2.XX string field format
 
