@@ -1223,7 +1223,7 @@ The next three characters, `VVV`, provide in Base64 notation the major and minor
 ::: warning non-canonical base64
 This is a non-canonical encoding using Base64 indicies. Most libraries will drop bits that aren't on a byte boundary using many rfc4648 compliant libraries if you just call decode on these characters naively.
 
-example) in python (with padding character for demonstration) our version 2.00 maps to "CAA" as above.
+For example in python (with padding character for demonstration) our using a semantic version 2.00 that would map to "CAA" as above.
 ```python
 >>> base64.urlsafe_b64decode("CAA=")
 b'\x08\x00'
