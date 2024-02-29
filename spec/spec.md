@@ -1175,7 +1175,17 @@ This master table includes both the Primitive and Count Code types. The types ar
 |`3A######` | Ed448 indexed signature big dual      |      8      |       3      |       3      |      160     |
 |`3B######` | Ed448 indexed signature big current only |      8      |       3      |       3      |      160     |
 
+Legend:
 
+| Short name | Description |
+|:----------:|:-----------:|
+| `pre` | Prefix |
+| `sn` | Sequence number |
+| `dig` | Digest |
+| `sig` | Signature |
+| `fn` | First seen number |
+| `idx` | Index |
+| `dt` | DateTime |
 
 #### Examples
 
