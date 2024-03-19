@@ -1395,7 +1395,8 @@ First, replace the value of the `$id` field with a string filled with dummy char
         "type": "object",
         "properties": {
             "full_name": {
-            "type": "string"
+            	"type": "string"
+            }
         }
     }
 ```
@@ -1416,7 +1417,8 @@ Third, replace the dummy identifier value with the derived identifier value in t
         "type": "object",
         "properties": {
             "full_name": {
-            "type": "string"
+                "type": "string"
+            }
         }
     }
 ```
