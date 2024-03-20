@@ -791,8 +791,9 @@ The following table summarizes the ‘T’ domain coding schemes by selector cod
 | large var 1-char lead byte |     `8`   |           |   3  |  4  |  8  |  1  |  1  | `*$$$####%&&&`|
 | large var 2-char lead byte |     `9`   |           |   3  |  4  |  8  |  2  |  2  | `*$$$####%%&&`|
 | small cnt code |     `-`   |`[A-Z,a-z]`| `1*` |  0  |  4  |  0  |  0  |         `*$##`|
-| large code cnt|     `-`   |     `0`   |  2 |  0 |  8  |  0  |  0  |     `**$#####`|
-| proto + genus |     `-`   |     `-`   |   2 |  0  |  8  |  0  |  0  |     `**$$$###`|
+| large code cnt|     `-`   |     `0`   |  1 |  0 |  8  |  0  |  0  |     `**$#####`|
+| proto + genus |     `-`   |     `-`   |   1 |  0  |  8  |  0  |  0  |     `**$$$###`|
+| other cnt codes |     `-`   |     `[1-9,_]`   |   TBD |  TBD  |  TBD  |  TBD  |  TBD  |     `**`|
 | op codes |     `_`   |           | TBD | TBD | TBD | TBD | TBD |            `*`|
 
 
