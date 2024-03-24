@@ -1107,7 +1107,8 @@ This master table includes both the Primitive and Count Code types. The types ar
 |    `0J`    | Tag1 1 B64 encoded char with pre pad for field tag |      1      |              |      4    |
 |    `0K`    | Tag2 2 B64 encoded chars for field tag or version VV or trait like 'EO'    |      2      |              |       4     |
 |    `0L`    | Tag5 5 B64 encoded chars with pre pad for field tag     |      2      |              |       8     |
-|    `0M`    | Tag6 6 B64 encoded chars for field tag or protocol kind version like KERIVV (KERI 1.1) or KKKVVV   |      2      |              |       8     |
+|    `0M`    | Tag6 6 B64 encoded chars for field tag  |      2      |              |       8     |
+|    `0N`    | Tag10 10 B64 encoded chars for field tag or version PPPPMmmMmm  |      2      |              |       12     |
 |            |  Basic Four Character Codes   |             |              |              |
 |   `1AAA`   | ECDSA secp256k1 non-transferable prefix public verification key   |      4      |              |      48      |
 |   `1AAB`   | ECDSA secp256k1 public verification or encryption key |      4      |              |      48      |
