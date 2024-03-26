@@ -1232,9 +1232,9 @@ The first four characters, `PPPP` indicate the protocol. Each genus of a given C
 The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the Version of the protocol specification. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
 
 ::: warning non-canonical base64
-This is a non-canonical encoding using Base64 indicies. Most libraries will drop bits that aren't on a byte boundary using many rfc4648 compliant libraries if you just call decode on these characters naively.
+This is a non-canonical encoding using Base64 indicies. Most [[spec: RFC4648]]-compliant libraries will drop bits that aren't on a byte boundary if you just call decode on these characters naively.
 
-For example in python (with padding character for demonstration) our using a semantic version 2.00 that would map to "CAA" as above.
+For example, in python (with padding character for demonstration), using a semantic version 2.00 that would map to "CAA" in our scheme as above.
 ```python
 >>> base64.urlsafe_b64decode("CAA=")
 b'\x08\x00'
