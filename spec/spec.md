@@ -733,9 +733,11 @@ There may be as many at 13 Count Code tables, but only three are specified curre
 * The large count, eight-character table
 * The eight-character protocol genus and version table. 
 
-Each Count Code shall be aligned on a 24-bit boundary. Count Codes have no value component but have only type and size components. The size component counts Quadlets/triplets in the following group. Moreover, because Primitives are already guaranteed to be composable, Count Codes do not need to account for pad size as long as the Count Code itself is aligned on a 24-bit boundary. The Count Code type indicates the type of Primitive or group being counted, and the size indicates how many Quadlets/triplets are consumed by that group. Count Code tables use the first two characters as a nested set of selectors. The first selector uses the `-` character for the initial selector. The next character is either a selector for another Count Code table or is the type for the small Count Code table. When the second character is numeral `0` - `9` or the letters `-` or `_`, then it is a secondary Count Code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it is a unique single-character Count Code. This results in a total of 52 single-character Count Codes.
+Each Count Code shall be aligned on a 24-bit boundary. Count Codes have no value component but have only type and size components. The size component counts Quadlets/triplets in the following group. Moreover, because Primitives are already guaranteed to be composable, Count Codes do not need to account for pad size as long as the Count Code is aligned on a 24-bit boundary. The Count Code type indicates the type of Primitive or group being counted. When the code supports variable-sized primitives, the size indicates how many Quadlets/triplets are consumed by that group. When the code does not support variable size primitives, i.e., the converted raw part is empty, then the size may be used to convey special Base64 values more compactly. 
 
-All Count Codes except the genus/version code table (see below) are pipelineable because they count the number of Quadlets/triplets in the count group. A Quadlet is four Base64 characters in the Text domain. A triplet is three B2 bytes in the Binary domain. The count is invariant in either Domain. This allows a stream parser to extract the count number of characters/bytes in a group from the Stream without parsing the contents of the group. By making all Count Codes pipelineable, the Stream parser can be optimized in a granular way. This includes granular core affinity.
+Count Code tables use the first two characters as a nested set of selectors. The first selector uses the `-` character for the initial selector. The next character is either a selector for another Count Code table or is the type for the small Count Code table. When the second character is numeral `0` - `9` or the letters `-` or `_`, then it is a secondary Count Code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it is a unique single-character Count Code. This results in a total of 52 single-character Count Codes.
+
+All Count Codes except the genus/version code table (see below) are pipelineable because they count the number of Quadlets/triplets in the count group. A Quadlet is four Base64 characters in the Text domain. A triplet is three B2 bytes in the Binary domain. The count is invariant in either Domain. This allows a stream parser to extract the count number of characters/bytes in a group from the Stream without parsing the group's contents. By making all Count Codes pipelineable, the Stream parser can be optimized in a granular way. This includes granular core affinity.
 
 ::: issue
 https://github.com/trustoverip/tswg-cesr-specification/issues/15
@@ -779,11 +781,11 @@ The following table summarizes the ‘T’ domain coding schemes by selector cod
 | Table | Universal Selector | Selector | Type Chars | Value Size Chars | Code Size | Lead Bytes | Pad Size | Format |
 |:-------------------------|:---------:|:---------:|:----:|:---:|:---:|:---:|:---:|--------------:|
 |  |           |           |      |     |     |     |     |               |
-| 1-char fixed |`[A-Z,a-z]`|           | `1*` |  0  |  1  |  0  |  1  |         `$&&&`|
-| 2-char fixed |     `0`   |           |   1  |  0  |  2  |  0  |  2  |         `*$&&`|
-| large fixed 0-char lead byte |     `1`   |           |   3  |  0  |  4  |  0  |  0  |     `*$$$&&&&`|
-| large fixed 1-char lead byte |     `2`   |           |   3  |  0  |  4  |  1  |  1  |     `*$$$%&&&`|
-| large fixed 2-char lead byte |     `3 `  |           |   3  |  0  |  4  |  2  |  2  |     `*$$$%%&&`|
+| 1-char fixed |`[A-Z,a-z]`|           | `1*` |  0 or special |  1  |  0  |  1  |         `$&&&`|
+| 2-char fixed |     `0`   |           |   1  |  0 or special |  2  |  0  |  2  |         `*$&&`|
+| large fixed 0-char lead byte |     `1`   |           |   3  |  0 or special |  4  |  0  |  0  |     `*$$$&&&&`|
+| large fixed 1-char lead byte |     `2`   |           |   3  |  0 or special |  4  |  1  |  1  |     `*$$$%&&&`|
+| large fixed 2-char lead byte |     `3 `  |           |   3  |  0 or special |  4  |  2  |  2  |     `*$$$%%&&`|
 | small var 0-char lead byte |     `4`   |           |   1  |  2  |  4  |  0  |  0  |     `*$##&&&&`|
 | small var 1-char lead byte |     `5`   |           |   1  |  2  |  4  |  1  |  1  |     `*$##%&&&`|
 | small var 2-char lead byte |     `6`   |           |   1  |  2  |  4  |  2  |  2  |     `*$##%%&&`|
@@ -796,6 +798,7 @@ The following table summarizes the ‘T’ domain coding schemes by selector cod
 | other cnt codes |     `-`   |     `[1-9,_]`   |   TBD |  TBD  |  TBD  |  TBD  |  TBD  |     `**`|
 | op codes |     `_`   |           | TBD | TBD | TBD | TBD | TBD |            `*`|
 
+Special fixed-size codes can convey values in the value size part of the code. This enables more compact encoding of small special values like field tags, types, or versions. In this case, the Code Size must equal the size of the Selector, Type, and Value Size parts summed together. This means the converted raw part must be empty. In that case, a fixed-sized code but with a non-empty Value Size, the value of the Value Size part may have special meaning.
 
 ##### Encoding scheme symbols
 
@@ -820,11 +823,11 @@ The set of tables above provides the basic or master encoding schemes. These cod
 
 #### Indexed codes
 
-Currently, there is only one context-specific coding scheme, that is, for indexed signatures. A common use case is thresholded multi-signature schemes. A threshold-satisficing subset of signatures belonging to an ordered set or list of public keys may be provided as part of a Stream of Primitives. One way to compactly associate each signature with its public key is to include in the text code for that signature the index into the ordered set of public keys.
+Currently, there is only one context-specific coding scheme for indexed signatures. A common use case is thresholded multi-signature schemes. A threshold-satisficing subset of signatures belonging to an ordered set or list of public keys may be provided as part of a Stream of Primitives. One way to compactly associate each signature with its public key is to include the index into the ordered set of public keys in the text code for that signature.
 
-A popular signature raw binary size is 64 bytes, which has a pad size of 2. This gives two code characters for a compact text code. The first character is the selector and type code. The second character is the Base64 encoded integer index.  By using a similar dual selector type code character scheme as above, where the selectors are the numbers `0-9` and `-` and `_`. Then there are 52 type codes given by the letters `A- Z` and `a-z`. The index has 64 values which support up to 64 members in the public key list. A selector can be used to select a large text code with more characters dedicated to larger indices. Some applications of CESR, like KERI, need dual-indexed signatures (i.e., each signature has two indices) to support pre-rotation with partial or reserved participants in a rotation. With partial rotation, a given signature may contribute to the signing threshold for two different thresholds, each on two different lists of keys where the associated key may appear at a different location in each list. For 64-byte signatures, the Ed25519 and ECDSA secp256k1 schemes have entries in the table. For dual-indexed codes, the next larger code size that aligns a 64-byte signature on a 24-bit boundary is 6 characters. The table provides entries for dual-indexed 64-byte signatures. The code includes one selector character, one type character, and two each of two-character indices.
+A popular signature raw binary size is 64 bytes, with a pad size of 2. This gives two code characters for a compact text code. The first character is the selector and type code. The second character is the Base64 encoded integer index.  Using a similar dual selector type code character scheme as above, the selectors are the numbers `0-9` and `-` and `_`. Then there are 52 type codes given by the letters `A- Z` and `a-z`. The index has 64 values which support up to 64 members in the public key list. A selector can select a large text code with more characters dedicated to larger indices. Some applications of CESR, like KERI, need dual-indexed signatures (i.e., each signature has two indices) to support pre-rotation with partial or reserved participants in a rotation. With partial rotation, a given signature may contribute to the signing threshold for two different thresholds, each on two different lists of keys where the associated key may appear at a different location in each list. For 64-byte signatures, the Ed25519 and ECDSA secp256k1 schemes have entries in the table. For dual-indexed codes, the next larger code size that aligns a 64-byte signature on a 24-bit boundary is 6 characters. The table provides entries for dual-indexed 64-byte signatures. The code includes one selector character, one type character, and two each of two-character indices.
 
-A new signature scheme based on Ed448 with 114-byte signatures is also supported. These signatures have a pad size of zero, so they require a four-character text code. The first character is the selector `0`, the second character is the type with 64 values, and the last two characters each provide a one-character index as a Base64 encoded integer with 64 different values. A big Version code consumes eight characters with one character for the selector, one for the type, and three characters for each of the dual indices.
+A new signature scheme based on Ed448 with 114-byte signatures is also supported. These signatures have a pad size of zero, so they require a four-character text code. The first character is the selector `0`, the second character is the type with 64 values, and the last two characters each provide a one-character index as a Base64 encoded integer with 64 different values. A big Version code consumes eight characters with one character for the selector, one for the type, and three for each of the dual indices.
 
 ##### Indexed code table
 
@@ -952,7 +955,12 @@ All code tables for every protocol genus/version shall implement the following t
 
 #### Universal Code table genus/version codes that allow genus/version override
 
-All genera shall have the following codes in their Count Code table. Should the first Group Code embedded in each of these groups be a genus/version code then the parser shall switch code tables to the code table given by that genus/version code.
+All genera shall have the following codes in their Count Code table. Should the first Group Code embedded in each of these groups be a genus/version code, then the parser shall switch code tables to the code table given by that genus/version code. One of the codes in the following table supports this genus/version override. No other codes support this feature and are characterized as non-overrideable codes.
+
+The presence of a genus/version count code that appears as the first element within the framed material of any non-overrideable count code (universal or not) has no special meaning as an override to the stream parser. In other words, the parser only treats the genus/version count code, especially as an override, when it appears as the first count code within the framed material of an overrideable universal count code. Otherwise, there is no special override meaning to the parser. To elaborate, the parser's interpretation of a genus/version code's presence as the first element of the framed material of a non-overrideable count code depends on the framed material context in which it appears.
+
+For example, suppose some application uses a list (a universal but non-overrideable count code) with a genus/version code as its first element. From the perspective of the stream parser, the genus/version count code's appearance as the list's first element has no special override semantics, i.e., its presence provides no special override meaning to the parser.
+
 
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
@@ -1089,10 +1097,10 @@ This master table includes both the Primitive and Count Code types. The types ar
 |     `S`    | Large 11-byte b2 number    |      1      |              |      16     |
 |     `T`    | Great 14-byte b2 number |      1      |              |      20     |
 |     `U`    | Vast 17-byte b2 number    |      1      |              |      24     |
-|     `V`    | Label1 as one char (bytes) field map label lead size 1 |      1      |              |      4    |
-|     `W`    | Label2 as two char (bytes) field map label lead size 0 |      1      |              |      4    |
-|     `X`    | Tag3 3 B64 encoded chars for field tag or packet type, semver, trait like 'DND'    |      1      |              |      4    |
-|     `Y`    | Tag7 7 B64 encoded chars for field tag or packet kind and version KERIVVV    |      1      |              |      8   |
+|     `V`    | Label1 1 bytes for label lead size 1 |      1      |              |      4    |
+|     `W`    | Label2 2 bytes for label lead size 0 |      1      |              |      4    |
+|     `X`    | Tag3 3 B64 encoded chars for special values |      1      |       3       |      4    |
+|     `Y`    | Tag7 7 B64 encoded chars for special values  |      1      |        7      |      8   |
 |     `Z`    | Blinding factor 256 bits, Cryptographic strength deterministically generated from random salt |      1      |              |      44 |         
 | Basic Two Character Codes    |             |              |              |
 |    `0A`    | Random salt, seed, nonce, private key, or sequence number of length 128 bits |      2      |              |      24      |
@@ -1104,25 +1112,28 @@ This master table includes both the Primitive and Count Code types. The types ar
 |    `0G`    | SHA2-512 Digest                   |      2      |              |      88      |
 |    `0H`    | Long number 4-byte b2      |      2      |              |       8      |
 |    `0I`    | ECDSA secp256r1 signature      |      2      |              |       88      |
-|    `0J`    | Tag1 1 B64 encoded char with pre pad for field tag |      1      |              |      4    |
-|    `0K`    | Tag2 2 B64 encoded chars for field tag or version VV or trait like 'EO'    |      2      |              |       4     |
-|    `0L`    | Tag5 5 B64 encoded chars with pre pad for field tag     |      2      |              |       8     |
-|    `0M`    | Tag6 6 B64 encoded chars for field tag  |      2      |              |       8     |
-|    `0N`    | Tag10 10 B64 encoded chars for field tag or version PPPPMmmMmm  |      2      |              |       12     |
+|    `0J`    | Tag1 1 B64 encoded char + 1 prepad for special values |      2      |       2       |      4    |
+|    `0K`    | Tag2 2 B64 encoded chars for for special values  |      2      |       2       |       4     |
+|    `0L`    | Tag5 5 B64 encoded chars + 1 prepad for for special values     |      2      |        6      |       8     |
+|    `0M`    | Tag6 6 B64 encoded chars for for special values  |      2      |      6        |       8     |
+|    `0N`    | Tag9 9 B64 encoded chars + 1 prepad for special values |      2      |       10       |       12     |
+|    `0N`    | Tag10 10 B64 encoded chars for special values |      2      |      10        |       12     |
 |            |  Basic Four Character Codes   |             |              |              |
 |   `1AAA`   | ECDSA secp256k1 non-transferable prefix public verification key   |      4      |              |      48      |
 |   `1AAB`   | ECDSA secp256k1 public verification or encryption key |      4      |              |      48      |
 |   `1AAC`   | Ed448 non-transferable prefix public verification key |      4      |              |      80      |
 |   `1AAD`   | Ed448 public verification key     |      4      |              |      80      |
 |   `1AAE`   | Ed448 signature                   |      4      |              |      156     |
-|   `1AAF`   | Tag4 4 B64 encoded chars for field tag or Message kind   |      4      |              |      8       |
+|   `1AAF`   | Label3 3 bytes for label lead size 0 |      4      |              |      8       |
 |   `1AAG`   | DateTime Base64 custom encoded 32 char ISO-8601 DateTime |      4      |              |      36      |
 |   `1AAH`   | X25519 100 char b64 Cipher of 24 char qb64 Salt |      4      |              |      100      |
 |   `1AAI`   | ECDSA secp256r1 verification key non-transferable, basic derivation |      4      |              |      48      |
 |   `1AAJ`   | ECDSA secp256r1 verification or encryption key, basic derivation |      4      |              |     48     |
 |   `1AAK`   | Null None or empty value |      4      |              |      4      |
-|   `1AAL`   | Yes truthy Boolean value |      4      |              |      8      |
-|   `1AAM`   | No falsey Boolean value |      4      |              |      8      |
+|   `1AAL`   | No falsey Boolean value |      4      |              |      8      |
+|   `1AAM`   | Yes truthy Boolean value|      4      |              |      8      |
+|   `1AAN`   | Tag4 4 B64 encoded chars for special values |      4      |       4       |      8      |
+|   `1AAO`   | Tag8 8 B64 encoded chars for special values |      4      |       8       |      12      |
 |            |  Variable Raw Size Codes  |             |              |              |
 |   `4A`     | String Base64 Only Lead Size 0      |      4      |      2        |            |
 |   `5A`     | String Base64 Only Lead Size 1      |      4      |      2        |            |
