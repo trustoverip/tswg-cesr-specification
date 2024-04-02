@@ -951,7 +951,11 @@ All code tables for every protocol genus/version shall implement the following t
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAA###` | KERI/ACDC stack code table at genus `AAA` |      8      |       3      |       8     |
+|`--AAA###` | KERI/ACDC stack code table at genus `AAA` |      8      |       3\*      |       8     |
+
+::: note Count Length of genus/version code
+\* This isn't a count of items on the stream like others in the count code tables below.  Instead its the length of the characters wherein the total number of KERI/ACDC stack code genuses could exist (denoted by `###`).
+:::
 
 #### Universal Code table genus/version codes that allow genus/version override
 
@@ -1002,9 +1006,12 @@ These tables are specific to the KERI/ACDC protocol genus.
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAABAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00` |      8      |       5      |       8     |
-|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00` |      8      |       5      |       8     |
+|`--AAABAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00` |      8      |             |       8     |
+|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00` |      8      |             |       8     |
 
+::: note Count Length of KERI protocol genus/version codes
+Unlike the code in the Universal Code Selector Table above, these represent *specific* instantiations of the protocol genus codes so their count lengths are 0.
+:::
 
 #### Master code table for genus/version `--AAACAA` (KERI/ACDC protocol stack Version 2.00)
 
@@ -1017,8 +1024,8 @@ This master table includes both the Primitive and Count Code types. The types ar
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            | Count Codes |     |        |       |
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAABAA`  | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00` |      8      |       5      |       8     |
-|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00` |      8      |       5      |       8     |
+|`--AAABAA`  | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00`\* |     8      |             |       8     |
+|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00`\* |      8     |             |       8     |
 |            |  Universal Count Codes that allow genus/version override |       |        |        | 
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
@@ -1165,6 +1172,12 @@ This master table includes both the Primitive and Count Code types. The types ar
 |   `7AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 0 |      8      |      4        |            |
 |   `8AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 1 |      8      |      4        |            |
 |   `9AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 2 |      8      |      4        |            |
+
+::: note Count Length of KERI protocol genus/version codes in --AAACAA
+\*Similar to the table above, these represent *specific* instantiations of the protocol genus codes so their count lengths are 0.
+
+\--AAACAA may recieve a --AAABAA code on the stream but would have to parse with a table from the original reference implementation not included in this specification.
+:::
 
 
 #### Indexed code table for genus/version `--AAACAA` (KERI/ACDC protocol stack version 2.00)
