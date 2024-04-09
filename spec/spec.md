@@ -951,7 +951,11 @@ All code tables for every protocol genus/version shall implement the following t
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAA###` | KERI/ACDC stack code table at genus `AAA` |      8      |       3      |       8     |
+|`--AAA###` | KERI/ACDC stack code table at genus `AAA` |      8      |       3\*      |       8     |
+
+::: note Count Length of genus/version code
+\* This isn't a count of items on the stream like others in the count code tables below.  Instead its the length of the characters wherein the total number of KERI/ACDC stack code genuses could exist (denoted by `###`).
+:::
 
 #### Universal Code table genus/version codes that allow genus/version override
 
@@ -969,7 +973,7 @@ For example, suppose some application uses a list (a universal but non-overridea
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0A#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `-0B#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-C##`   | Attachments only group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `-0C#####` | Attachments only group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 
@@ -1002,9 +1006,12 @@ These tables are specific to the KERI/ACDC protocol genus.
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAABAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00` |      8      |       5      |       8     |
-|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00` |      8      |       5      |       8     |
+|`--AAABAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00` |      8      |             |       8     |
+|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00` |      8      |             |       8     |
 
+::: note Count Length of KERI protocol genus/version codes
+Unlike the code in the Universal Code Selector Table above, these represent *specific* instantiations of the protocol genus codes so their count lengths are 0.
+:::
 
 #### Master code table for genus/version `--AAACAA` (KERI/ACDC protocol stack Version 2.00)
 
@@ -1017,13 +1024,13 @@ This master table includes both the Primitive and Count Code types. The types ar
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            | Count Codes |     |        |       |
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAABAA`  | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00` |      8      |       5      |       8     |
-|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00` |      8      |       5      |       8     |
+|`--AAABAA`  | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00`\* |     8      |             |       8     |
+|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00`\* |      8     |             |       8     |
 |            |  Universal Count Codes that allow genus/version override |       |        |        | 
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0A#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `-0B#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-C##`   | Attachments only group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `-0C#####` | Attachments only group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |            |  Universal Count Codes that do not allow genus/version override |     |      |    | 
@@ -1166,6 +1173,12 @@ This master table includes both the Primitive and Count Code types. The types ar
 |   `8AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 1 |      8      |      4        |            |
 |   `9AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 2 |      8      |      4        |            |
 
+::: note Count Length of KERI protocol genus/version codes in --AAACAA
+\*Similar to the table above, these represent *specific* instantiations of the protocol genus codes so their count lengths are 0.
+
+\--AAACAA may recieve a --AAABAA code on the stream but would have to parse with a table from the original reference implementation not included in this specification.
+:::
+
 
 #### Indexed code table for genus/version `--AAACAA` (KERI/ACDC protocol stack version 2.00)
 
@@ -1238,6 +1251,20 @@ The format of the Version String is `PPPPVVVKKKKBBBB.`. It is 16 characters in l
 The first four characters, `PPPP` indicate the protocol. Each genus of a given CESR code table set may support multiple protocols.  
 
 The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the Version of the protocol specification. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
+
+::: warning non-canonical base64
+This is a non-canonical encoding using Base64 indicies. Most [[spec: RFC4648]]-compliant libraries will drop bits that aren't on a byte boundary if you just call decode on these characters naively.
+
+For example, in python (with padding character for demonstration), using a semantic version 2.00 that would map to "CAA" in our scheme as above.
+```python
+>>> base64.urlsafe_b64decode("CAA=")
+b'\x08\x00'
+```
+
+Which is two bytes.  However, there are three base64 characters in this version scheme which encode 18 bits.  base64 encoding works on 6-bit groupings so: `C -> 0b000010, A -> 0b000000, A -> 0b000000` which is two bytes + two bits when concatenated together.  In the python example above we get back `b'\x08\x00'` -> `'0b00001000 0b00000000'` which is two bytes (16 bits) in hexidecimal notation.  The canonical decoding by the library is stripping the last two bits per the RFC.  Implementers should thus use a library capable of getting the index of the b64 characters according to the scheme (for this version string only) and not those written to give canonical decodings.
+
+See https://datatracker.ietf.org/doc/html/rfc4648#section-3.5
+:::
 
 The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[spec: RFC8949]] [[ref: RFC8949]] [[3]] [[ref: CESR]]. The last one, CESR is special. A CESR native serialization of a field map may use either the    `-G##` or  `-0G#####` count codes to indicate both that it is a field map and its size. Moreover, because count codes have unique start bits (see the section on Performant resynchronization) there is no need to embed a regular expression parsable version string field in a CESR native field map. Instead, a native CESR message's field map includes a protocol version field that indicates the protocol and version but not the size and serialization type. These are provided already by the count code. As a result, once deserialized into an in-memory data object representation of that field map, there is no normative indication that the in-memory object was deserialized from a  CESR native field map (i.e. no version string field with serialization kind).   This serialization kind indication would otherwise have to be provided externally.  Instead, the in-memory object representation of the field map may inject a placeholder version string, `v` field, whose value is a version string but with the serialization kind set to `CESR`. This way, when re-serializing, there is a normative indicator to reserialize as a CESR native field map, not JSON, CBOR, or MGPK.  This reserialization does not include an embedded version string field. It only appears in the in-memory object representation, not the serialization.
 
