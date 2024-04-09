@@ -969,7 +969,7 @@ For example, suppose some application uses a list (a universal but non-overridea
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0A#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `-0B#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-C##`   | Attachments only group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `-0C#####` | Attachments only group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 
@@ -1023,7 +1023,7 @@ This master table includes both the Primitive and Count Code types. The types ar
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0A#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `-0B#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-C##`   | Attachments only group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `-0C#####` | Attachments only group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |            |  Universal Count Codes that do not allow genus/version override |     |      |    | 
