@@ -1072,13 +1072,15 @@ This master table includes both the Primitive and Count Code types. The types ar
 |   `-U##`   | SAD root path signature group rootpath+path-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0U#####` | SAD root path signature group rootpath+path-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-V##`   | Digest seal singles `dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0V#####` |Digest seal singles `dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-W##`   | Merkle Tree Root seal singles `rdig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0W#####` | Merkle Tree Root seal singles `rdig`up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-X##`   | Backer registrar identifier seal couples `brid+dig`up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0X#####` | Backer registrar identifier seal couples `brid+dig`up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-Y##`   | ESSR (TSP) Payload `version+messagtype+...` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0Y#####` | ESSR (TSP) Payload `version+messagtype+...` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `-0V#####` | Digest seal singles `dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-W##`   | Merkle Tree Root seal singles `rdig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0W#####` | Merkle Tree Root seal singles `rdig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-X##`   | Backer registrar identifier seal couples `brid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0X#####` | Backer registrar identifier seal couples `brid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-Y##`   | Last event seal source singles  `aid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0Y#####` | Last event seal source singles  `aid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-Z##`   | ESSR (TSP) Payload `version+messagtype+...` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-0Z#####` | ESSR (TSP) Payload `version+messagtype+...` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |            |  Operation Codes   |             |              |              |
 |   `_`      |      Reserved TBD  |             |              |              |
 |            |  Primitive Matter Codes  |             |              |              |
