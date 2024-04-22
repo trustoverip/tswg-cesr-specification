@@ -1149,7 +1149,7 @@ This master table includes both the Primitive and Count Code types. The types ar
 |   `6A`     | String Base64 Only Lead Size 2      |      4      |      2        |            |
 |   `7AAA`   | String Big Base64 Only Lead Size 0 |      8      |      4        |            |
 |   `8AAA`   | String Big Base64 Only Lead Size 1 |      8      |      4        |            |
-|   `7AAA`   | String Big Base64 Only Lead Size 2 |      8      |      4        |            |
+|   `9AAA`   | String Big Base64 Only Lead Size 2 |      8      |      4        |            |
 |   `4B`     | Bytes Lead Size 0                  |      4      |      2        |            |
 |   `5B`     | Bytes Lead Size 1                  |      4      |      2        |            |
 |   `6B`     | Bytes Lead Size 2                  |      4      |      2        |            |
