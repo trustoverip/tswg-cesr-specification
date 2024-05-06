@@ -1139,8 +1139,8 @@ This master table includes both the Primitive and Count Code types. The types ar
 |   `1AAI`   | ECDSA secp256r1 verification key non-transferable, basic derivation |      4      |              |      48      |
 |   `1AAJ`   | ECDSA secp256r1 verification or encryption key, basic derivation |      4      |              |     48     |
 |   `1AAK`   | Null None or empty value |      4      |              |      4      |
-|   `1AAL`   | No falsey Boolean value |      4      |              |      8      |
-|   `1AAM`   | Yes truthy Boolean value|      4      |              |      8      |
+|   `1AAL`   | No falsey Boolean value |      4      |              |      4      |
+|   `1AAM`   | Yes truthy Boolean value|      4      |              |      4      |
 |   `1AAN`   | Tag4 4 B64 encoded chars for special values |      4      |       4       |      8      |
 |   `1AAO`   | Tag8 8 B64 encoded chars for special values |      4      |       8       |      12      |
 |            |  Variable Raw Size Codes  |             |              |              |
