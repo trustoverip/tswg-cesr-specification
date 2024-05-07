@@ -1122,7 +1122,7 @@ This master table includes both the Primitive and Count Code types. The types ar
 |    `0L`    | Tag5 5 B64 encoded chars + 1 prepad for for special values     |      2      |        6      |       8     |
 |    `0M`    | Tag6 6 B64 encoded chars for for special values  |      2      |      6        |       8     |
 |    `0N`    | Tag9 9 B64 encoded chars + 1 prepad for special values |      2      |       10       |       12     |
-|    `0N`    | Tag10 10 B64 encoded chars for special values |      2      |      10        |       12     |
+|    `0O`    | Tag10 10 B64 encoded chars for special values |      2      |      10        |       12     |
 |            |  Basic Four Character Codes   |             |              |              |
 |   `1AAA`   | ECDSA secp256k1 non-transferable prefix public verification key   |      4      |              |      48      |
 |   `1AAB`   | ECDSA secp256k1 public verification or encryption key |      4      |              |      48      |
@@ -1135,8 +1135,8 @@ This master table includes both the Primitive and Count Code types. The types ar
 |   `1AAI`   | ECDSA secp256r1 verification key non-transferable, basic derivation |      4      |              |      48      |
 |   `1AAJ`   | ECDSA secp256r1 verification or encryption key, basic derivation |      4      |              |     48     |
 |   `1AAK`   | Null None or empty value |      4      |              |      4      |
-|   `1AAL`   | No falsey Boolean value |      4      |              |      8      |
-|   `1AAM`   | Yes truthy Boolean value|      4      |              |      8      |
+|   `1AAL`   | No falsey Boolean value |      4      |              |      4      |
+|   `1AAM`   | Yes truthy Boolean value|      4      |              |      4      |
 |   `1AAN`   | Tag4 4 B64 encoded chars for special values |      4      |       4       |      8      |
 |   `1AAO`   | Tag8 8 B64 encoded chars for special values |      4      |       8       |      12      |
 |            |  Variable Raw Size Codes  |             |              |              |
