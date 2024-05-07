@@ -739,10 +739,6 @@ Count Code tables use the first two characters as a nested set of selectors. The
 
 All Count Codes except the genus/version code table (see below) are pipelineable because they count the number of Quadlets/triplets in the count group. A Quadlet is four Base64 characters in the Text domain. A triplet is three B2 bytes in the Binary domain. The count is invariant in either Domain. This allows a stream parser to extract the count number of characters/bytes in a group from the Stream without parsing the group's contents. By making all Count Codes pipelineable, the Stream parser can be optimized in a granular way. This includes granular core affinity.
 
-::: issue
-https://github.com/trustoverip/tswg-cesr-specification/issues/15
-:::
-
 ##### Small Count Code table
 
 Codes in the small Count Code table are each four characters long. The first character is the selector `-`. The second character is the Count Code type. the last two characters are the count size as a Base64 encoded integer. The Count Code type must be a letter `A` - `Z` or `a` - `z`. If the second character is not a letter but is a numeral `0` - `9` or `-` or `_`, then it is a selector for a different Count Code table. The set of letters provides 52 unique Count Codes. A two-character size provides counts from 0 to 4095 (`64**2 - 1`).
@@ -1149,7 +1145,7 @@ This master table includes both the Primitive and Count Code types. The types ar
 |   `6A`     | String Base64 Only Lead Size 2      |      4      |      2        |            |
 |   `7AAA`   | String Big Base64 Only Lead Size 0 |      8      |      4        |            |
 |   `8AAA`   | String Big Base64 Only Lead Size 1 |      8      |      4        |            |
-|   `7AAA`   | String Big Base64 Only Lead Size 2 |      8      |      4        |            |
+|   `9AAA`   | String Big Base64 Only Lead Size 2 |      8      |      4        |            |
 |   `4B`     | Bytes Lead Size 0                  |      4      |      2        |            |
 |   `5B`     | Bytes Lead Size 1                  |      4      |      2        |            |
 |   `6B`     | Bytes Lead Size 2                  |      4      |      2        |            |
@@ -1477,10 +1473,6 @@ CESR is a dual text-binary encoding format that has the unique property of text-
 
 #### Streamable SADs
 A primary goal of SAD Path Signatures is to allow any signed SAD to be streamed inline with any other CESR content.  In support of that goal, SAD Path Signatures leverage CESR attachments to define a signature scheme that can be attached to any SAD content serialized as JSON [[spec: RFC4627]], MessagePack [[3]] or CBOR [[spec: RFC8949]].  Using this capability, SADs signed with SAD Path Signatures can be streamed inline in either the Text (T) or Binary (B) domain alongside any other KERI event Message over, for example TCP or UDP.  In addition, signed SADs can be transported via HTTP as a CESR HTTP Request.
-
-::: issue
-https://github.com/trustoverip/tswg-cesr-specification/issues/29
-:::
 
 #### Nested Partial Signatures
 SAD Path Signatures can be used to sign as many portions of a SAD as needed, including the entire SAD. The signed subsets are either SADs themselves or the SAID of a SAD that will be provided out of band.  A new CESR Count Code is included with this specification to allow for multiple signatures on nested portions of a SAD to be grouped together under one attachment.  By including a SAD Path in the new CESR attachment for grouping signatures, the entire group of signatures can be transposed across envelope boundaries by changing only the root path of the group attachment code.
