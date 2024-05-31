@@ -1,4 +1,6 @@
 ## Composability and Domain representations
+<!-- file name: composability-and-domain-representations.md -->
+
 ### Composability
 
 An encoding has Composability when any set of self-framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss. Essentially, Composability provides round-trippable lossless conversion between Text and Binary domain representations of any set of concatenated Primitives when converted as a set not merely individually. The property enables a Stream processor to safely convert en-masse a Stream in the Text domain to an equivalent Stream in the Binary domain for compact transmission that may be safely converted back to Text domain en-masse by a Stream processor at the other end for further processing or archival storage. The use of Count Codes as independently composable groups enables hierarchical compositions. Such a hierarchically composable encoding protocol enables pipelining (multiplexing and de-multiplexing) of complex Streams in either text or compact binary. This allows management at scale for high-bandwidth applications that benefit from core affinity off-loading of Streams [[17]].

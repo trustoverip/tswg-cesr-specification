@@ -1,4 +1,6 @@
 ## Terms and Definitions
+<!-- file name: terms-and-definitions.md -->
+
 For the purposes of this document, the following terms and definitions apply.
 
 ISO and IEC maintain terminological databases for use in standardization at the following addresses:

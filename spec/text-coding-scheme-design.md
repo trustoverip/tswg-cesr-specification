@@ -1,4 +1,6 @@
-## Text coding scheme design 
+## Text coding scheme design
+<!-- file name: text-coding-scheme-design.md -->
+
 ### Text code size
 
 Recall that the ‘R’ domain representation is a pair`(text code, raw binary)`. The text code is Stable and begins with one or more Base64 characters that provide the Primitive type and may also include one or more additional characters that provide the length. The actual usable cryptographic material is provided by the raw binary element.

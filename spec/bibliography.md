@@ -1,4 +1,6 @@
 ## Bibliography
+<!-- file name: bibliography.md -->
+
 [[spec]]
 
 [1]. KERI

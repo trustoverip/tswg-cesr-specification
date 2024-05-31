@@ -1,5 +1,6 @@
 Composable Event Streaming Representation (CESR)
 ================================================
+<!-- file name: header.md -->
 
 **Specification Status**: v1.0 Draft
 

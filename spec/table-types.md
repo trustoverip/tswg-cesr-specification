@@ -1,4 +1,6 @@
 ## Table types
+<!-- file name: table-types.md -->
+
 The tables in CESR consist of:
 * Two major types for raw CESR primitives:
 	* fixed-length raw size primitives 
