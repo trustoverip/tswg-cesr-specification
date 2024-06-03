@@ -52,15 +52,15 @@ One way to better secure Internet communications is to use cryptographically ver
 
 Generic binary-to-text, [[12]], or simply textual encodings such as Base64 [[spec: RFC4648]], do not provide any information about the type or size of the underlying Cryptographic Primitive. Base64 only provides "value" information. More recently, [[10]] was developed as a fit-for-purpose textual encoding of Cryptographic Primitives for shared distributed ledger applications that, in addition to value, may include information about the type and, in some cases, the size of the underlying Cryptographic Primitive [[11]]. Each application, however, may use a non-interoperable type and optionally size encoding because a binary encoding may include as a subset some codes that are in the text-printable compatible subset of [[2]] such as ISO Latin-1, [[14]] or UTF-8, [[13]]. Interestingly, for a given Cryptographic Primitive, a text-printable type code from a binary code table could be found serendipitously from a set of binary encodings. This is the case for the Multicodec encodings, which are binary but include a subset of "serendipitous" ASCII codes. [[8]][[7]][[ref: IPFS]]. Indeed, some [[10]] applications take advantage of the binary MultiCodec tables but only use serendipitous text-compatible type codes. Serendipitous text encodings in binary code tables do not generally work for any size or type. So, the serendipitous approach is not universally applicable and is no substitute for a true textual encoding protocol for Cryptographic Primitives.
 
-A textual encoding that includes type, size, and value is self-framing. A self-framing text Primitive may be parsed without needing any additional delimiting characters. Thus, a stream of concatenated Primitives may be individually parsed individually without the need to encapsulate the Primitives inside textual delimiters or envelopes and a textual self-framing encoding provides the core capability for a streaming text protocol like [[15]] or [[16]]. Although a first-class textual encoding of Cryptographic Primitives is the primary motivation for the CESR protocol, CESR is sufficiently flexible and extensible to support other useful data types, such as integers of various sizes, floating-point numbers, date-times as well as generic text. Thus, the CESR protocol is generally useful to encode data structures of all types into text, not merely those that contain Cryptographic Primitives.
+A textual or binary encoding that includes type, size, and value is Self-Framing. A self-framing Primitive may be extracted from a stream of characters or bytes without needing any additional delimiting characters. Thus, a stream of concatenated Primitives may be parsed without the need to encapsulate each Primitive inside a set of delimiters or an envelope. A textual Self-Framing encoding provides the core capability for a streaming text protocol like [[15]] or [[16]]. Although a first-class textual encoding of Cryptographic Primitives is the primary motivation for the CESR protocol, CESR is sufficiently flexible and extensible to support other useful data types, such as integers of various sizes, floating-point numbers, date-times as well as generic text. Thus, the CESR protocol is generally useful to encode data structures of all types into text, not merely those that contain Cryptographic Primitives.
 
 Textual encodings have numerous usability advantages over binary encodings. The one advantage, however, of a binary encoding over text is compactness. An encoding protocol with the property called text-binary concatenation composability or, more succinctly, Composability enables both text's usability and binary's compactness. Composability may be the most uniquely innovative and useful feature of the CESR encoding protocol.
 
 No standard text-based encoding protocol provides universal type, size, and value encoding for Cryptographic Primitives as compact atomic values. Providing this capability is one of the primary motivations for the CESR encoding protocol. But text-based atomic cryptographic primitives alone are insufficient for cryptography-heavy protocols. Grouping those primitives into cryptographically verifiable data structures, including messages with attachments, is also essential.  Consequently, CESR provides encodings for groups or collections of primitives such as lists, field maps, fixed field data structures, messages, attachments to messages, and arbitrary collections of groups. 
 
-Like primitives, CESR group encodings are self-framing. This enables efficient stream processing of CESR streams.  A CESR parser can efficiently extract whole groups from the stream without parsing into the group. The extracted groups can then be diverted to other processor resources to be processed in parallel. This enables pipelining of CESR streams and messages within a stream.
+Like primitives, CESR group encodings are Self-Framing. This enables efficient stream processing of CESR streams.  A CESR parser can efficiently extract whole groups from the stream without parsing into the group. The extracted groups can then be diverted to other processor resources to be processed in parallel. This enables pipelining of CESR streams and messages within a stream.
 
-The support for efficient stream processing is reflected in how a cryptographic commitment to some data is associated with that data. For example, a serialized data structure that constitutes a message may be signed digitally. The signature constitutes a non-repudiable commitment by the holder of the private key to the message. Cryptographically, the signature (commitment) can not be part of the data it signs (commits to).  Therefore, the signature must be attached to the message in some way. This constraint also applies to other commitments like cryptographic digests (hashes). The signature may be used as a strong authentication factor for the message. A stream processor may want to drop any messages whose signatures do not verify. One common way of associating commitments to a message is to create a new message that acts as a wrapper or envelope on the original message. The wrapper message includes both the original message and the commitment. However, enveloping or wrapping may defeat efficient stream processing, especially when that envelope is block delimited. The parser now has to parse into the wrapper to find the signature to verify it against the message. The wrapper is discarded.  A more stream-processing-friendly approach is to attach commitments to messages as self-framing stream parts without creating disposable wrappers. Consequently, CESR provides self-framing group encodings for attachments instead of wrappers. Properly, in CESR parlance, a full Message consists of a Message Body plus Attachments.
+The support for efficient stream processing is reflected in how a cryptographic commitment to some data is associated with that data. For example, a serialized data structure that constitutes a message may be signed digitally. The signature constitutes a non-repudiable commitment by the holder of the private key to the message. Cryptographically, the signature (commitment) can not be part of the data it signs (commits to).  Therefore, the signature must be attached to the message in some way. This constraint also applies to other commitments like cryptographic digests (hashes). The signature may be used as a strong authentication factor for the message. A stream processor may want to drop any messages whose signatures do not verify. One common way of associating commitments to a message is to create a new message that acts as a wrapper or envelope on the original message. The wrapper message includes both the original message and the commitment. However, enveloping or wrapping may defeat efficient stream processing, especially when that envelope is block delimited. The parser now has to parse into the wrapper to find the signature to verify it against the message. The wrapper is discarded.  A more stream-processing-friendly approach is to attach commitments to messages as Self-Framing stream parts without creating disposable wrappers. Consequently, CESR provides Self-Framing group encodings for attachments instead of wrappers. Properly, in CESR parlance, a full Message consists of a Message Body plus Attachments.
 
 ## Status of This Memo
 
@@ -76,7 +76,7 @@ available at
 
 If source code is included in the specification, that code is subject to the
 [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.txt) unless otherwise marked. In the case of any conflict or
-confusion between the OWF Contributor License and the designated source code license within this specification, the terms of the OWF Contributor License shall apply.
+confusion between the OWF Contributor License and the designated source code license within this specification, the terms of the OWF Contributor License MUST apply.
 
 These terms are inherited from the Technical Stack Working Group at the Trust over IP Foundation. [Working Group Charter](https://trustoverip.org/wp-content/uploads/TSWG-2-Charter-Revision.pdf).
 
@@ -99,7 +99,11 @@ Implementation design of a protocol-based data serialization specification that 
 
 ## Normative references
 
-This document has no normative references.
+[a]. IETF RFC-2119 Key words for use in RFCs to Indicate Requirement Levels
+[a]: https://www.rfc-editor.org/rfc/rfc2119.txt
+
+[b]. IETF RFC-4648 Base64 
+[b]: https://www.rfc-editor.org/rfc/rfc4648.txt
 
 
 ## Terms and Definitions
@@ -115,9 +119,13 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 ~ a self-managing cryptonymous identifier that must be self-certifying (self-authenticating) and must be encoded in CESR as a qualified Cryptographic Primitive.
 
+[[def: Self-Framing]]
+
+~ a textual or binary encoding that begins with type, size, and value so that a parser knows how many characters (when textual) or bytes (when binary) to extract from the stream for a given element without parsing the rest of the characters or bytes in the element is Self-Framing. A self-framing Primitive may be extracted without needing any additional delimiting characters. Thus, a stream of concatenated Primitives may be extracted without the need to encapsulate each Primitive inside a set of delimiters or an envelope.
+
 [[def: Composability]]
 
-~ short for text-binary concatenation composability. An encoding has Composability when any set of self-framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss.
+~ short for text-binary concatenation composability. An encoding has Composability when any set of Self-Framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss.
 
 [[def: Cryptographic Primitive]]
 
@@ -182,7 +190,10 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 ### Composability
 
-An encoding has Composability when any set of self-framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss. Essentially, Composability provides round-trippable lossless conversion between Text and Binary domain representations of any set of concatenated Primitives when converted as a set not merely individually. The property enables a Stream processor to safely convert en-masse a Stream in the Text domain to an equivalent Stream in the Binary domain for compact transmission that may be safely converted back to Text domain en-masse by a Stream processor at the other end for further processing or archival storage. The use of Count Codes as independently composable groups enables hierarchical compositions. Such a hierarchically composable encoding protocol enables pipelining (multiplexing and de-multiplexing) of complex Streams in either text or compact binary. This allows management at scale for high-bandwidth applications that benefit from core affinity off-loading of Streams [[17]].
+An encoding has Composability when any set of Self-Framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss. Essentially, Composability provides round-trippable lossless conversion between Text and Binary domain representations of any set of concatenated Primitives when converted as a set not merely individually. The property enables a Stream processor to safely convert en-masse a Stream in the Text domain to an equivalent Stream in the Binary domain for compact transmission that may be safely converted back to Text domain en-masse by a Stream processor at the other end for further processing or archival storage. All compliant encoded Primitives MUST be Composable. All compliant encoded Primitives MUST be self-framing.
+
+The use of Count Codes as independently composable groups enables hierarchical compositions. Such a hierarchically composable encoding protocol enables pipelining (multiplexing and de-multiplexing) of complex Streams in either text or compact binary. This allows management at scale for high-bandwidth applications that benefit from core affinity off-loading of Streams [[17]].  All Count Code groups of Primitives or other compositions of Primitives and Count code groups MUST be Composable.  All Count Code groups of Primitives or other compositions of Primitives and Count code groups MUST be self-framing.  
+
 
 ### Abstract Domain representations
 
@@ -206,7 +217,7 @@ Let `B(R)` denote the abstract transformation function from the ‘R’ domain t
 
 Let `R(B)` denote the abstract transformation function from the ‘B’ domain to the ‘R’ domain. This is the dual of `B(R)` above.
 
-Given these transformations, a complete a circuit of transformations can be completed that starts in any of the three Domains and then crosses over the other two Domains in either direction. 
+Given these transformations, a complete a circuit of transformations can be completed that starts in any of the three Domains and then crosses over the other two Domains in either direction. All compliant implementations MUST support the transformations between all three domains.
 
 ##### Examples of circuits of transformations
 
@@ -248,7 +259,7 @@ Given a set of Primitives `b[k]` and `t[k]` and transformations `T(B)` and `B(T)
 T(cat(b[k]))=cat(T(b[k])) and B(cat(t[k]))=cat(B(t[k])) for all k.
 ```
 
-Basically, Composability (over concatenation) means that the transformation of a set (as a whole) of concatenated Primitives is equal to the concatenation of the set of individually transformed Primitives.
+Basically, Composability (over concatenation) means that the transformation of a set (as a whole) of concatenated Primitives is equal to the concatenation of the set of individually transformed Primitives. Each and every Primitive or Count Code group of primitives MUST satisfy the Concatenation Composability property.
 
 For example, suppose there are two Primitives in the Text domain, namely, `t[0]` and `t[1]` that each transforms, respectively, to primitives in the Binary domain, namely, `b[0]` and `b[1]`. The transformation duals, `B(T)` and `T(B)`, are composable if and only if,
 
@@ -268,11 +279,11 @@ The Composability property is an essential building block for streaming in eithe
 
 ### Concrete Domain representations
 
-The Text, ‘T’, domain representations in CESR use only the characters from the URL and filename safe variant of the IETF RFC-4648 Base64 standard [[spec: RFC4648]]. Unless otherwise indicated, all references to Base64 [[spec: RFC4648]] in this document imply the URL and filename safe variant. The URL and filename safe variant of Base64 uses in order the 64 characters `A to Z`, `a to z`, `0 to 9`, `-`, and `_` to encode 6 bits of information. In addition, Base64 uses the `=` character for padding, but CESR does not use the `=` character for any purpose because all CESR-encoded Primitives are composable.
+The Text, ‘T’, domain representations in CESR MUST use only the characters from the URL/filename safe variant of the IETF RFC-4648 Base64 standard [[spec: RFC4648]]. Unless otherwise indicated, all references to Base64 [[spec: RFC4648]] in this document imply the URL and filename safe variant. The URL and filename safe variant of Base64 uses in order the 64 characters `A to Z`, `a to z`, `0 to 9`, `-`, and `_` to encode 6 bits of information. In addition, Base64 uses the `=` character for padding, but CESR does not use the `=` character for any purpose because all CESR-encoded Primitives are composable.
 
-The fact that Base64 [[spec: RFC4648]] by itself does not satisfy the Composability property is notable and must employ pad characters to ensure one-way convertibility between the Binary domain and the Text domain.
+It is notable that Base64 [[spec: RFC4648]] by itself does not satisfy the Composability property and must, therefore, employ pad characters to ensure one-way convertibility between the Binary domain and the Text domain.
 
-In CESR, however, both ‘T’ and ‘B’ domain representations include a prepended Framing Code prefix that is structured in such a way as to ensure Composability.
+In CESR, however, both ‘T’ and ‘B’ domain representations include a prepended Framing Code prefix that is structured to ensure Composition.
 
 Suppose that Base64 characters are used in the Text domain and binary bytes are used in the Binary domain, called respectively, naive text and naive binary encodings and Domains. Recall that a byte encodes 8 bits of information and a Base64 character encodes 6 bits of information. Furthermore, suppose that there are three Primitives denoted `a`, `b`, and `c` in the naive Binary domain with lengths of 1, 2, and 3 bytes, respectively.
 
@@ -369,27 +380,31 @@ Starting instead in the Text domain with Primitives `u` and `v` of lengths 1 and
 
 All six bits of information in `U0` are included in `B2` along with the least significant two bits of information in `V2`. Therefore, a Binary domain parser is unable to cleanly de-concatenate on a byte-by-byte basis the conversion of `u + v` into separate Binary domain Primitives. Therefore, standard (naive) Base64 to binary conversion does not satisfy the Composability constraint.
 
-The Composability property is satisfied only if each Primitive in the ‘T’ domain is an integer multiple of four Base64 characters (24 bits) and each Primitive in the ‘B’ domain is an integer multiple of three bytes (24 bits). Each of either four Base64 text characters or three binary bytes captures 24 bits of information. Twenty-four is the least common multiple of six and eight. Therefore, in order to cleanly capture integer multiples of twenty-four bits of information, Primitive lengths must be integer multiples of either four Base64 text characters or three binary bytes in their respective Domains. Given that the constraint of alignment on 24-bit boundaries in either Text domain or Binary domain is satisfied, the conversion of concatenated Primitives in one Domain never results in the same byte or character in the converted Domain sharing bits from two adjacent Primitives. This constraint of 24-bit alignment, therefore, satisfies the Composability property.
+The Composability property is satisfied only if each Primitive in the ‘T’ domain is an integer multiple of four Base64 characters (24 bits) and each Primitive in the ‘B’ domain is an integer multiple of three bytes (24 bits). Each of either four Base64 text characters or three binary bytes captures 24 bits of information. Twenty-four is the least common multiple of six and eight. Therefore, in order to cleanly capture integer multiples of twenty-four bits of information, Primitive lengths MUST be integer multiples of either four Base64 text characters or three binary bytes in their respective Domains. Given that the constraint of alignment on 24-bit boundaries in either Text domain or Binary domain is satisfied, the conversion of concatenated Primitives in one Domain never results in the same byte or character in the converted Domain sharing bits from two adjacent Primitives. This constraint of 24-bit alignment, therefore, satisfies the Composability property.
 
-To elaborate, when converting Streams made up of concatenated Primitives back and forth between the ‘T’ and ‘B’ domains, the converted results will not align on byte or character boundaries at the end of each Primitive unless the Primitives themselves are integer multiples of twenty-four bits of information. In other words, all Primitives must be aligned on 24-bit boundaries to satisfy the Composability property. This means that the length of any Primitive in the ‘B’ domain must be an integer multiple of three binary bytes with a minimum length of three binary bytes. Likewise, this means that the length of any Primitive in the ‘T’ domain must be an integer multiple of four Base64 characters with a minimum length of four Base64 characters.
+To elaborate, when converting Streams made up of concatenated Primitives back and forth between the ‘T’ and ‘B’ domains, the converted results will not align on byte or character boundaries at the end of each Primitive unless the Primitives themselves are integer multiples of twenty-four bits of information. In other words, all Primitives MUST be aligned on 24-bit boundaries to satisfy the Composability property. This means that the length of any Primitive in the ‘B’ domain MUST be an integer multiple of three binary bytes with a minimum length of three binary bytes. Likewise, this means that the length of any Primitive in the ‘T’ domain MUST be an integer multiple of four Base64 characters with a minimum length of four Base64 characters.
 
 #### Stable Framing Codes in the text domain
 
-There are many coding schemes that could satisfy the Composability constraint of alignment on 24-bit boundaries. The main reason for using a ‘T’ domain-centric encoding is higher usability, readability, or human friendliness. A primary design goal of CESR is to select an encoding approach that provides high usability, readability, or human friendliness in the ‘T’ domain. This type of usability goal simply is not realizable in the ‘B’ domain. The ‘B’ domain's purpose is merely to provide convenient compactness at scale. Usability in the ‘T’ domain is maximized when the type portion of the prepended Framing Code and its postpended value are Stable, i.e., ‘invariant’. 
+There are many coding schemes that could satisfy the Composability constraint of alignment on 24-bit boundaries. The main reason for using a ‘T’ domain-centric encoding is higher usability, readability, or human friendliness. A primary design goal of CESR is to select an encoding approach that provides high usability, readability, or human friendliness in the ‘T’ domain. This type of usability goal simply is not realizable in the ‘B’ domain. The ‘B’ domain's purpose is merely to provide convenient compactness at scale. Usability in the ‘T’ domain is maximized when the type portion of the prepended Framing Code and its postpended value are Stable, i.e., ‘invariant’. The type portion of all compliant prepended Framing Codes MUST be stable in the Text domain. Stable type encoding is defined in the following section.
 
 ##### Stable type encoding
 
-Stable type coding makes it much easier to recognize Primitives of a given type when debugging source, reading Messages, or documents in the ‘T’ domain that include encoded Primitives. This is true even when those Primitives have different lengths or values. For Primitive types that have fixed lengths, i.e., all Primitives of that type have the same length, Stable type coding aids visual type and visual size recognition. Stable type coding means that the leading characters that determine the type do not change when any other portion of the primitive changes.
+Stable type coding makes it much easier to recognize Primitives of a given type when debugging source, reading Messages, or documents in the ‘T’ domain that include encoded Primitives. This is true even when those Primitives have different lengths or values. For Primitive types with fixed lengths, i.e., all Primitives of that type have the same length, Stable type coding aids visual type and visual size recognition. Stable type coding means that the leading characters that determine the type do not change when any other portion of the primitive changes.
 
-The usability of Stable type coding is maximized when the type portion appears first in the Framing Code. Stability also requires that for a given type, the type coding portion must consume a fixed integer number of characters in the ‘T’ domain. To clarify, as used here, Stable type coding in the ‘T’ domain never shares information bits with either length or value coding in any given Framing Code character and appears first in the Framing Code. Stable type coding in the ‘T’ domain translates to Stable type coding in the ‘B’ domain except that the type coding portion of the Framing Code may not respect byte boundaries. This is an acceptable tradeoff because binary-domain parsing tools easily accommodate bit fields and bit shifts while text-domain parsing tools do not. Generally, Text domain parsing tools only process whole characters. This is another reason to impose a stability constraint on the ‘T’ domain type coding instead of the ‘B’ domain.
+The usability of Stable type coding is maximized when the type portion appears first in the Framing Code.  Stability also requires that for a given type, the type coding portion must consume a fixed integral number of characters in the ‘T’ domain. To clarify, as used here, Stable type coding in the ‘T’ domain never shares information bits with either length or value coding in any given Framing Code character and appears first in the Framing Code. Stable type coding in the ‘T’ domain translates to Stable type coding in the ‘B’ domain, except that the type coding portion of the Framing Code MAY or MAY not respect byte boundaries. This is an acceptable tradeoff because binary-domain parsing tools easily accommodate bit fields and bit shifts while text-domain parsing tools do not. Generally, Text domain parsing tools only process whole characters. This is another reason to impose a stability constraint on the ‘T’ domain type coding instead of the ‘B’ domain. 
+
+Therefore, the type portion MUST begin the Framing Code, and the type coding portion MUST consume a fixed integral number of characters in the 'T' domain.
 
 ##### Stable value encoding
 
-A secondary usability constraint is recognizable or readable Stable value coding in the Text, ‘T’, domain. Stable value encoding means that the trailing Base64 characters that encode the primitive value are right aligned. This means one can manually confirm values are the same. Not all Primitives benefit from Stable value coding. Any representation of a value that is a long random string of characters is essentially unreadable or recognizable versus some other representation. Consequently, bit shifts of the value that result in leading or trailing zero pads, as long as they are static, do not change the readability. This is not true, however, of values that are small numbers. Base64 encodings of small numbers are readable. for example, the numerical sequence of decimal numbers, `0, 1, 2`, is recognizable as the sequence of Base64 characters, `A, B, C`. Thus, all else equal, readable Stable value encodings also contribute to usability, at least in some cases.  The combination of Stable leading type encoding and Stable trailing value encoding means that any zero padding must appear in the middle of the Primitive, after the type code, but before the value.
+A secondary usability constraint is recognizable or readable Stable value coding in the Text, ‘T’, domain. Stable value encoding means that the trailing Base64 characters that encode the primitive value are right aligned.  This means one can manually confirm values are the same. Not all Primitives benefit from Stable value coding. Any representation of a value that is a long random string of characters is essentially unreadable or recognizable versus some other representation. Consequently, bit shifts of the value that result in leading or trailing zero pads, as long as they are static, do not change the readability. This is not true, however, of values that are small numbers. Base64 encodings of small numbers are readable. for example, the numerical sequence of decimal numbers, `0, 1, 2`, is recognizable as the sequence of Base64 characters, `A, B, C`. Thus, all else equal, readable Stable value encodings also contribute to usability, at least in some cases.  The combination of Stable leading type encoding and Stable trailing value encoding means that any zero padding must appear in the middle of the Primitive, after the type code, but before the value. 
+
+Therefore the value portion of any primitive MUST be right aligned.
 
 #### Code characters and lead bytes
 
-There are two ways to provide the required alignment on 24-bit boundaries to satisfy the Composability property. One is to post-pad (with trailing pad characters, `=`) the Text domain encoding to ensure that the ‘T’ domain Primitive has a total size (length) that is an integer multiple of 4. This is what naive Base64 encoding does. The other way is to pre-pad leading bytes of zeros to the raw binary value before conversion to Base64 to ensure the total size of the raw binary value with pre-pad bytes is an integer multiple of 3 bytes. This ensures that the size in characters of the Base64 conversion of the pre-padded raw binary is an integer multiple of 4 characters. This means that, effectively, value padding shows up as a mid-pad relative to the full Primitive with a prepended type code.
+Two ways exist to provide the required alignment on 24-bit boundaries to satisfy the Composability property defined above. One is to post-pad (with trailing pad characters, `=`) the Text domain encoding to ensure that the ‘T’ domain Primitive has a total size (length) of an integer multiple of 4. This is what naive Base64 encoding does. The other way is to pre-pad leading bytes of zeros to the raw binary value portion before conversion to Base64 to ensure the total size of the raw binary value with pre-pad bytes is an integer multiple of 3 bytes. This ensures that the size in characters of the Base64 conversion of the pre-padded raw binary is an integer multiple of 4 characters. This means that, effectively, value padding shows up as a mid-pad relative to the full Primitive with a prepended type code.
 
 Given pre-padded values, one of two options is available that depends on the specific code. In the first option, an appropriate number of text characters that result from the conversion of a porting of the leading pre-pad zero bytes are replaced with the appropriate number of code characters. In the second option, the code characters are pre-pended to the conversion with leading zeros intact. In the second option, the length of the pre-pended type code must also, thereby, be an integer multiple of 4 characters. In either option, the total length of the ‘T’ domain Primitive with code is an integer multiple of 4 characters.
 
@@ -401,11 +416,15 @@ Suppose that the raw binary value is 32 bytes in length. The next higher integer
 
 Similarly, a 64-byte raw binary value needs 2 lead bytes to make the combination 66 bytes in length, where 66 is the next integer multiple of 3 greater than 64. When converted, the result is 88 characters in length. The number of pad characters added on the result of the Base64 conversion of a 64-byte raw binary is also 2.
 
-In summary, there are two possibilities for CESR's coding scheme to ensure a composable 24-bit alignment. The first is to add trailing pad characters post-conversion. The second is to add leading pad bytes pre-conversion. Because of the greater readability of the value portion of both the fully qualified Text, ‘T’, or fully qualified Binary, ‘B’, domain representations, the second approach was chosen for CESR.
+In summary, there are two possibilities for CESR's coding scheme to ensure a composable 24-bit alignment. The first is to add trailing pad characters post-conversion. The second is to add leading pad bytes to the value portion pre-conversion, effectively placing the padding after the framing code but before the value i.e. mid-padding. Because of the greater readability of the value portion of both the fully qualified Text, ‘T’, or fully qualified Binary, ‘B’, domain representations, the second approach was chosen for CESR. 
+
+Therefore all CESR primitives MUST employ mid-padding as defined above.
 
 #### Multiple code table approach
 
 The design goals for CESR Framing Codes include minimizing the Framing Code size for the most frequently used (most popular) codes while also supporting a sufficiently comprehensive set of codes for all foreseeable current and future applications. This requires a high degree of both flexibility and extensibility. This is best achieved with multiple code tables with a different coding scheme optimized for a different set of features instead of a single one-size-fits-all scheme. A specification that supports multiple coding schemes may appear on the surface to be much more complex to implement, but careful design of the coding schemes can reduce implementation complexity by using a relatively simple single integrated parse and conversion table. Parsing in any given Domain given Stable type codes may then be implemented with a single function that simply reads the appropriate type selector in the table to know how to parse and convert the rest of the Primitive.
+
+Each code table MUST be uniquely indicated by the first character of the type code in the 'T' domain.
 
 ## Text coding scheme design 
 
@@ -529,13 +548,13 @@ With this approach, both the Binary domain and Text domain representations are a
 
 As mentioned above, one of the primary advantages of composable encoding is that special Framing Codes can be specified to support groups of Primitives. Grouping enables pipelining. Other suitable terms for these special Framing Codes are Group Codes or Count Codes for short. These are suitable terms because these Framing Codes can be used to count characters or bytes in a group of Primitives when parsing and offloading a Stream of CESR Primitives. A group of Primitives may be recursively composed into a group of groups.
 
-A Count Code is its own composable Primitive, and its length, therefore, shall be an integer multiple of four characters in the Text domain or, equivalently, an integer multiple of three bytes in the Binary domain. To clarify, a Count Code is a special Primitive that does not include a raw binary value, only its text code. Because a Count Code's raw binary element value is empty and its length is an integer multiple of four characters (three bytes), its pad size is always 0.
+A Count Code is its own composable Primitive, and its length, therefore, MUST be an integer multiple of four characters in the Text domain or, equivalently, an integer multiple of three bytes in the Binary domain. To clarify, a Count Code is a special Primitive that does not include a raw binary value, only its text code. Because a Count Code's raw binary element value is empty and its length MUST be an integer multiple of four characters (three bytes), its pad size MUST always be 0.
 
-To elaborate, Count Codes can be used as separators to better organize a Stream of Primitives or to interleave non-native (non-CESR) serializations. Count Codes enable grouping any combination of Primitives, groups of Primitives, or non-native serializations to optimize pipelining and offloading.
+To elaborate, Count Codes MAY be used as separators to better organize a Stream of Primitives or to interleave non-native (non-CESR) serializations. Count Codes enable grouping any combination of Primitives, groups of Primitives, or non-native serializations to optimize pipelining and offloading.
 
 ### Interleaved non-CESR serializations
 
-As mentioned above, one extremely useful property of CESR is that special Count Codes enable CESR to be interleaved with other serializations. Many applications use JSON [[spec: RFC4627]] [[spec: RFC4627]], CBOR [[spec: RFC8949]] [[spec: RFC8949]], or MessagePack (MGPK) [[3]] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. With respect to field map serializations, CESR Primitives may appear in two different contexts. The first context is as a delimited text Primitive inside of a field map serialization. The delimited text may be either the key or value of a (key, value) pair. The second context is a standalone serialization interleaved with field map serializations in a stream. Special CESR Count Codes enable support for the second context of interleaving standalone CESR with other serializations.
+As mentioned above, one extremely useful property of CESR is that special Count Codes enable CESR to be interleaved with other serializations. Many applications use JSON [[spec: RFC4627]] [[spec: RFC4627]], CBOR [[spec: RFC8949]] [[spec: RFC8949]], or MessagePack (MGPK) [[3]] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. With respect to field map serializations, CESR Primitives MAY appear in two different contexts. The first context is as a delimited text Primitive inside of a field map serialization. The delimited text may be either the key or value of a (key, value) pair. The second context is a standalone serialization interleaved with field map serializations in a stream. Special CESR Count Codes enable support for the second context of interleaving standalone CESR with other serializations.
 
 ### Cold start Stream parsing problem
 
@@ -547,11 +566,11 @@ Special CESR Count Codes support re-synchronization at each boundary between int
 
 #### Performant resynchronization with unique start bits
 
-A CESR Stream parser supports three specific interleaved serializations, namely, JSON, CBOR, and MGPK. To make the parser more performant and robust, fine-grained serialization boundary detection may be highly beneficial for interleaving these serializations in a CESR stream. One way to provide this is by selecting the Count Code start bits such that there is always a unique (mutually distinct) set of start bits at each interleaved boundary between CESR, JSON, CBOR, and MGPK.
+A CESR Stream parser MUST support three specific interleaved serializations, namely, JSON, CBOR, and MGPK. To make the parser more performant and robust, fine-grained serialization boundary detection may be highly beneficial for interleaving these serializations in a CESR stream. One way to provide this is by selecting the Count Code start bits such that there is always a unique (mutually distinct) set of start bits at each interleaved boundary between CESR, JSON, CBOR, and MGPK.
 
-Furthermore, it may also be highly beneficial to support in-stride switching between interleaved CESR text-domain Streams and CESR Binary domain Streams. In other words, the start bits for Count Codes in both the ‘T’ domain and the ‘B’ domain should be unique. This would provide the analogous equivalent of a UTF Byte Order Mark (BOM) [[4]]. Recall that a BOM enables a parser of UTF-encoded documents to determine if the UTF codes are big-endian or little-endian [[4]]. In the CESR case, an analogous feature would enable a Stream parser to know if a Count Code, along with its associated counted group of Primitives, is expressed in the ‘T’ or ‘B’ domain. Together these impose the constraint that the boundary start bits for interleaved text CESR, binary CESR, JSON, CBOR, and MGPK be mutually distinct.
+Furthermore, it may also be highly beneficial to support in-stride switching between interleaved CESR text-domain Streams and CESR Binary domain Streams. In other words, the start bits for Count Codes in both the ‘T’ domain and the ‘B’ domain should be unique. This would provide the analogous equivalent of a UTF Byte Order Mark (BOM) [[4]]. Recall that a BOM enables a parser of UTF-encoded documents to determine if the UTF codes are big-endian or little-endian [[4]]. In the CESR case, an analogous feature would enable a Stream parser to know if a Count Code, along with its associated counted group of Primitives, is expressed in the ‘T’ or ‘B’ domain. Together these impose the constraint that the boundary start bits for interleaved text CESR, binary CESR, JSON, CBOR, and MGPK MUST be mutually distinct.
 
-Among the codes for map objects in JSON, CBOR, and MGPK, only the first three bits are fixed and not dependent on mapping size. 
+Only the first three bits of the codes for map objects in JSON, CBOR, and MGPK are fixed and not dependent on mapping size. 
 * In JSON, a serialized mapping object always starts with `{`. This is encoded as `0x7b`. the first three bits are `0b011`. 
 * In CBOR, the first three bits of the major type of its serialized mapping object are `0b101` corresponding to the bits denoting map "Major Type 5" from the CBOR spec.
 * In MGPK, there are three different mapping object codes. The FixMap code starts with `0b100`. Both the Map16 and Map32 codes start with `0b110`.
@@ -560,13 +579,16 @@ Therefore, the JSON, CBOR, and MGPK encodings consume four starting Tritets (3 b
 
 Consequently, two different Base64 characters, `-` and `_`, can be used for the first character of any Count Code in the ‘T’ domain. This also means there can be two different classes of Count Codes. Using Count Codes in this way also provides a BOM-like capability that enables a parser to determine if the Count Code itself is expressed in either the ‘T’ or ‘B’ domain. To clarify, if a Stream group starts with the Tritet `0b111`, then the Stream frame is ‘B’ domain CESR, and a Stream parser would thereby know how to convert the first sextet of the Stream group to determine which of the two Count Codes is being used, `0x3E` or `0x3F`. If, on the other hand, the Count Code starts with either of the Tritets `0b001` or `0b010`, then the Count Code is expressed in the ‘T’ domain, and a Stream parser likewise would thereby know how to convert the first character (octet) of the Count Code to determine which Count Code is being used for that group. Otherwise, if a Stream starts with `0b011`, then it is JSON. If it starts with `0b101`, then it is CBOR. If it starts with either `0b100` or `0b110`, then it is MGPK.
 
-This is summarized in the following table:
+Finally, several useful applications of 'T' domain encoding of CESR streams for archiving or logging may benefit from annotations. The white space ASCII characters for line feed, carriage return, and tab all have starting tritets of `0b000`. Thus a parser would know to de-annotate such a stream before re-parsing.
+
+The starting tritet of any cold start (restart) MUST begin with one of eight cases.
+These tritet start bit REQUIREMENTS are summarized in the following table:
 
 ##### Table 1
 
 |   Starting Tritet   | Serialization | Character |
 |:------------:|:------------:|:------------:|
-|0b000|Unused| |
+|0b000|Annotated 'T' domain| |
 |0b001|CESR ‘T’ domain Count Code|`-`|
 |0b010|CESR ‘T’ domain Op Code|`_`|
 |0b011|JSON|`{`|
@@ -576,14 +598,14 @@ This is summarized in the following table:
 |0b111|CESR ‘B’ domain Count Code or Op Code| |
 
 ::: note 
-The above table implies a normative requirement that all serializations of MGPK, CBOR, JSON in CESR be top level field maps.  Serializations of these formats that aren't top level field maps are undefined and will most likely lead to a stream that won't decode.
+The above table implies a normative requirement that all serializations of MGPK, CBOR, JSON in CESR MUST be top level field maps.  Serializations of these formats that aren't top level field maps are undefined and will most likely lead to a stream that won't decode.
 :::
 
 #### Stream parsing rules
 
 Given this set of Tritets (3 bits), a well-formed Stream start and restart requirement can be expressed.
 
-Each Stream must start (restart) with one of seven cases:
+Each Stream MUST start (restart) with one of eight cases:
 
 1. A Count Code in CESR ‘T’ domain
 2. A Count Code in CESR ‘B’ domain.
@@ -592,16 +614,17 @@ Each Stream must start (restart) with one of seven cases:
 5. A JSON encoded mapping.
 6. A CBOR encoded mapping.
 7. A MGPK encoded mapping.
+8. Annotated Text domain CESR.
 
-A parser merely needs to examine the first Tritet (3 bits) of the first byte of the Stream start to determine which one of the seven it is. When the first Tritet is a Count Code, then the remainder of the Count Code itself will include the additional information needed to parse the attached group. When the first Tritet indicates, its JSON, CBOR, or MGPK, the mapping's first field must be a Version String that provides the additional information needed to parse the associated encoded field map serialization fully. See the Version String annex for the detailed syntax of the information that may be extracted with a regular expression search, given that the first Tritet indicates the following bytes in the stream belong to a JSON, CBOR, or MGPK field map serialization.
+A parser merely needs to examine the first Tritet (3 bits) of the first byte of the Stream start to determine which one of the eight it is. When the first Tritet is a Count Code, then the remainder of the Count Code itself will include the additional information needed to parse the attached group. When the first Tritet indicates, its JSON, CBOR, or MGPK, the mapping's first field must be a Version String that provides the additional information needed to parse the associated encoded field map serialization fully. See the Version String annex for the detailed syntax of the information that may be extracted with a regular expression search, given that the first Tritet indicates the following bytes in the stream belong to a JSON, CBOR, or MGPK field map serialization.
 
-The Stream must resume with a frame starting byte that begins with one of the 7 Tritets, either another Count Code expressed in the ‘T’ or ‘B’ domain or a new JSON, CBOR, or MGPK encoded mapping.
+The Stream MUST resume with a frame starting byte that begins with one of the 8 Tritets, either another Count Code expressed in the ‘T’ or ‘B’ domain or a new JSON, CBOR, or MGPK encoded mapping or a new annotated encoding.
 
 This provides an extremely compact and elegant Stream parsing formula that generalizes support not only for CESR Composability but also for interleaved CESR with three of the most popular field map serializations.
 
 ### Compact fixed-size codes
 
-As mentioned above, CESR uses a multiple-code table design that enables both size-optimized text codes for the most popular Primitive types and extensible universal support for all other Primitive types. Modern cryptographic suites support limited sets of raw binary Primitives with fixed (not variable) sizes. The design aesthetic is based on the understanding that there is minimally sufficient cryptographic strength and more cryptographic strength just wastes computation and bandwidth. Cryptographic strength is measured in bits of entropy, which also corresponds to the number of trials that must be attempted to succeed in a brute-force attack. The accepted minimum for cryptographic strength is 128 bits of entropy or equivalently `2**128` (2 raised to the 128th power) brute force trials. The size in bytes of a given raw binary Primitive for a given modern cryptographic suite is usually directly related to this minimum strength of 128 bits (16 bytes).
+Typically, modern cryptographic suites support limited sets of raw binary Primitives with fixed (not variable) sizes. The design aesthetic is based on the understanding that there is minimally sufficient cryptographic strength and more cryptographic strength just wastes computation and bandwidth. Cryptographic strength is measured in bits of entropy, which also corresponds to the number of trials that must be attempted to succeed in a brute-force attack. The accepted minimum for cryptographic strength is 128 bits of entropy or equivalently `2**128` (2 raised to the 128th power) brute force trials. The size in bytes of a given raw binary Primitive for a given modern cryptographic suite is usually directly related to this minimum strength of 128 bits (16 bytes).
 
 For example, the raw binary Primitives from the well-known [[6]] ECC (Elliptic Curve Cryptography) library all satisfy this 128-bit strength goal. In particular, the digital signing public key raw binary Primitives for EdDSA are 256 bits (32 bytes) in length because well-known algorithms can reduce the number of trials to brute force invert an ECC public key to get the private key by the square root of the number of scalar multiplications which is also related to the size of both the private key and public key coordinates (discrete logarithm problem [[5]]). Therefore, 256-bit (32-byte) ECC keys are needed to achieve 128 bits of cryptographic strength. In general, the size of a given raw binary Primitive is typically some multiple of 128 bits of cryptographic strength. This is also true for the associated EdDSA raw binary signatures which are 512 bits (64 bytes) in length.
 
@@ -625,17 +648,24 @@ Therefore, the minimal text code size is 2 characters for 64-byte raw binary cry
 
 For all other cryptographic material values whose pad size is 0, such as the 33-byte ECDSA public keys then, the minimum size text code is 4 characters. So, the minimally sized text code tables are 1, 2, and 4 characters, respectively.
 
+As mentioned above, CESR uses a multiple-code table design that enables both size-optimized text codes for the most popular Primitive types and extensible universal support for all other Primitive types. 
+
 Given that a given Cryptographic Primitive type has a known fixed raw binary size, then that Primitive type and size can be encoded efficiently with just the type information. The size is given by the type.
 
 For example, an Ed25519 (EdDSA) raw public key is always 32 bytes, so knowing that the type is `Ed25519 public key` implies the size of 32 bytes and a pad size of 1 character that, therefore, may be encoded with a 1-character text code. Likewise, an Ed25519 (EdDSA) signature is always 64 bytes, so knowing that the type is `Ed25519 signature` implies the size of 64 bytes and a pad size of 2 characters that, therefore, may be encoded with a 2-character text code.
 
 ### Code table selectors
 
-In order to parse a Stream of Primitives with types from multiple text code tables efficiently, the first character in the text code must determine which code table to use, either a default code table or a code table selector character when not the default code table. Thus, the 1-character text code table must do double duty. It must provide selectors for the different text code tables and also provide type codes for the most popular Primitives that have a pad size of 1 that appears as the default code table. There are 64 Base64 characters (64 values). Only 12 tables are needed to support all the codes and code formats needed for the foreseeable future. Therefore, only 12 of those characters need to be dedicated as code table selectors, which leaves 52 characters that may be used for the 1-character type codes in the default table. This gives a total of 13 type code tables consisting of the dual purpose 1 character type or selector code table and 12 other tables.
+To parse a Stream of Primitives with types from multiple text code tables efficiently, the first character in the text code MUST determine which code table to use, either a default code table or a code table selector character when not the default code table. Thus, the 1-character text code table MUST do double duty. It MUST provide selectors for the different text code tables and MUST also provide type codes for the most popular Primitives that have a pad size of 1 that appears as the default code table. 
+
+There are 64 Base64 characters (64 values). Only 12 tables are needed to support all the codes and code formats needed for the foreseeable future. Therefore, only 12 of those characters need to be dedicated as code table selectors, which leaves 52 characters that may be used for the 1-character type codes in the default table. This gives a total of 13 type code tables consisting of the dual purpose 1 character type or selector code table and 12 other tables.
 
 As described above, the selector characters for the Count Code tables that best support interleaved JSON, CBOR, and MGPK are `-` and `_`. The numerals `0` through `9` are used each to serve as a selector for the other tables. That leaves the letters `A` to `Z` and `a` to `z` as single character selectors. This provides 52 unique type codes for fixed-length Primitive types with raw binary values that have a pad size of 1.
 
-To clarify, the first character of any Primitive is either a selector or a 1-character code type. The characters `0` through `9`, `-`, and `_` are selectors that select a given code table and indicate the number of remaining characters in the text code.
+To clarify, the first character of any Primitive MUST be either a selector or a 1-character code type. The characters `0` through `9`, `-`, and `_` are selectors that select a given code table and indicate the number of remaining characters in the text code.
+
+
+In summary, a compliant CESR implementation MAY use up to 13 standard (non-special context) code tables. The Count Code table MUST use the '-' character as its selector. The Op Code table MUST use the '_' character as its selector. The single code character table MUST use the characters [A-Z,a-z]. The other 10 code tables MUST each use one the characters [0-9] as their selector.
 
 ## Table types
 
@@ -654,7 +684,7 @@ The sections below explain these table types, the code selectors that differenti
 
 #### Small fixed-length raw-size tables
 
-There are two special tables that are dedicated to the most popular fixed-size raw binary Cryptographic Primitive types. These are the most compact, so they optimize bandwidth but only provide a small number of total types. In both of these, the text code size equals the number of pad characters, i.e., the pad size.
+There are two special tables that are dedicated to the most popular fixed-size raw binary Cryptographic Primitive types. These are the most compact, so they optimize bandwidth but only provide a small number of total types. In both of these, the code-specific size equals the number of pad characters, i.e., the pad size.
 
 ##### One-character fixed-length raw-size table
 
@@ -728,47 +758,60 @@ This table uses `9` as its first character or selector. The next three character
 
 ### Count Code tables
 
-There may be as many at 13 Count Code tables, but only three are specified currently. These three are:
+All Count Codes except the genus/version code table (see below) are pipelineable because they count the number of Quadlets/triplets in the count group. A Quadlet is four Base64 characters in the Text domain. A Triplet is three B2 bytes in the Binary domain. Because this corresponds to the 24-bit alignment constraint of Composability defined above, the count value is invariant between 'T' and 'B' Domains. Therefore the count value MUST be invariant in either Domain and MUST be the number of Quadlets in the 'T' domain and the number of Triplets in the 'B' domain.
+
+This invariance allows a stream parser to extract the count number of characters/bytes in a group from the Stream without parsing the group's contents; it is pipeline-able. By making all Count Codes pipeline-able, the Stream parser can be optimized in a granular way, including granular core affinity.
+
+There may be as many at 13 Count Code tables, but only three are specified in the current version. These three are:
 * The small count, four-character table
 * The large count, eight-character table
 * The eight-character protocol genus and version table. 
 
-Each Count Code shall be aligned on a 24-bit boundary. Count Codes have no value component but have only type and size components. The size component counts Quadlets/triplets in the following group. Moreover, because Primitives are already guaranteed to be composable, Count Codes do not need to account for pad size as long as the Count Code is aligned on a 24-bit boundary. The Count Code type indicates the type of Primitive or group being counted. When the code supports variable-sized primitives, the size indicates how many Quadlets/triplets are consumed by that group. When the code does not support variable size primitives, i.e., the converted raw part is empty, then the size may be used to convey special Base64 values more compactly. 
+Each Count Code MUST be aligned on a 24-bit boundary. Count Codes MUST NOT have a value component but MUST have only type and size components. The size component MUST count the Quadlets/triplets in its following group. Moreover, because Primitives are already guaranteed to be composable, Count Codes do not need to account for pad size because the Count Code MUST be aligned on a 24-bit boundary. The Count Code type indicates the type of Primitive or group being counted. When the code supports variable-sized primitives, the size indicates how many Quadlets/triplets are consumed by that group. When the code does not support variable size primitives, i.e., the converted raw part is empty, then the size may be used to convey special Base64 values more compactly. 
 
-Count Code tables use the first two characters as a nested set of selectors. The first selector uses the `-` character for the initial selector. The next character is either a selector for another Count Code table or is the type for the small Count Code table. When the second character is numeral `0` - `9` or the letters `-` or `_`, then it is a secondary Count Code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it is a unique single-character Count Code. This results in a total of 52 single-character Count Codes.
+Count Code tables MAY use a nested set of selectors. The first selector MUST always be the `-` character as the initial selector. The following character MAY be either a selector for another Count Code table or MAY be the type for the small Count Code table. When the second character is numeral `0` - `9` or the letters `-` or `_`, then it MUST be a secondary Count Code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it MUST be a unique single-character Count Code. This results in a total of 52 single-character Count Codes.
 
-All Count Codes except the genus/version code table (see below) are pipelineable because they count the number of Quadlets/triplets in the count group. A Quadlet is four Base64 characters in the Text domain. A triplet is three B2 bytes in the Binary domain. The count is invariant in either Domain. This allows a stream parser to extract the count number of characters/bytes in a group from the Stream without parsing the group's contents. By making all Count Codes pipelineable, the Stream parser can be optimized in a granular way. This includes granular core affinity.
 
 ##### Small Count Code table
 
-Codes in the small Count Code table are each four characters long. The first character is the selector `-`. The second character is the Count Code type. the last two characters are the count size as a Base64 encoded integer. The Count Code type must be a letter `A` - `Z` or `a` - `z`. If the second character is not a letter but is a numeral `0` - `9` or `-` or `_`, then it is a selector for a different Count Code table. The set of letters provides 52 unique Count Codes. A two-character size provides counts from 0 to 4095 (`64**2 - 1`).
+Codes in the small Count Code table MUST be each four characters long. The first character MUST be the selector `-`. The second character MUST be the Count Code type. the last two characters MUST be the count size as a Base64 encoded integer. The Count Code type MUST be a letter `A` - `Z` or `a` - `z`. The set of letters provides 52 unique Count Codes. A two-character size provides counts from 0 to 4095 (`64**2 - 1`).
+
+If the second character is not a letter but is a numeral `0` - `9` or `-` or `_`, then it MUST be either a selector for a different Count Code table or an error. 
 
 ##### Large Count Code table
 
-Codes in the large Count Code table are each 8 characters long. The first two characters are the selectors `-0`. The next character is the Count Code type. the last five characters are the count size as a Base64 encoded integer. With one character for type, there are 64 unique large-Count Code types. A five-character size provides counts from 0 to 1,073,741,823 (`64**5 - 1`). These correspond to groups of size `1,073,741,823 * 4 = 4,294,967,292` characters or `1,073,741,823 * 3 = 3,221,225,469` bytes.
+Codes in the large Count Code table MUST be each 8 characters long. The first two characters MUST be the selectors `-0`. The next character MUST be the Count Code type. the last five characters MUSt be the count size as a Base64 encoded integer. With one character for type, there are 64 unique large-count code types. A five-character size provides counts from 0 to 1,073,741,823 (`64**5 - 1`). These correspond to groups of size `1,073,741,823 * 4 = 4,294,967,292` characters or `1,073,741,823 * 3 = 3,221,225,469` bytes.
 
 ### Protocol genus and version table
 
-The protocol genus/version table is special because its codes modify the Count Code groups that appear at the top level of the stream or the Count code groups that appear inside special enclosing Count Code groups. A protocol genus and version code itself does not provide a count of the following Quadlets or triplets but modifies the protocol genus and Version of all the following Count Codes that either appear at the top level until another protocol and genus Count Code is provided or are inside a special enclosing Count Code group. There are three general-purpose special enclosing Count Codes that allow an embedded genus/version table code. These are defined below. These are special because they must be universal across all genera of Count Code tables.
+The protocol genus/version table is special because its codes modify the Count Code groups that appear at the top level of the stream or the Count code groups that appear inside special enclosing Count Code groups. A protocol genus and version code itself MUST not provide a count of the following Quadlets or triplets but MUST modify the protocol genus and Version of all the following Count Codes that either appear at the top level until another protocol and genus Count Code is provided or are inside a special enclosing Count Code group. There are three general-purpose special enclosing Count Codes that allow an embedded genus/version table code. These are defined below. These are special because they must be universal across all genera of Count Code tables.
 
-The purpose of the protocol genus/version table is twofold. First, it allows CESR to be used for different protocols and protocol stacks, where each protocol may have its own dedicated set of code tables. The only table that all protocols must share is the protocol genus and version table (protocol table for short) and. All other entries in all other tables may vary by protocol. Secondly, for a given protocol genus, a protocol genus and version code provide the Version of that given protocol's table set. This allows versioning of the CESR code tables for a given protocol.
+The purpose of the protocol genus/version table is twofold. First, it allows CESR to be used for different protocols and protocol stacks, where each protocol may have its own dedicated set of code tables. The only table that all protocols MUST share (i.e. has identical values) is the protocol genus and version table (protocol table for short). All other entries in all other tables MAY vary by protocol. Secondly, for a given protocol genus, a protocol genus and version code MUST provide the Version of that given protocol's table set. This allows versioning of the CESR code tables for a given protocol.
 
 ##### Protocol and genus version table
-The format for a protocol genus and version code is as follows: `--GGGVVV` where `GGG` represents the protocol genus and `VVV` is the Version of that protocol genus. The genus uses three Base64 characters for a possible total of 262,144 different protocol genera. The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the Version of the protocol genus. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The version part supports up to 64 major versions with 4096 minor versions per major version.
 
-Any addition of a new code to the code table is backward breaking in at least one direction, so it is a feature change in at least one direction. New implementations with the new codes can accept streams from old implementations, but old ones will break if they receive the new ones. A major change means a code's meaning has changed. This means it breaks in both directions, i.e., sender and receiver. A minor change happens when a code is added; this only breaks backward compatibility when a new sender sends to an old receiver, but a new sender will still correctly process a stream sent from an old receiver. Since code additions will be commonly compared to code changes, it is beneficial to have more room for minor vs. major versions.
+The format for a protocol genus and version code MUST be as follows: `--GGGVVV` where `GGG` represents the protocol genus and `VVV` is the Version of that protocol genus. The genus uses three Base64 characters for a possible total of 262,144 different protocol genera. The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the Version of the protocol genus. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The version part supports up to 64 major versions with 4096 minor versions per major version.
+
+Any addition of a new code to the code table is backward breaking in at least one direction, so it is a feature change in at least one direction. New implementations with the new codes can accept streams from old implementations, but old ones will break if they receive the new ones. 
+
+A Major change is defined to occur when a code's meaning has changed. When a Major change occurs, the Major version number MUST be incremented. This means it breaks in both directions, i.e., sender and receiver. 
+
+A minor change it defined to occur when a code is added; this only breaks backward compatibility when a new sender sends to an old receiver, but a new sender will still correctly process a stream sent from an old receiver. Since code additions will be commonly compared to code changes, it is beneficial to have more room for minor vs. major versions. When a minor change occurs, the Minor version number MUST be incremented.
 
 
 
 ### OpCode tables
 
 ##### Op Code table
-The `_` selector is reserved for the yet-to-be-defined opcode table or tables. Opcodes are meant to provide Stream processing instructions that are more general and flexible than simply concatenated Primitives or groups of Primitives. A yet-to-be-determined stack-based virtual machine could be executed using a set of opcodes that provides Primitive, groups of Primitives, or Stream processing instructions. This would enable highly customizable uses for CESR.
+
+The `_` selector MUST be reserved for the yet-to-be-defined opcode table or tables. Opcodes are meant to provide Stream processing instructions that are more general and flexible than simply concatenated Primitives or groups of Primitives. A yet-to-be-determined stack-based virtual machine could be executed using a set of opcodes that provides Primitive, groups of Primitives, or Stream processing instructions. This would enable highly customizable uses for CESR. 
 
 
 ### Summary of Selector code tables and encoding scheme design
 
 #### Encoding scheme table
+
+A given CESR protocol genus MUST use the table encoding schemes defined above and summarized in the following table:
 
 The following table summarizes the ‘T’ domain coding schemes by selector code for the 15 code tables defined in the sections above:
 
@@ -794,7 +837,7 @@ The following table summarizes the ‘T’ domain coding schemes by selector cod
 | other cnt codes |     `-`   |     `[1-9,_]`   |   TBD |  TBD  |  TBD  |  TBD  |  TBD  |     `**`|
 | op codes |     `_`   |           | TBD | TBD | TBD | TBD | TBD |            `*`|
 
-Special fixed-size codes can convey values in the value size part of the code. This enables more compact encoding of small special values like field tags, types, or versions. In this case, the Code Size must equal the size of the Selector, Type, and Value Size parts summed together. This means the converted raw part must be empty. In that case, a fixed-sized code but with a non-empty Value Size, the value of the Value Size part may have special meaning.
+Special fixed-size codes MAY convey values in the value size part of the code. This enables compact encoding of small special values like field tags, types, or versions. In this case, the Code Size MUST equal the size of the Selector, Type, and Value Size parts summed together. This means the converted raw part MAY be empty. In that case, a fixed-sized code but with a non-empty Value Size, the value of the Value Size part MAY have special meaning.
 
 ##### Encoding scheme symbols
 
@@ -819,7 +862,7 @@ The set of tables above provides the basic or master encoding schemes. These cod
 
 #### Indexed codes
 
-Currently, there is only one context-specific coding scheme for indexed signatures. A common use case is thresholded multi-signature schemes. A threshold-satisficing subset of signatures belonging to an ordered set or list of public keys may be provided as part of a Stream of Primitives. One way to compactly associate each signature with its public key is to include the index into the ordered set of public keys in the text code for that signature.
+Currently, there is only one context-specific coding scheme defined for indexed signatures. A given CESR Protocol Genus MAY define other context-specific coding schemes. The common use case for indexed signatures is thresholded multi-signature schemes. A threshold-satisficing subset of signatures belonging to an ordered set or list of public keys may be provided as part of a Stream of Primitives. One way to compactly associate each signature with its public key is to include the index into the ordered set of public keys in the text code for that signature.
 
 A popular signature raw binary size is 64 bytes, with a pad size of 2. This gives two code characters for a compact text code. The first character is the selector and type code. The second character is the Base64 encoded integer index.  Using a similar dual selector type code character scheme as above, the selectors are the numbers `0-9` and `-` and `_`. Then there are 52 type codes given by the letters `A- Z` and `a-z`. The index has 64 values which support up to 64 members in the public key list. A selector can select a large text code with more characters dedicated to larger indices. Some applications of CESR, like KERI, need dual-indexed signatures (i.e., each signature has two indices) to support pre-rotation with partial or reserved participants in a rotation. With partial rotation, a given signature may contribute to the signing threshold for two different thresholds, each on two different lists of keys where the associated key may appear at a different location in each list. For 64-byte signatures, the Ed25519 and ECDSA secp256k1 schemes have entries in the table. For dual-indexed codes, the next larger code size that aligns a 64-byte signature on a 24-bit boundary is 6 characters. The table provides entries for dual-indexed 64-byte signatures. The code includes one selector character, one type character, and two each of two-character indices.
 
@@ -924,7 +967,7 @@ The following table includes both labels of parts shown in the columns in the pa
 
 ### Code table entry policy 
 
-The policy for placing entries into the tables in general is in order of first needed first-entered basis. In addition, the compact code tables prioritize entries that satisfy the requirement that the associated cryptographic operations maintain at least 128 bits of cryptographic strength. This precludes the entry of many weak cryptographic suites into the compact tables. CESR's compact code table includes only best-of-class cryptographic operations along with common non-Cryptographic Primitive types. At the time of this writing, there is the expectation that the National Institute of Standards and Technology (NIST) soon will approve standardized post-quantum resistant cryptographic operations. When that happens, codes for the most appropriate post-quantum operations will be added. For example, Falcon appears to be one of the leading candidates with open-source code already available.
+The policy for placing entries into the tables, in general, is in order of first needed first-entered basis. In addition, the compact code tables prioritize entries that satisfy the requirement that the associated cryptographic operations maintain at least 128 bits of cryptographic strength. This precludes the entry of many weak cryptographic suites into the compact tables. CESR's compact code table includes only best-of-class cryptographic operations along with common non-Cryptographic Primitive types. At the time of this writing, there is the expectation that the National Institute of Standards and Technology (NIST) soon will approve standardized post-quantum resistant cryptographic operations. When that happens, codes for the most appropriate post-quantum operations will be added. For example, Falcon appears to be among the leading candidates with open-source code already available.
 
 ### Table format
 
@@ -940,7 +983,7 @@ Each table has 5 columns. These are as follows:
 
 ### Universal Code tables
 
-All code tables for every protocol genus/version shall implement the following tables:
+All code tables for every protocol genus/version MUST implement the following tables:
 
 #### Universal Code table genus/version codes
 
@@ -955,12 +998,13 @@ All code tables for every protocol genus/version shall implement the following t
 
 #### Universal Code table genus/version codes that allow genus/version override
 
-All genera shall have the following codes in their Count Code table. Should the first Group Code embedded in each of these groups be a genus/version code, then the parser shall switch code tables to the code table given by that genus/version code. One of the codes in the following table supports this genus/version override. No other codes support this feature and are characterized as non-overrideable codes.
+All genera MUST have the following codes in their Count Code table. Should the first Group Code embedded in each of these groups be a genus/version code, then the parser MUST switch code tables to the code table given by that genus/version code. All of the codes in the following table support this genus/version override. All other codes MUST NOT support this feature and are characterized as non-overrideable codes.
 
-The presence of a genus/version count code that appears as the first element within the framed material of any non-overrideable count code (universal or not) has no special meaning as an override to the stream parser. In other words, the parser only treats the genus/version count code, especially as an override, when it appears as the first count code within the framed material of an overrideable universal count code. Otherwise, there is no special override meaning to the parser. To elaborate, the parser's interpretation of a genus/version code's presence as the first element of the framed material of a non-overrideable count code depends on the framed material context in which it appears.
+The presence of a genus/version count code that appears as the first element within the framed material of any non-overrideable count code (universal or not) MUST have no special meaning as an override to the stream parser. In other words, the parser MUST only treat the genus/version count code, especially as an override, when it appears as the first count code within the framed material of an overrideable universal count code. Otherwise, there MUST be no special override meaning to the parser. To elaborate, the parser's interpretation of a genus/version code's presence as the first element of the framed material of a non-overrideable count code depends on the framed material context in which it appears.
 
 For example, suppose some application uses a list (a universal but non-overrideable count code) with a genus/version code as its first element. From the perspective of the stream parser, the genus/version count code's appearance as the list's first element has no special override semantics, i.e., its presence provides no special override meaning to the parser.
 
+All genera MUST have the following codes in their Count Code table.
 
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
@@ -975,7 +1019,7 @@ For example, suppose some application uses a list (a universal but non-overridea
 
 #### Universal Code table genus/version codes that do not allow genus/version override
 
-All genera shall have the following codes in their Count Code table.
+All genera MUST have the following codes in their Count Code table.
 
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
@@ -995,7 +1039,7 @@ All genera shall have the following codes in their Count Code table.
 
 
 ### KERI/ACDC protocol stack tables
-These tables are specific to the KERI/ACDC protocol genus.
+These tables are specific to the KERI/ACDC protocol genus. A compliant implementation of KERI/ACDC MUST support the following codes
 
 #### KERI/ACDC protocol genus version table
 
@@ -1011,9 +1055,11 @@ Unlike the code in the Universal Code Selector Table above, these represent *spe
 
 #### Master code table for genus/version `--AAACAA` (KERI/ACDC protocol stack Version 2.00)
 
-This master table includes both the Primitive and Count Code types for the KERI/ACDC protocol stack. This table only provides the codes for the KERI/ACDC protocol stack code table genus `AAA` at Version 2.00 given by the genus/version code = `--AAACAA` KERI/ACDC 2.00.  It is anticipated that the code tables for the KERI/ACDC/TSP protocol stack will not change much in the future after 2.00. Hopefully, there will never be a Version 3.00 because 2.00 was designed properly.
+This master table includes the REQUIRED Primitive and Count Code types for the KERI/ACDC protocol stack. This table only provides the codes for the KERI/ACDC protocol stack code table genus `AAA` at Version 2.00 given by the genus/version code = `--AAACAA` KERI/ACDC 2.00.  It is anticipated that the code tables for the KERI/ACDC/TSP protocol stack will not change much in the future after 2.00. Hopefully, there will never be a Version 3.00 because 2.00 was designed properly.
 
 This master table includes both the Primitive and Count Code types. The types are separated by headers. 
+
+A compliant KERI/ACDC genus MUST have the following codes in its Primitive and Count code tables.
 
 
 |   Code     | Description                       | Code Length | Count Length | Total Length |
@@ -1180,6 +1226,8 @@ This master table includes both the Primitive and Count Code types. The types ar
 
 #### Indexed code table for genus/version `--AAACAA` (KERI/ACDC protocol stack version 2.00)
 
+A compliant KERI/ACDC genus MUST have the following codes in its contextual indexed code table.
+
 |   Code    | Description                            | Code Length | Index Length | Ondex Length | Total Length |
 |:---------:|:---------------------------------------|:-----------:|:------------:|:------------:|:------------:|
 |           | Indexed Two Character Codes        |             |              |              |              |
@@ -1233,11 +1281,11 @@ ACTD7NDX93ZGTkZBBuSeSGsAQ7u0hngpNTZTK_Um7rUZGnLRNJvo5oOnnC1J2iBQHuxoq8PyjdT3BHS2
 
 ### Version String field
 
-Non-CESR serializations, namely, JSON, CBOR, and MGPK when interleaved in a CESR Stream shall have a Version String as their first field with field label, `v` (lower case "v"). The Version String field value enables the Stream parser to use a regular expression parser to determine the type and length of the interleaved serialization. See the section on cold start stream processing section above for more detail on how a stream parser detects when to perform a regular expression search for a version string in a JSON, CBOR, or MGPK serialization interleaved in a CESR stream.
+Non-CESR serializations, namely, JSON, CBOR, and MGPK when interleaved in a CESR Stream MUST have a Version String as their first field with field label, `v` (lower case "v"). The Version String field value enables the Stream parser to use a regular expression parser to determine the type and length of the interleaved serialization. See the section on cold start stream processing section above for more detail on how a stream parser detects when to perform a regular expression search for a version string in a JSON, CBOR, or MGPK serialization interleaved in a CESR stream.
 
 ##### Version 2.XX string field format
 
-The Version String, `v` field shall be the first field in any top-level field map of any interleaved JSON, CBOR, or MGPK serialization. It provides a regular expression target for determining a serialized field map's serialization format and size (character count) of its enclosing field map. A Stream parser may use the Version String to extract and deserialize (deterministically) any serialized Stream field maps. Each field map in a Stream may use a different serialization type from the JSON, CBOR, or MGPK set.
+The Version String, `v` field MUST be the first field in any top-level field map of any interleaved JSON, CBOR, or MGPK serialization. It provides a regular expression target for determining a serialized field map's serialization format and size (character count) of its enclosing field map. A Stream parser MUST be able to use the Version String to extract and deserialize (deterministically) any serialized Stream field maps. Each field map in a Stream MUST use one of the serialization types from the JSON, CBOR, or MGPK set. Each field map MAY have a different serialization type.
 
 The format of the Version String is `PPPPVVVKKKKBBBB.`. It is 16 characters in length and is divided into five parts: 
 * Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
@@ -1274,7 +1322,7 @@ Although a given field map serialization kind may have characters or bytes such 
 
 ##### Legacy Version 1.XX string field format
 
-Compliant Version 2.XX implementations shall support the old Version 1.XX Version String format to properly verify field maps created with 1.XX format events.
+Compliant Version 2.XX implementations MUST support the old Version 1.XX Version String format to properly verify field maps created with 1.XX format events.
 
 The format of the Version String for version 1.XX is `PPPPvvKKKKllllll_`. It is 17 characters in length and is divided into five parts: 
 * Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
@@ -1294,9 +1342,9 @@ The next six characters provide in lowercase hexadecimal notation the total leng
 
 ### Self-addressing identifier (SAID)
 
-A SAID (Self-Addressing Identifier) is a special type of content-addressable identifier based on encoded cryptographic digest that is self-referential. The SAID derivation protocol defined herein enables verification that a given SAID is uniquely cryptographically bound to a serialization that includes the SAID as a field in that serialization. Embedding a SAID as a field in the associated serialization indicates a preferred content-addressable identifier for that serialization that facilitates greater interoperability, reduced ambiguity, and enhanced security when reasoning about the serialization. Moreover, given sufficient cryptographic strength, a cryptographic commitment such as a signature, digest, or another SAID, to a given SAID is essentially equivalent to a commitment to its associated serialization. Any change to the serialization invalidates its SAID thereby ensuring secure immutability evident reasoning with SAIDs about serializations or equivalently their SAID. Thus SAIDs better facilitate immutably referenced data serializations for applications such as Verifiable Credentials or Ricardian Contracts.
+A SAID (Self-Addressing Identifier) is a special type of content-addressable identifier based on an encoded cryptographic digest that is self-referential. The SAID derivation protocol defined herein enables verification that a given SAID is uniquely cryptographically bound to a serialization that includes the SAID as a field in that serialization. Embedding a SAID as a field in the associated serialization indicates a preferred content-addressable identifier for that serialization that facilitates greater interoperability, reduced ambiguity, and enhanced security when reasoning about the serialization. Moreover, given sufficient cryptographic strength, a cryptographic commitment such as a signature, digest, or another SAID, to a given SAID is essentially equivalent to a commitment to its associated serialization. Any change to the serialization invalidates its SAID thereby ensuring secure immutability evident reasoning with SAIDs about serializations or equivalently their SAID. Thus SAIDs better facilitate immutably referenced data serializations for applications such as Verifiable Credentials or Ricardian Contracts.
 
-SAIDs are encoded with CESR [CESR] which includes a pre-pended derivation code that encodes the cryptographic suite or algorithm used to generate the digest. A CESR Primitive's primary expression (alone or in combination) is textual using Base64 URL-safe characters. CESR Primitives may be round-tripped (alone or in combination) to a compact binary representation without loss. The CESR derivation code enables cryptographic digest algorithm agility in systems that use SAIDs as content addresses. Each serialization may use a different cryptographic digest algorithm as indicated by its derivation code. This provides interoperable future proofing. CESR was developed for the KERI protocol.
+SAIDs MUST be encoded as a  CESR [CESR] Primitive. As defined above, a CESR Primitive includes a pre-pended derivation code that encodes the cryptographic suite or algorithm used to generate the digest. A CESR Primitive's primary expression (alone or in combination) is textual using Base64 URL-safe characters. CESR Primitives may be round-tripped (alone or in combination) to a compact binary representation without loss. The CESR derivation code enables cryptographic digest algorithm agility in systems that use SAIDs as content addresses. Each serialization may use a different cryptographic digest algorithm as indicated by its derivation code. This provides interoperable future-proofing. CESR was developed for the KERI protocol.
 
 The primary advantage of a content-addressable identifier is that it is cryptographically bound to the content (expressed as a serialization), thus providing a secure root-of-trust for reasoning about that content. Any sufficiently strong cryptographic commitment to a content-addressable identifier is functionally equivalent to a cryptographic commitment to the content itself.
 
@@ -1310,7 +1358,7 @@ When reasoning about a given content serialization, the existence of a non-crypt
 
 #### Generation and Verification Protocols
 
-The SAID verification protocol is as follows:
+The SAID verification protocol MUST be implemented as follows:
 
 - Make a copy of the embedded `CESR` [CESR] encoded SAID string included in the serialization.
 - replace the SAID field value in the serialization with a dummy string of the same length. The dummy character is `#`, that is, ASCII 35 decimal (23 hex).
@@ -1349,6 +1397,7 @@ To verify the embedded SAID with respect to its encompassing serialization above
 ##### Serialization Generation
 
 ###### Order-Preserving Data Structures
+
 The crucial consideration in SAID generation is reproducibility. This requires the ordering and sizing of fields in the serialization to be fixed. Data structures in most computer languages have fixed fields. The example above is such an example.
 
 A very useful type of serialization especially in some languages like Python or JavaScript is of self-describing data structures that are mappings of (key, value) or (label, value) pairs. These are often also called dictionaries or hash tables. The essential feature needed for reproducible serialization of such mappings is that mapping preserve the ordering of its fields on any round trip to/from a serialization. In other words, the mapping is ordered with respect to serialization. Another way to describe a predefined order preserving serialization is canonicalization or canonical ordering. This is often referred to as the mapping canonicalization problem.
