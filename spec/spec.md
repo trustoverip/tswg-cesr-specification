@@ -1,7 +1,7 @@
 Composable Event Streaming Representation (CESR)
 ================================================
 
-**Specification Status**: v1.0 Draft
+**Specification Status**: v0.9 Draft
 
 **Latest Draft:**
 
