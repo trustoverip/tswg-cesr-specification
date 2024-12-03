@@ -30,14 +30,6 @@ Composable Event Streaming Representation (CESR)
 
 [//]: # (\newpage)
 
-[//]: # (::: forewordtitle)
-
-## Foreword
-
-The foreword goes here.
-
-[//]: # (:::)
-
 [//]: # (\newpage)
 
 [//]: # (::: introtitle)
