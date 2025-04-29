@@ -1,12 +1,12 @@
-## Terms and Definitions
-<!-- file name: terms-and-definitions.md -->
+~ ## Terms and Definitions
+~ <!-- file name: terms-and-definitions.md -->
 
-For the purposes of this document, the following terms and definitions apply.
+~ For the purposes of this document, the following terms and definitions apply.
 
-ISO and IEC maintain terminological databases for use in standardization at the following addresses:
+~ ISO and IEC maintain terminological databases for use in standardization at the following addresses:
 
- - ISO Online browsing platform: available at <https://www.iso.org/obp>
- - IEC Electropedia: available at <http://www.electropedia.org/>
+~  - ISO Online browsing platform: available at <https://www.iso.org/obp>
+~  - IEC Electropedia: available at <http://www.electropedia.org/>
 
 [[def: Autonomic Identifier (AID)]]
 
@@ -72,4 +72,4 @@ ISO and IEC maintain terminological databases for use in standardization at the 
 
 ~ the first field in any top-level KERI field map in which it appears.
 
-[//]: # (Composability and Domain representations {#sec:content})
+~ [//]: # (Composability and Domain representations {#sec:content})
