@@ -801,7 +801,7 @@ Any addition of a new code to the code table is backward breaking in at least on
 
 A Major change is defined to occur when a code's meaning has changed. When a Major change occurs, the Major version number MUST be incremented. This means it breaks in both directions, i.e., sender and receiver. 
 
-A minor change it defined to occur when a code is added; this only breaks backward compatibility when a new sender sends to an old receiver, but a new sender will still correctly process a stream sent from an old receiver. Since code additions will be commonly compared to code changes, it is beneficial to have more room for minor vs. major versions. When a minor change occurs, the Minor version number MUST be incremented.
+A minor change is defined to occur when a code is added; this only breaks backward compatibility when a new sender sends to an old receiver, but a new sender will still correctly process a stream sent from an old receiver. Since code additions will be commonly compared to code changes, it is beneficial to have more room for minor vs. major versions. When a minor change occurs, the Minor version number MUST be incremented.
 
 
 
