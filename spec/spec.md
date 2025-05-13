@@ -1448,20 +1448,20 @@ The `dict` is then serialized into JSON with no extra whitespace. The serializat
 The Blake3-256 digest is then computed on that serialization above and encoded in CESR to provide the SAID as follows:
 
 ```
-EnKa0ALimLL8eQdZGzglJG_SxvncxkmvwFDhIyLFchUk
+EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ
 ```
 
 The value of the `said` field is now replaced with the computed and encoded SAID to produce the final serialization with embedded SAID as follows:
 
 ```json
-{"said":"EnKa0ALimLL8eQdZGzglJG_SxvncxkmvwFDhIyLFchUk","first":"Sue","last":"Smith","role":"Founder"}
+{"said":"EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ","first":"Sue","last":"Smith","role":"Founder"}
 ```
 
 The final serialization may be converted to a python `dict` by deserializing the JSON to produce:
 
 ```python
 {
-    "said": "EnKa0ALimLL8eQdZGzglJG_SxvncxkmvwFDhIyLFchUk",
+    "said": "EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ",
     "first": "Sue",
     "last": "Smith",
     "role": "Founder"
@@ -1500,7 +1500,7 @@ Third, replace the dummy identifier value with the derived identifier value in t
 
 ```json
     {
-        "$id": "EZT9Idj7zLA0Ek6o8oevixdX20607CljNg4zrf_NQINY",
+        "$id": "EGU_SHY-8ywNBJOqPKHr4sXV9tOtOwpYzYOM63_zUCDW",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "properties": {
