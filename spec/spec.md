@@ -30,14 +30,6 @@ Composable Event Streaming Representation (CESR)
 
 [//]: # (\newpage)
 
-[//]: # (::: forewordtitle)
-
-## Foreword
-
-The foreword goes here.
-
-[//]: # (:::)
-
 [//]: # (\newpage)
 
 [//]: # (::: introtitle)
@@ -809,9 +801,8 @@ Any addition of a new code to the code table is backward-breaking in at least on
 
 A Major change occurs when a code's meaning changes. When a Major change occurs, the Major version number MUST be incremented. This means it breaks in both directions, i.e., sender and receiver. 
 
+
 A minor change occurs when a code is added to a table; this only breaks backward compatibility when a new sender sends to an old receiver, but a new sender will still correctly process a stream sent from an old receiver. Since code additions will be commonly compared to code changes, it is beneficial to have more room for minor vs. major versions. When a minor change occurs, the Minor version number MUST be incremented.
-
-
 
 ### OpCode tables
 
@@ -1456,20 +1447,20 @@ The `dict` is then serialized into JSON with no extra whitespace. The serializat
 The Blake3-256 digest is then computed on that serialization above and encoded in CESR to provide the SAID as follows:
 
 ```
-EnKa0ALimLL8eQdZGzglJG_SxvncxkmvwFDhIyLFchUk
+EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ
 ```
 
 The value of the `said` field is now replaced with the computed and encoded SAID to produce the final serialization with embedded SAID as follows:
 
 ```json
-{"said":"EnKa0ALimLL8eQdZGzglJG_SxvncxkmvwFDhIyLFchUk","first":"Sue","last":"Smith","role":"Founder"}
+{"said":"EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ","first":"Sue","last":"Smith","role":"Founder"}
 ```
 
 The final serialization may be converted to a python `dict` by deserializing the JSON to produce:
 
 ```python
 {
-    "said": "EnKa0ALimLL8eQdZGzglJG_SxvncxkmvwFDhIyLFchUk",
+    "said": "EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ",
     "first": "Sue",
     "last": "Smith",
     "role": "Founder"
@@ -1508,7 +1499,7 @@ Third, replace the dummy identifier value with the derived identifier value in t
 
 ```json
     {
-        "$id": "EZT9Idj7zLA0Ek6o8oevixdX20607CljNg4zrf_NQINY",
+        "$id": "EGU_SHY-8ywNBJOqPKHr4sXV9tOtOwpYzYOM63_zUCDW",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "properties": {
