@@ -567,7 +567,7 @@ To elaborate, Count Codes MAY be used as separators to better organize a Stream 
 
 ### Interleaved non-CESR serializations
 
-As mentioned above, one extremely useful property of CESR is that special Count Codes enable CESR to be interleaved with other serializations. Many applications use JSON [[spec: RFC4627]] [[spec: RFC4627]], CBOR [[spec: RFC8949]] [[spec: RFC8949]], or MessagePack (MGPK) [[3]] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. With respect to field map serializations, CESR Primitives MAY appear in two different contexts. The first context is as a delimited text Primitive inside of a field map serialization. The delimited text may be either the key or value of a (key, value) pair. The second context is a standalone serialization interleaved with field map serializations in a stream. Special CESR Count Codes enable support for the second context of interleaving standalone CESR with other serializations.
+As mentioned above, one extremely useful property of CESR is that at the top-level of a CESR stream, non-native message serializations, namely, JSON, CBOR, and MGPK may be interleaved with native message serializations. Many applications use JSON [[spec: RFC4627]] [[spec: RFC4627]], CBOR [[spec: RFC8949]] [[spec: RFC8949]], or MessagePack (MGPK) [[3]] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. In addition, non-native CESR serializations may be encoded as CESR primitives and then enclosed in a special count code for non-native messages. To clarify, regarding field map serializations, CESR Primitives may also appear as a delimited text Primitive inside a non-native field map serialization. The delimited text may be either the key or value of a (key, value) pair. 
 
 ### Cold start Stream parsing problem
 
@@ -771,18 +771,19 @@ This table uses `9` as its first character or selector. The next three character
 
 ### Count Code tables
 
-All Count Codes except the genus/version code table (see below) are pipelineable because they count the number of Quadlets/triplets in the count group. A Quadlet is four Base64 characters in the Text domain. A Triplet is three B2 bytes in the Binary domain. Because this corresponds to the 24-bit alignment constraint of Composability defined above, the count value is invariant between 'T' and 'B' Domains. Therefore the count value MUST be invariant in either Domain and MUST be the number of Quadlets in the 'T' domain and the number of Triplets in the 'B' domain.
+All Count Codes except the genus/version code table (see below) are pipelineable because they count the number of Quadlets/triplets in the count group. A Quadlet is four Base64 characters in the Text domain. A Triplet is three B2 bytes in the Binary domain. Because this corresponds to the 24-bit alignment constraint of Composability defined above, the count value is invariant between 'T' and 'B' Domains. Therefore, the count value MUST be invariant in either Domain and MUST be the number of Quadlets in the 'T' domain and the number of Triplets in the 'B' domain.
 
-This invariance allows a stream parser to extract the count number of characters/bytes in a group from the Stream without parsing the group's contents; it is pipeline-able. By making all Count Codes pipeline-able, the Stream parser can be optimized in a granular way, including granular core affinity.
+This invariance allows a stream parser to extract the number of characters/bytes in a group from the Stream without parsing the group's contents; it is therefore pipeline-able. By making all Count Codes pipeline-able, the Stream parser can be optimized in a granular way, including granular core affinity.
 
 There may be as many at 13 Count Code tables, but only three are specified in the current version. These three are:
 * The small count, four-character table
 * The large count, eight-character table
 * The eight-character protocol genus and version table. 
 
-Each Count Code MUST be aligned on a 24-bit boundary. Count Codes MUST NOT have a value component but MUST have only type and size components. The size component MUST count the Quadlets/triplets in its following group. Moreover, because Primitives are already guaranteed to be composable, Count Codes do not need to account for pad size because the Count Code MUST be aligned on a 24-bit boundary. The Count Code type indicates the type of Primitive or group being counted but always counts the number of quadlets/triplets in the group not the number of primitives. 
+Each Count Code MUST be aligned on a 24-bit boundary. Count Codes MUST NOT have a value component but MUST have only type and size components. The size component MUST count the Quadlets/triplets in its following group. Moreover, because Primitives are already guaranteed to be composable, Count Codes do not need to account for pad size because the Count Code MUST be aligned on a 24-bit boundary. The Count Code type indicates the type of Primitive or group being counted but always counts the number of quadlets/triplets in the group not the number of primitives. Each element in content of a Count Code group MUST be aligned on a 24-bit boundary. Thus the only elements allowed in
+the contents of a Count Code group are other primitives or groups.
 
-Count Code tables MAY use a nested set of selectors. The first selector MUST always be the `-` character as the initial selector. The following character MAY be either a selector for another Count Code table or MAY be the type for the small Count Code table. When the second character is numeral `0` - `9` or the letters `-` or `_`, then it MUST be a secondary Count Code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it MUST be a unique single-character Count Code. This results in a total of 52 single-character Count Codes.
+Count Code tables MAY use a nested set of selectors. The first selector MUST always be the `-` character as the initial selector. The following character MAY be either a selector for another Count Code table or MAY be the type for the small Count Code table. When the second character is numeral `0` - `9` or the letters `-` or `_`, then it MUST be a secondary Count Code table selector. When the second character is a letter in the range `A` - `Z` or `a` - `z`, then it MUST be a unique single-character Count Code. This results in a total of 52 single-character Count Codes. If at some time in the future, no more than the initial three count code tables are needed, then the number of single-character Count Codes could be expanded to include the unused selector codes.
 
 
 ##### Small Count Code table
@@ -793,7 +794,7 @@ If the second character is not a letter but is a numeral `0` - `9` or `-` or `_`
 
 ##### Large Count Code table
 
-Codes in the large Count Code table MUST be each 8 characters long. The first two characters MUST be the selectors `-0`. The next character MUST be the Count Code type. the last five characters MUST be the count size as a Base64 encoded integer. With one character for type, there are 64 unique large-count code types. A five-character size provides counts from 0 to 1,073,741,823 (`64**5 - 1`). These correspond to groups of size `1,073,741,823 * 4 = 4,294,967,292` characters or `1,073,741,823 * 3 = 3,221,225,469` bytes.
+Codes in the large Count Code table MUST be each 8 characters long. The first two characters MUST be the selectors `--`. The next character MUST be the Count Code type. The last five characters MUST be the count size as a Base64 encoded integer. With one character for type, there are 64 unique large-count code types. A five-character size provides counts from 0 to 1,073,741,823 (`64**5 - 1`). These correspond to groups of size `1,073,741,823 * 4 = 4,294,967,292` characters or `1,073,741,823 * 3 = 3,221,225,469` bytes.
 
 ### Protocol genus/version table
 
@@ -803,7 +804,7 @@ The purpose of the protocol genus/version table is twofold. First, it allows CES
 
 ##### Protocol genus/version codes
 
-The format for a protocol genus/version code MUST be as follows: `--GGGVVV` where `GGG` represents the protocol genus and `VVV` is the Version of that protocol genus. The genus uses three Base64 characters for a possible total of 262,144 different protocol genera. The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the Version of the protocol genus. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The version part supports up to 64 major versions with 4096 minor versions per major version.
+The format for a protocol genus/version code MUST be as follows: `-_GGGVVV` where `GGG` represents the protocol genus and `VVV` represents the Version of that protocol genus. The genus uses three Base64 characters for a possible total of 262,144 different protocol genera. The next three characters, `VVV`, provide, in Base64 notation, the major and minor version numbers of the Version of the protocol genus. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The version part supports up to 64 major versions with 4096 minor versions per major version.
 
 Any addition of a new code to the code table is backward-breaking in at least one direction, so it is a feature change in at least one direction. New implementations with the new codes can accept streams from old implementations, but old ones will break if they receive the new ones. 
 
@@ -817,7 +818,7 @@ A minor change occurs when a code is added to a table; this only breaks backward
 
 ##### Op Code table
 
-The `_` selector MUST be reserved for the yet-to-be-defined opcode table or tables. Opcodes are meant to provide Stream processing instructions that are more general and flexible than simply concatenated Primitives or groups of Primitives. A yet-to-be-determined stack-based virtual machine could be executed using a set of opcodes that provides Primitive, groups of Primitives, or Stream processing instructions. This would enable highly customizable uses for CESR. 
+The `_` selector MUST be reserved for the yet-to-be-defined opcode table or tables. Opcodes are designed to provide Stream processing instructions that are more general and flexible than simply concatenating Primitives or groups of Primitives. A yet-to-be-determined stack-based virtual machine could be executed using a set of opcodes that provide Primitive, groups of Primitives, or Stream processing instructions. This would enable highly customizable uses for CESR. 
 
 
 ### Summary of Selector code tables and encoding scheme design
@@ -845,9 +846,9 @@ The following table summarizes the ‘T’ domain coding schemes by selector cod
 | large var 1-char lead byte |     `8`   |           |   3  |  4  |  8  |  1  |  1  | `*$$$####%&&&`|
 | large var 2-char lead byte |     `9`   |           |   3  |  4  |  8  |  2  |  2  | `*$$$####%%&&`|
 | small cnt code |     `-`   |`[A-Z,a-z]`| `1*` |  0  |  4  |  0  |  0  |         `*$##`|
-| large code cnt|     `-`   |     `0`   |  1 |  0 |  8  |  0  |  0  |     `**$#####`|
-| proto + genus |     `-`   |     `-`   |   1 |  0  |  8  |  0  |  0  |     `**$$$###`|
-| other cnt codes |     `-`   |     `[1-9,_]`   |   TBD |  TBD  |  TBD  |  TBD  |  TBD  |     `**`|
+| large code cnt|     `-`   |     `-`   |  1 |  0 |  8  |  0  |  0  |     `**$#####`|
+| proto + genus |     `-`   |     `_`   |   1 |  0  |  8  |  0  |  0  |     `**$$$###`|
+| other cnt codes |     `-`   |     `[0-9]`   |   TBD |  TBD  |  TBD  |  TBD  |  TBD  |     `**`|
 | op codes |     `_`   |           | TBD | TBD | TBD | TBD | TBD |            `*`|
 
 Special fixed-size codes MAY convey values in the value size part of the code. This enables compact encoding of small special values like field tags, types, or versions. In this case, the Code Size MUST equal the size of the Selector, Type, and Value Size parts summed together. This means the converted raw part MAY be empty. In that case, a fixed-sized code but with a non-empty Value Size, the value of the Value Size part MAY have special meaning.
@@ -1003,7 +1004,7 @@ All code tables for every protocol genus/version MUST implement the following ta
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAA###` | KERI/ACDC stack code table at genus `AAA` |      8      |       3\*      |       8     |
+|`-_AAA###` | KERI/ACDC stack code table at genus `AAA` |      8      |       3\*      |       8     |
 
 ::: note Count Length of genus/version code
 \* This isn't a count of items on the stream like others in the count code tables below.  Instead its the length of the characters wherein the total number of KERI/ACDC stack code genuses could exist (denoted by `###`).
@@ -1024,11 +1025,11 @@ All genera MUST have the following codes in their Count Code table.
 |            |  Count Codes |     |        |       |
 |            |  Universal Count Codes that allow genus/version override |       |        |        | 
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0B#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--B#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-C##`   | Attachments only group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0C#####` | Attachments only group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--C#####` | Attachments only group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 
 #### Universal Code table genus/version codes that do not allow genus/version override
 
@@ -1038,17 +1039,20 @@ All genera MUST have the following codes in their Count Code table.
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            |  Universal Count Codes that do not allow genus/version override |     |      |    | 
 |   `-D##`   | Datagram Stream Segment up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0D#####` | Datagram Stream Segment up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--D#####` | Datagram Stream Segment up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-E##`   | ESSR wrapper signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0E#####` | ESSR wrapper signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--E#####` | ESSR wrapper signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-F##`   | CESR native message top-level fixed field signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0F#####` | CESR native message top-level fixed field signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--F#####` | CESR native message top-level fixed field signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-G##`   | CESR native message top-level field map signable up to 4,095 quadlets/triplets    |      4      |       2      |       4      |
-| `-0G#####` | CESR native message top-level field map signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-H##`   | Generic field map mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0H#####` | Generic field map mixed types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-I##`   | Generic list mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0I#####` | Generic list mixed types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--G#####` | CESR native message top-level field map signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-H##`   | Message group for enclosed non-native message to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `--H#####` | Message group for enclosed non-native message up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+
+|   `-I##`   | Generic field map mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `--I#####` | Generic field map mixed types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-J##`   | Generic list mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `--J#####` | Generic list mixed types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 
 
 ### KERI/ACDC protocol stack tables
@@ -1059,16 +1063,16 @@ These tables are specific to the KERI/ACDC protocol genus. A compliant implement
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAABAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00` |      8      |             |       8     |
-|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00` |      8      |             |       8     |
+|`-_AAABAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00` |      8      |             |       8     |
+|`-_AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00` |      8      |             |       8     |
 
 ::: note Count Length of KERI protocol genus/version codes
 Unlike the code in the Universal Code Selector Table above, these represent *specific* instantiations of the protocol genus codes so their count lengths are 0.
 :::
 
-#### Master code table for genus/version `--AAACAA` (KERI/ACDC protocol stack Version 2.00)
+#### Master code table for genus/version `-_AAACAA` (KERI/ACDC protocol stack Version 2.00)
 
-This master table includes the REQUIRED Primitive and Count Code types for the KERI/ACDC protocol stack. This table only provides the codes for the KERI/ACDC protocol stack code table genus `AAA` at Version 2.00 given by the genus/version code = `--AAACAA` KERI/ACDC 2.00.  It is anticipated that the code tables for the KERI/ACDC/TSP protocol stack will not change much in the future after 2.00. Hopefully, there will never be a Version 3.00 because 2.00 was designed properly.
+This master table includes the REQUIRED Primitive and Count Code types for the KERI/ACDC protocol stack. This table only provides the codes for the KERI/ACDC protocol stack code table genus `AAA` at Version 2.00 given by the genus/version code = `-_AAACAA` KERI/ACDC 2.00.  It is anticipated that the code tables for the KERI/ACDC/TSP protocol stack will not change much in the future after 2.00. Hopefully, there will never be a Version 3.00 because 2.00 was designed properly.
 
 This master table includes both the Primitive and Count Code types. The types are separated by headers. 
 
@@ -1079,61 +1083,59 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            | Count Codes |     |        |       |
 |            |  Universal Genus Version Codes |      |        |      |
-|`--AAABAA`  | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00`\* |     8      |             |       8     |
-|`--AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00`\* |      8     |             |       8     |
+|`-_AAABAA`  | KERI/ACDC protocol stack code table at genus `AAA` and Version `1.00`\* |     8      |             |       8     |
+|`-_AAACAA` | KERI/ACDC protocol stack code table at genus `AAA` and Version `2.00`\* |      8     |             |       8     |
 |            |  Universal Count Codes that allow genus/version override |       |        |        | 
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0B#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--B#####` | Message + attachments group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-C##`   | Attachments only group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0C#####` | Attachments only group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--C#####` | Attachments only group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |            |  Universal Count Codes that do not allow genus/version override |     |      |    | 
 |   `-D##`   | Datagram Stream Segment up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0D#####` | Datagram Stream Segment up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--D#####` | Datagram Stream Segment up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-E##`   | ESSR wrapper signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0E#####` | ESSR wrapper signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--E#####` | ESSR wrapper signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-F##`   | CESR native message top-level fixed field signable up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0F#####` | CESR native message top-level fixed field signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--F#####` | CESR native message top-level fixed field signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-G##`   | CESR native message top-level field map signable up to 4,095 quadlets/triplets    |      4      |       2      |       4      |
-| `-0G#####` | CESR native message top-level field map signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-H##`   | Generic field map mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0H#####` | Generic field map mixed type  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-I##`   | Generic list mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
-| `-0I#####` | Generic list mixed types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--G#####` | CESR native message top-level field map signable up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-H##`   | Message group for enclosed non-native message to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `--H#####` | Message group for enclosed non-native message up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-I##`   | Generic field map mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `--I#####` | Generic field map mixed type  up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-J##`   | Generic list mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
+| `--J#####` | Generic list mixed types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |            |  Genus Specific Count Codes |             |             |              | 
-|   `-J##`   | Indexed controller signature group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0J#####` | Indexed controller signature group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-K##`   | Indexed witness signature group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0K#####` | Indexed witness signature group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-L##`   | Nontransferable identifier receipt couples pre+sig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0L#####` | Nontransferable identifier receipt couples pre+sig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-M##`   | Transferable identifier receipt quadruples pre+snu+dig+sig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0M#####` | Transferable identifier receipt quadruples pre+snu+dig+sig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-N##`   | First seen replay couples fnu+dt up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0N#####` | First seen replay couples fnu+dt up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-O##`   | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0O#####` | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-P##`   | Transferable last indexed sig group pre+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0P#####` | Transferable last indexed sig group pre+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-Q##`   | Issuer/Delegator/Transaction event seal source couple snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0Q#####` | Issuer/Delegator/Transaction event seal source couple snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-R##`   | Anchoring event seal source triple pre+snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0R#####` | Anchoring event seal source triple pre+snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-S##`   | Pathed material group path+mixed-types up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0S#####` | Pathed material group path+mixed-types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-T##`   | SAD path signature group path+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0T#####` | SAD path signature group path+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-U##`   | SAD root path signature group rootpath+path-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0U#####` | SAD root path signature group rootpath+path-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-V##`   | Digest seal singles `dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0V#####` | Digest seal singles `dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-W##`   | Merkle Tree Root seal singles `rdig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0W#####` | Merkle Tree Root seal singles `rdig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-X##`   | Backer registrar identifier seal couples `brid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0X#####` | Backer registrar identifier seal couples `brid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-Y##`   | Last event seal source singles  `aid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0Y#####` | Last event seal source singles  `aid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-K##`   | Indexed controller signature group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--K#####` | Indexed controller signature group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-L##`   | Indexed witness signature group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--L#####` | Indexed witness signature group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-M##`   | Nontransferable identifier receipt couples pre+sig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--M#####` | Nontransferable identifier receipt couples pre+sig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-N##`   | Transferable identifier receipt quadruples pre+snu+dig+sig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--N#####` | Transferable identifier receipt quadruples pre+snu+dig+sig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-O##`   | First seen replay couples fnu+dt up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--O#####` | First seen replay couples fnu+dt up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-P##`   | Pathed material group path+mixed-types up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--P#####` | Pathed material group path+mixed-types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-Q##`   | Digest seal singles `dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--Q#####` | Digest seal singles `dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-R##`   | Merkle Tree Root seal singles `rdig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--R#####` | Merkle Tree Root seal singles `rdig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-S##`   | Anchoring event seal source triple pre+snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--S#####` | Anchoring event seal source triple pre+snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-T##`   | Issuer/Delegator/Transaction event seal source couple snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-T#####` | Issuer/Delegator/Transaction event seal source couple snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-U##`   | Last event seal source singles  `aid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--U#####` | Last event seal source singles  `aid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-V##`   | Backer registrar identifier seal couples `brid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--V#####` | Backer registrar identifier seal couples `brid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-W##`   | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--W#####` | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-X##`   | Transferable last indexed sig group pre+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--X#####` | Transferable last indexed sig group pre+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-Z##`   | ESSR (TSP) Payload `version+messagtype+...` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0Z#####` | ESSR (TSP) Payload `version+messagtype+...` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |            |  Operation Codes   |             |              |              |
@@ -1182,13 +1184,17 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |    `0M`    | Tag6 6 B64 encoded chars for for special values  |      2      |      6        |       8     |
 |    `0N`    | Tag9 9 B64 encoded chars + 1 prepad for special values |      2      |       10       |       12     |
 |    `0O`    | Tag10 10 B64 encoded chars for special values |      2      |      10        |       12     |
+|    `0P`    | Gram Head Neck |      2      |      22        |       32     |
+|    `0Q`    | Gram Head |      2      |      22        |       28     |
+|    `0R`    | Gram Head AID Neck |      2      |      22        |       76     |
+|    `0S`    | Gram Head AID |      2      |      22        |       72     |
 |            |  Basic Four Character Codes   |             |              |              |
 |   `1AAA`   | ECDSA secp256k1 non-transferable prefix public verification key   |      4      |              |      48      |
 |   `1AAB`   | ECDSA secp256k1 public verification or encryption key |      4      |              |      48      |
 |   `1AAC`   | Ed448 non-transferable prefix public verification key |      4      |              |      80      |
 |   `1AAD`   | Ed448 public verification key     |      4      |              |      80      |
 |   `1AAE`   | Ed448 signature                   |      4      |              |      156     |
-|   `1AAF`   | Label3 3 bytes for label lead size 0 |      4      |              |      8       |
+|   `1AAF`   | Tag4 4 B64 encoded chars for special values  |      4      |        4      |      8       |
 |   `1AAG`   | DateTime Base64 custom encoded 32 char ISO-8601 DateTime |      4      |              |      36      |
 |   `1AAH`   | X25519 100 char b64 Cipher of 24 char qb64 Salt |      4      |              |      100      |
 |   `1AAI`   | ECDSA secp256r1 verification key non-transferable, basic derivation |      4      |              |      48      |
@@ -1196,8 +1202,7 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `1AAK`   | Null None or empty value |      4      |              |      4      |
 |   `1AAL`   | No falsey Boolean value |      4      |              |      4      |
 |   `1AAM`   | Yes truthy Boolean value|      4      |              |      4      |
-|   `1AAN`   | Tag4 4 B64 encoded chars for special values |      4      |       4       |      8      |
-|   `1AAO`   | Tag8 8 B64 encoded chars for special values |      4      |       8       |      12      |
+|   `1AAN`   | Tag8 8 B64 encoded chars for special values |      4      |       8       |      12      |
 |            |  Variable Raw Size Codes  |             |              |              |
 |   `4A`     | String Base64 Only Lead Size 0      |      4      |      2        |            |
 |   `5A`     | String Base64 Only Lead Size 1      |      4      |      2        |            |
@@ -1229,6 +1234,18 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `7AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 0 |      8      |      4        |            |
 |   `8AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 1 |      8      |      4        |            |
 |   `9AAE`   | X25519 sealed box cipher bytes of QB2 plaintext big lead size 2 |      8      |      4        |            |
+|   `4F`     | HPKE Base cipher bytes of QB2 plaintext lead size 0 |      4      |      2        |            |
+|   `5F`     | HPKE Base cipher bytes of QB2 plaintext lead size 1 |      4      |      2        |            |
+|   `6F`     | HPKE Base cipher bytes of QB2 plaintext lead size 2 |      4      |      2        |            |
+|   `7AAF`   | HPKE Base cipher bytes of QB2 plaintext big lead size 0 |      8      |      4        |            |
+|   `8AAF`   | HPKE Base cipher bytes of QB2 plaintext big lead size 1 |      8      |      4        |            |
+|   `9AAF`   | HPKE Base cipher bytes of QB2 plaintext big lead size 2 |      8      |      4        |            |
+|   `4G`     | HPKE Auth cipher bytes of QB2 plaintext lead size 0 |      4      |      2        |            |
+|   `5G`     | HPKE Auth cipher bytes of QB2 plaintext lead size 1 |      4      |      2        |            |
+|   `6G`     | HPKE Auth cipher bytes of QB2 plaintext lead size 2 |      4      |      2        |            |
+|   `7AAG`   | HPKE Auth cipher bytes of QB2 plaintext big lead size 0 |      8      |      4        |            |
+|   `8AAG`   | HPKE Auth cipher bytes of QB2 plaintext big lead size 1 |      8      |      4        |            |
+|   `9AAG`   | HPKE Auth cipher bytes of QB2 plaintext big lead size 2 |      8      |      4        |            |
 
 ::: note Count Length of KERI protocol genus/version codes in --AAACAA
 \*Similar to the table above, these represent *specific* instantiations of the protocol genus codes so their count lengths are 0.
@@ -1304,7 +1321,7 @@ The format of the Version String is `PPPPVVVKKKKBBBB.`. It is 16 characters in l
 * Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
 * Version: `VVV` three character major minor version (described below)
 * Serialization kind: `KKKK` four character string of the types (`JSON`, `CBOR`, `MGPK`, `CESR`)
-* Serialization length: `BBBB` integer encoded in Base64
+* Serialization length: `BBBB` integer encoded in Base64 equal to the number of characters (inclusive).
 * version 2.XX terminator character `.`
 
 The first four characters, `PPPP` indicate the protocol. Each genus of a given CESR code table set may support multiple protocols.  
@@ -1578,7 +1595,7 @@ The rules for a SAD Path Language processor are simple. If a path consists of on
 The root context (after the initial `-`) is always a map. Therefore, the first path component represents a field of that map. The SAD is traversed following the path components as field labels or indexes in arrays until the end of the path is reached. The value at the end of the path is then returned as the resolution of the SAD Path. If the current context is a map and the path component is an integer, the path component represents an index into fields of the map. This feature takes advantage of the static field ordering of SADs and is used against any SAD that contains field labels that use non-Base64 compatible characters or the `-` character. Any combination of integer and field label path components can be used when the current context is a map. All path components MUST be an integer when the current context is an array.
 
 #### CESR Encoding for SAD Path Language
-SAD Paths are variable raw size Primitives that require CESR variable size codes.  The `A` small variable size code for SAD Paths will be used which has 3 code entries being added to the Master Code Table, `4A##`, `5A##` and `6A##` for SAD Paths with 0 lead bytes, 1 lead byte and 2 lead bytes respectively.  This small variable size code is reserved for text values that only contain valid Base64 characters.  These codes are detailed in Table 2 below.  The selector not only encodes the table but also implicitly encodes the number of lead bytes. The variable size is measured in quadlets of 4 characters each in the T domain and equivalently in triplets of 3 bytes each in the B domain. Thus, computing the number of characters when parsing or off-loading in the T domain means multiplying the variable size by 4. Computing the number of bytes when parsing or off-loading in the B domain means multiplying the variable size by 3. The two Base64 size characters provide value lengths in quadlets/triplets from 0 to 4095 (64**2 -1). This corresponds to path lengths of up to 16,380 characters (4095 * 4) or 12,285 bytes (4095 * 3).
+SAD Paths are variable raw size Primitives that require CESR variable size codes.  The `B` small variable size code for SAD Paths will be used which has 3 code entries being added to the Master Code Table, `4B##`, `5B##` and `6B##` for SAD Paths with 0 lead bytes, 1 lead byte and 2 lead bytes respectively.  This small variable size code is reserved for text values that only contain valid Base64 characters.   The selector not only encodes the table but also implicitly encodes the number of lead bytes. The variable size is measured in quadlets of 4 characters each in the T domain and equivalently in triplets of 3 bytes each in the B domain. Thus, computing the number of characters when parsing or off-loading in the T domain means multiplying the variable size by 4. Computing the number of bytes when parsing or off-loading in the B domain means multiplying the variable size by 3. The two Base64 size characters provide value lengths in quadlets/triplets from 0 to 4095 (64**2 -1). This corresponds to path lengths of up to 16,380 characters (4095 * 4) or 12,285 bytes (4095 * 3).
 
 #### SAD Path Examples
 
@@ -1637,339 +1654,6 @@ The examples in Table 1 represent all the features of the SAD Path language when
 #### Alternative Pathing / Query Languages
 The SAD Path language was chosen over alternatives such as JSONPtr and JSONPath in order to create a more compact representation of a pathing language in the text domain.  Many of the features of the alternatives are not needed for SAD Path Signatures.  The only token in the language (`-`) is Base64 compatible.  The use of field indices in SADs (which require statically ordered fields) allows for Base64 compatible pathing even when the field labels of the target SAD are not Base64 compatible.  The language accomplishes the goal of uniquely locating any path in a SAD using minimally sufficient means in a manner that allows it to be embedded in a CESR attachment as Base64.  Alternative syntaxes would need to be Base64 encoded to be used in a CESR attachment in the text domain thus incurring the additional bandwidth cost of such an encoding.
 
-### CESR Attachments
-
-This specification adds 2 Counter Four Character Codes to the Master Code Table and uses 1 Small Variable Raw Size Code Type and 1 Large Variable Raw Size Code Type from the Master Code Table (each of which have 3 code entries).
-
-#### Counter Four Character Codes
-The SAD Path Signature Count Code is represented by the four-character code `-J##`.  The first two characters reserve this code for attaching the couplet (SAD Path, Signature Group).  The second two characters represent the count in hexadecimal of the SAD path signatures are in this attachment.  The path is attached in the T domain using the codes described in the next section.  The signature group is from either a transferable identifier or a non-transferable identifier and therefore attached using the CESR codes `-F##` or `-C##`, respectively, as described above.
-
-#### Variable Size Codes
-The code `A` is reserved as a Small Variable Raw Size Code and `AAA` as a Large Variable Raw Size Code for Base64 URL safe strings.  SAD Paths are Base64 URL safe strings and so leverage these codes when encoded in the CESR T domain.  To account for the variable nature of path strings, the variable size types reserve 3 codes each with prefix indicators of lead byte size used for adjusting the T domain encoding to multiples of 4 characters and the B domain to multiples of 3 bytes.  For the Small codes the prefix indicators are `4`, `5` and `6` representing 0, 1 and 2 lead bytes respectively and for Large codes the prefix indicators are `7`, `8`, and `9` representing 0, 1 and 2 lead bytes respectively.  The resulting 6 code entries are displayed in the table that follows.
-
-The additions to the Master Code Table of CESR is shown below:
-
-|   Code   | Description                                                                         | Code Length | Count or Index Length | Total Length |
-|:--------:|:----------------------------------|:------------:|:-------------:|:------------:|
-|          |                        Counter Four Character Codes                         |             |              |              |
-|   -J##   | Count of attached qualified Base64 SAD path sig groups path+sig group (trans or non-trans)                       |      2      |       2      |       4      |
-|   -K##   | Count of attached qualified Base64 SAD Path groups                    |      2      |       2      |       4      |
-|          |                        Small Variable Raw Size Code                         |             |              |              |
-|   4A##   | String Base64 Only with 0 Lead Bytes                                                  |      2      |       2      |       4      |
-|   5A##   | String Base64 Only with 1 Lead Byte                                                   |      2      |       2      |       4      |
-|   6A##   | String Base64 Only with 2 Lead Bytes                                                  |      2      |       2      |       4      |
-|          |                        Large Variable Raw Size Code                         |             |              |              |
-|   7AAA####   | String Base64 Only with 0 Lead Bytes                                                  |      4      |       4      |       8      |
-|   8AAA####   | String Base64 Only with 1 Lead Byte                                                   |      4      |       4      |       8      |
-|   9AAA####   | String Base64 Only with 2 Lead Bytes                                                  |      4      |       4      |       8      |
-
-#### SAD Path Signature Attachments
-CESR defines several Count Codes for attaching signatures to serialized CESR event Messages.  For KERI event Messages, the signatures in the attachments apply to the entire serialized content of the KERI event Message.  As all KERI event Messages are SADs, the same rules for signing a KERI event Message applies to signing SADs for SAD Path Signatures.  A brief review of CESR signatures for transferable and non-transferable identifiers follows.  In addition, signatures on nested content will be specified.
-
-##### Signing SAD Content
-
-Signatures on SAD content require signing the serialized encoding format of the data ensuring that the signature applies to the data over the wire.  The serialization for any SAD is identified in the Version String which can be found in the `v` field of any KERI event Message or ACDC credential.   An example Version String follows:
-
-```json
- {
-     "v": "KERICAAJSONAAQB."
- }
-```
-
-where KERI is the identifier of KERI events followed by the hexadecimal major and minor version code and then the serialized encoding format of the event, JSON in this case.  KERI and ACDC support JSON, MessagePack and CBOR currently.  Field ordering is important when apply cryptographic signatures and all serialized encoding formats MUST support static field ordering.  Serializing a SAD starts with reading the Version String from the SAD field (`v` for KERI and ACDC events Message) to determine the serialized encoding format of the Message.  The serialized encoding format is used to generate the SAID at creation and cannot be changed.  The event map is serialized using a library that ensures the static field order preserved across serialization and deserialization and the private keys are used to generate the qualified cryptographic material that represents the signatures over the SAD content.
-
-The same serialized encoding format MUST be used when nesting a SAD in another SAD.  For example, an ACDC credential that was issued using JSON can be embedded and presented only in a KERI `exn` presentation event Message that uses JSON as its serialized encoding format.  That same credential MUST NOT be transmitted using CBOR or MessagePack.  Controllers can rely on this REQUIREMENT when verifying signatures of embedded SADs.  When processing the signature attachments and resolving the data at a given SAD path, the serialization of the outer most SAD can be used at any depth of the traversal.  New Version String processing does not need to occur at nested paths.  However, if credential signature verification is pipelined and processed in parallel to the event Message such that the event Message is not available, the Version String of the nested SAD will still be valid and can be used if needed.
-
-Each attached signature is accompanied by a SAD Path that indicates the content that is signed.  The path MUST resolve within the enveloping SAD to either a nested SAD (map) or a SAID (string) of an externally provided SAD.  This of course, includes a root path that resolves to the enveloping SAD itself.
-
-##### Signatures with Non-Transferable Identifiers
-
-Non-transferable identifiers only ever have one public key.  In addition, the identifier prefix is identical to the qualified cryptographic material of the public key and therefore a Key Event Log ( KEL) is NOT REQUIRED (i.e. is OPTIONAL) to validate the signature of a non-transferable identifier [[1]].  The attachment code for witness receipt couplets, used for SAD Path Signatures, takes this into account.  The four-character Count Code `-C##` is used for non-transferable identifiers and contains the signing identifier prefix and the signature.  Since the verification key can be extracted from the identifier prefix and the identifier cannot be rotated, all that is required to validate the signature is the identifier prefix, the data signed and the signature.
-
-##### Signatures with Transferable Identifiers
-
-Transferable identifiers REQUIRE full KEL resolution and verification to determine the correct public key used to sign some content [[1]].  In addition, the attachment code(s) used for transferable identifiers, `-O` or `-0O` MUST specify the location in the KEL at which point the signature was generated.  To accomplish this, this Count Code includes the identifier prefix, the sequence number of the event in the KEL, the digest of the event in the KEL and the indexed signatures (transferable identifiers support multiple public/private keys and require index signatures).  Using all the values, the signature(s) can be verified by retrieving the KEL of the identifier prefix and determining the key state at the sequence number along with validating the digest of the event against the actual event.  Then using the key(s) at the determined key state, validate the signature(s).
-
-#### Additional Count Codes
-This specification adds two Counter Four Character Codes to the CESR Master Code Table for attaching and grouping transposable signatures on SAD and nested SAD content.  The first code `-T` or `-0T` is reserved for attaching a SAD path and the associated signatures on the content at the resolution of the SAD Path (either a SAD or its associated SAID).  The second reserved code `-U` or `-0U` is for grouping all SAD Path signature groups under a root path for a given SAD.  The root path in the second grouping code provides signature attachment transposability for embedding SAD content in other Messages.
-
-##### SAD Path Signature Group
-The SAD Path Signature Group provides a four-character Count Code, `-T` or `-0T`, for attaching an encoded Variable Length SAD Path along with either a transferable index signature group or non-transferable identifier receipt couplets.  The SAD Path identifies the content that this attachment is signing.  The path must resolve to either a nested SAD (map) or a SAID (string) of an externally provided SAD within the context of the SAD and root path against which this attachment is applied.  Using the following ACDC SAD embedded in a KERI `exn` Message:
-
-```json
-{
-  "v": "KERICAAJSONAAQB.",
-  "t": "exn",
-  "dt": "2020-08-22T17:50:12.988921+00:00",
-  "r": "/credential/offer",
-  "a": {
-    "credential": { // SIGNATURE TARGET OF TRANSPOSED SAD PATH GROUP
-      "v": "ACDC10JSON00011c_",
-      "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
-      "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
-      "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
-      "a": {
-        "d": "EgveY4-9XgOcLxUderzwLIr9Bf7V_NHwY1lkFrn9y2PY",
-        "i": "EQzFVaMasUf4cZZBKA0pUbRc9T8yUXRFLyM1JDASYqAA",
-        "dt": "2021-06-09T17:35:54.169967+00:00",
-        "ri": "EymRy7xMwsxUelUauaXtMxTfPAMPAI6FkekwlOjkggt",
-        "LEI": "254900OPPU84GM83MG36",
-        "personal": {
-          "legalName": "John Doe",
-          "home": "Durham"
-        }
-      }
-    }
-  }
-}
-```
-
-
-The following signature applies to the nested credential SAD signed by a transferable identifier using the transferable index signature group. The example is annotated with spaces and line feeds for clarity and an accompanied table is provided with comments.
-
-```
--JAB
-6AAEAAA-a-credential
--FAB
-E_T2_p83_gRSuAYvGhqV3S0JzYEF2dIa-OCPLbIhBO7Y
--EAB0AAAAAAAAAAAAAAAAAAAAAAB
-EwmQtlcszNoEIDfqD-Zih3N6o5B3humRKvBBln2juTEM
--AAD
-AA5267UlFg1jHee4Dauht77SzGl8WUC_0oimYG5If3SdIOSzWM8Qs9SFajAilQcozXJVnbkY5stG_K4NbKdNB4AQ
-ABBgeqntZW3Gu4HL0h3odYz6LaZ_SMfmITL-Btoq_7OZFe3L16jmOe49Ur108wH7mnBaq2E_0U0N0c5vgrJtDpAQ
-ACTD7NDX93ZGTkZBBuSeSGsAQ7u0hngpNTZTK_Um7rUZGnLRNJvo5oOnnC1J2iBQHuxoq8PyjdT3BHS2LiPrs2Cg
-```
-
-| code | description |
-| --- | ----------- |
-|-JAB| SAD path signature group Count Code 1 following the group |
-|6AAEAAA-a-credential| encoded SAD path designation|
-|-FAB| Trans Indexed Sig Groups Count Code 1 following group|
-|E_T2_p83_gRSuAYvGhqV3S0JzYEF2dIa-OCPLbIhBO7Y|trans prefix of signer for sigs|
-|-EAB0AAAAAAAAAAAAAAAAAAAAAAB|sequence number of est event of signer's public keys for sigs|
-|EwmQtlcszNoEIDfqD-Zih3N6o5B3humRKvBBln2juTEM| digest of est event of signer's public keys for sigs|
-|-AAD|Controller Indexed Sigs Count Code 3 following sigs |
-|AA5267...4AQ| sig 0 |
-|ABBgeq...pAQ| sig 1 |
-|ACTD7N...2Cg| sig 2 |
-
-
-The next example demonstrates the use of a non-transferable identifier to sign SAD content.  In this example, the entire nested SAD located at the `a` field is signed by the non-transferable identifier:
-
-```
--JAB
-5AABAA-a
--CAB
-BmMfUwIOywRkyc5GyQXfgDA4UOAMvjvnXcaK9G939ArM
-0BT7b5PzUBmts-lblgOBzdThIQjKCbq8gMinhymgr4_dD0JyfN6CjZhsOqqUYFmRhABQ-vPywggLATxBDnqQ3aBg
-```
-
-
-| code | description |
-| --- | ----------- |
-| -JAB | SAD path signature group Count Code 1 following the group |
-| 5AABAA-a | encoded SAD path designation |
-| -CAB  | NonTrans witness receipt couplet |
-| BmMfUwIOywRkyc5GyQXfgDA4UOAMvjvnXcaK9G939ArM | non-trans prefix of signer of sig |
-| 0BT7b5... aBg | sig |
-
-##### SAD Path Groups
-The SAD Path Group provides a four-character Count Code, `-U`or `-0U`, for attaching encoded Variable Length root SAD Path along with 1 or more SAD Path Signature Groups.  The root SAD Path identifies the root context against which the paths in all included SAD Path Signature Groups are resolved.  When parsing a SAD Path Group, if the root path is the single `-` character, all SAD paths are treated as absolute paths.  Otherwise, the root path is prepended to the SAD paths in each of the SAD Path Signature Groups.  Given the following snippet of a SAD Path Group:
-
-```
--KAB6AABAAA--JAB5AABAA-a...
-```
-
-The root path is the single `-` character meaning that all subsequent SAD Paths are absolute and therefore the first path is resolved as the `a` field of the root map of the SAD as seen in the following example:
-
-```json
-{
-  "v": "ACDCCAAJSONAAQB.",
-  "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
-  "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
-  "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
-  "a": {  // SIGNATURE TARGET OF SAD PATH GROUP
-    "d": "EgveY4-9XgOcLxUderzwLIr9Bf7V_NHwY1lkFrn9y2PY",
-    "i": "EQzFVaMasUf4cZZBKA0pUbRc9T8yUXRFLyM1JDASYqAA",
-    "dt": "2021-06-09T17:35:54.169967+00:00",
-    "ri": "EymRy7xMwsxUelUauaXtMxTfPAMPAI6FkekwlOjkggt",
-    "LEI": "254900OPPU84GM83MG36",
-    "personal": {
-      "legalName": "John Doe",
-      "city": "Durham"
-    }
-  }
-}
-```
-
-###### Transposable Signature Attachments
-To support nesting of signed SAD content in other SAD content, the root path of SAD Path Groups or the path of a SAD Path Signature Group provides transposability of CESR SAD signatures such that a single SAD Path Signature Group or an entire SAD Path Group attachment can be transposed across envelope boundaries by updating the single path or root path to indicate the new location.  Extending the example above, the SAD content is now embedded in a KERI `exn` event Message as follows:
-
-
-```json
-{
-  "v": "KERICAAJSONAAQB.",
-  "t": "exn",
-  "dt": "2020-08-22T17:50:12.988921+00:00",
-  "r": "/credential/offer",
-  "a": {
-    "v": "ACDC10JSON00011c_",
-    "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
-    "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
-    "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
-    "a": { // SIGNATURE TARGET OF TRANSPOSED SAD PATH GROUP
-      "d": "EgveY4-9XgOcLxUderzwLIr9Bf7V_NHwY1lkFrn9y2PY",
-      "i": "EQzFVaMasUf4cZZBKA0pUbRc9T8yUXRFLyM1JDASYqAA",
-      "dt": "2021-06-09T17:35:54.169967+00:00",
-      "ri": "EymRy7xMwsxUelUauaXtMxTfPAMPAI6FkekwlOjkggt",
-      "LEI": "254900OPPU84GM83MG36",
-      "personal": {
-        "legalName": "John Doe",
-        "city": "Durham"
-      }
-    }
-  }
-}
-```
-
-The same signature gets transposed to the outer `exn` SAD by updating the root path of the `-K##` attachment:
-
-```
--KAB5AABAA-a-JAB5AABAA-a...
-```
-
-Now the SAD Path of the first signed SAD content resolves to the `a` field of the `a` field of the streamed `exn` Message
-
-#### Small Variable Raw Size SAD Path Code
-The small variable raw side code reserved for SAD Path encoding is a variable length string with code `A` which uses the 3 entries (`4A##`, `5A##` and `6A##`) in the Master Code Table for each lead byte configuration.  These codes and their use are discussed in detail in [CESR Encoding for SAD Path Language]().
-
-::: issue
-fix this citation
-:::
-
-### Nested Partial Signatures
-Additional signatures on nested content can be included in a SAD Path Group and are applied to the serialized data at the resolution of a SAD path in a SAD.  Signatures can be applied to the SAID or an entire nested SAD.   When verifying a SAD Path Signature, the content at the resolution of the SAD path is the data that was signed.  The choice to sign a SAID or the full SAD effects how the data may be used in presentations and the rules for verifying the signature.
-
-#### Signing Nested SADs
-When signing nested SAD content, the serialization used at the time of signing is the only serialization that can be used when presenting the signed data.  When transposing the signatures and nesting the signed data, the enveloping SAD must use the same serialization that was used to create the signatures.  This is to ensure that all signatures apply to the data over the wire and not a transformation of that data.  The serialization can be determined from the version field (`v`) of the nested SAD or any parent of the nested SAD as they are guaranteed to be identical.  Consider the following ACDC Credential SAD:
-
-```json
-{
-  "v": "ACDCCAAJSONAAQB.",
-  "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
-  "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
-  "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
-  "a": {   // SIGNATURE TARGET OF SAD PATH GROUP
-    "d": "EgveY4-9XgOcLxUderzwLIr9Bf7V_NHwY1lkFrn9y2PY",
-    "i": "EQzFVaMasUf4cZZBKA0pUbRc9T8yUXRFLyM1JDASYqAA",
-    "dt": "2021-06-09T17:35:54.169967+00:00",
-    "ri": "EymRy7xMwsxUelUauaXtMxTfPAMPAI6FkekwlOjkggt",
-    "LEI": "254900OPPU84GM83MG36",
-    "personal": {
-      "d": "E2X8OLaLnM0XRQEYgM5UV3bZmWg3UUn7CP4SoKkvsl-s",
-        "first": "John",
-        "last": "Doe"
-    }
-  }
-}
-```
-
-To sign the SAD located at the path `-a`, JSON serialization would be used because the SAD at that path does not have a version field so the version field of its parent is used.  The serialization rules (spacing, field ordering, etc.) for a SAD would be used for the SAD and the serialization encoding format and the signature would be applied to the bytes of the JSON for that map.  Any presentation of the signed data must always include the fully nested SAD.  The only valid nesting of this credential would be as follows:
-
-```json
-{
-  "v": "KERICAAJSONAAQB.",
-  "t": "exn",
-  "dt": "2020-08-22T17:50:12.988921+00:00"
-  "r": "/credential/apply"
-  "a": {
-    "v": "ACDC10JSON00011c_",
-    "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
-    "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
-    "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
-    "a": {   // FULL SAD MUST BE PRESENT
-      "d": "EgveY4-9XgOcLxUderzwLIr9Bf7V_NHwY1lkFrn9y2PY",
-      "i": "EQzFVaMasUf4cZZBKA0pUbRc9T8yUXRFLyM1JDASYqAA",
-      "dt": "2021-06-09T17:35:54.169967+00:00",
-      "ri": "EymRy7xMwsxUelUauaXtMxTfPAMPAI6FkekwlOjkggt",
-      "LEI": "254900OPPU84GM83MG36",
-      "legalName": {
-        "d": "E2X8OLaLnM0XRQEYgM5UV3bZmWg3UUn7CP4SoKkvsl-s",
-        "first": "John",
-        "last": "Doe"
-      }
-    }
-  }
-}
-```
-
-#### Signing SAIDs
-Applying signatures to a SAD with SAIDs in place of fully expanded nested SAD content enables compact credentials for Domains with bandwidth restrictions such as IoT.  Consider the following fully expanded credential:
-
-```json
-{
-    "v": "ACDCCAAJSONAAQB.",
-    "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
-    "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
-    "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
-    "a": {
-      "d": "EgveY4-9XgOcLxUderzwLIr9Bf7V_NHwY1lkFrn9y2PY",
-      "i": "EQzFVaMasUf4cZZBKA0pUbRc9T8yUXRFLyM1JDASYqAA",
-      "dt": "2021-06-09T17:35:54.169967+00:00",
-      "ri": "EymRy7xMwsxUelUauaXtMxTfPAMPAI6FkekwlOjkggt",
-      "LEI": "254900OPPU84GM83MG36",
-      "legalName": {
-        "d": "E2X8OLaLnM0XRQEYgM5UV3bZmWg3UUn7CP4SoKkvsl-s",
-        "n": "sKHtYSiCdlibuLDS2PTJg1AZXtPhaySZ9O3DoKrRXWY",
-        "first": "John",
-        "middle": "William",
-        "last": "Doe"
-      },
-      "address": {
-        "d": "E-0luqYSg6cPcMFmhiAz8VBQObZLmTQPrgsr7Z1j6CA4",
-        "n": "XiSoVDNvqV8ldofPyTVqQ-EtVPlkIIQTln9Ai0yI05M",
-        "street": "123 Main St",
-        "city": "Salt Lake City",
-        "state": "Utah",
-        "zipcode": "84157"
-      },
-      "phone": {
-        "d": "E6lty8H2sA_1acq8zg89_kqF194DbF1cDpwA7UPtwjPQ",
-        "n": "_XKNVntbcIjp12DmsAGhv-R7JRwuzjD6KCHC7Fw3zvU",
-        "mobile": "555-121-3434",
-        "home": "555-121-3435",
-        "work": "555-121-3436",
-        "fax": "555-121-3437"
-      }
-    }
-  }
-}
-```
-
-The three nested blocks of the `a` block `legalName`, `address` and `phone` are SADs with a SAID in the `d` field and are candidates for SAID replacement in an issued credential.  A compact credential can be created and signed by replacing those three nested blocks with the SAID of each nested SAD.  The schema for this Verifiable Credential would need to specify conditional subschema for the field labels at each nesting location that requires the full schema of the nested SAD or a string for the SAID.  The commitment to a SAID in place of a SAD contains nearly the same cryptographic integrity as a commitment to the SAD itself since the SAID is the qualified cryptographic material of a digest of the SAD.  The same credential could be converted to a compact credential containing the SAIDs of each nested block and signed as follows:
-
-```json
-{
-   "v": "ACDCCAAJSONAAQB.",
-   "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
-   "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
-   "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
-   "a": {
-     "d": "EgveY4-9XgOcLxUderzwLIr9Bf7V_NHwY1lkFrn9y2PY",
-     "i": "EQzFVaMasUf4cZZBKA0pUbRc9T8yUXRFLyM1JDASYqAA",
-     "dt": "2021-06-09T17:35:54.169967+00:00",
-     "ri": "EymRy7xMwsxUelUauaXtMxTfPAMPAI6FkekwlOjkggt",
-     "LEI": "254900OPPU84GM83MG36",
-     "legalName": "E2X8OLaLnM0XRQEYgM5UV3bZmWg3UUn7CP4SoKkvsl-s",
-     "address": "E-0luqYSg6cPcMFmhiAz8VBQObZLmTQPrgsr7Z1j6CA4",
-     "phone": "E6lty8H2sA_1acq8zg89_kqF194DbF1cDpwA7UPtwjPQ"
-   }
-}
-```
-
-It is important to note that if this Version of the credential is the one issued to the holder and the signature over the entire credential is on the serialized data of this Version of the credential it is the only Version that can be presented.  The full SAD data of the three nested blocks would be delivered out of band from the signed credential.  The top-level schema would describe the blocks with conditional subschema for each section.  The credential signature becomes a cryptographic commitment to the contents of the overall credential as well as the content of each of the blocks and will still validate the presented credential with significantly less bandwidth.
-
-With this approach, credential presentation request and exchange protocols can be created that modify the schema with the conditional subschema, removing the conditions that allow for SAIDs in place of the required (or presented) nested blocks.  The modified schema can be used in such a protocol to indicate the required sections to be delivered out of bounds or as a commitment to provide the nested blocks after the credential presentation has occurred.
 
 ### Post-Quantum Security
 Post-quantum or quantum-safe cryptography deals with techniques that maintain their cryptographic strength despite attacks from quantum computers. Because it is currently assumed that practical quantum computers do not yet exist, post-quantum techniques are forward-looking to some future time when they do exist. A one-way function that is post-quantum secure will not be any less secure (resistant to inversion) in the event that practical quantum computers suddenly or unexpectedly become available. One class of post-quantum secure one-way functions are some cryptographic strength hashes. The analysis of D.J. Bernstein with regards the collision resistance of cryptographic one-way hashing functions concludes that quantum computation provides no advantage over non-quantum techniques. Consequently, one way to provide some degree of post-quantum security is to hide cryptographic material behind digests of that material created by such hashing functions. This directly applies to the public keys declared in the pre-rotations. Instead of a pre-rotation making a cryptographic pre-commitment to a public key, it makes a pre-commitment to a digest of that public key. The digest may be verified once the public key is disclosed (unhidden) in a later rotation operation. Because the digest is the output of a one-way hash function, the digest is uniquely strongly bound to the public key. When the unexposed public keys of a pre-rotation are hidden in a digest, the associated private keys are protected from a post-quantum brute force inversion attack on those public keys.
