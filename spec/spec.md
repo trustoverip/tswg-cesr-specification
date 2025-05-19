@@ -30,14 +30,6 @@ Composable Event Streaming Representation (CESR)
 
 [//]: # (\newpage)
 
-[//]: # (::: forewordtitle)
-
-## Foreword
-
-The foreword goes here.
-
-[//]: # (:::)
-
 [//]: # (\newpage)
 
 [//]: # (::: introtitle)
@@ -806,13 +798,12 @@ The purpose of the protocol genus/version table is twofold. First, it allows CES
 
 The format for a protocol genus/version code MUST be as follows: `-_GGGVVV` where `GGG` represents the protocol genus and `VVV` represents the Version of that protocol genus. The genus uses three Base64 characters for a possible total of 262,144 different protocol genera. The next three characters, `VVV`, provide, in Base64 notation, the major and minor version numbers of the Version of the protocol genus. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The version part supports up to 64 major versions with 4096 minor versions per major version.
 
+
 Any addition of a new code to the code table is backward-breaking in at least one direction, so it is a feature change in at least one direction. New implementations with the new codes can accept streams from old implementations, but old ones will break if they receive the new ones. 
 
 A Major change occurs when a code's meaning changes. When a Major change occurs, the Major version number MUST be incremented. This means it breaks in both directions, i.e., sender and receiver. 
 
 A minor change occurs when a code is added to a table; this only breaks backward compatibility when a new sender sends to an old receiver, but a new sender will still correctly process a stream sent from an old receiver. Since code additions will be commonly compared to code changes, it is beneficial to have more room for minor vs. major versions. When a minor change occurs, the Minor version number MUST be incremented.
-
-
 
 ### OpCode tables
 
@@ -1473,20 +1464,20 @@ The `dict` is then serialized into JSON with no extra whitespace. The serializat
 The Blake3-256 digest is then computed on that serialization above and encoded in CESR to provide the SAID as follows:
 
 ```
-EnKa0ALimLL8eQdZGzglJG_SxvncxkmvwFDhIyLFchUk
+EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ
 ```
 
 The value of the `said` field is now replaced with the computed and encoded SAID to produce the final serialization with embedded SAID as follows:
 
 ```json
-{"said":"EnKa0ALimLL8eQdZGzglJG_SxvncxkmvwFDhIyLFchUk","first":"Sue","last":"Smith","role":"Founder"}
+{"said":"EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ","first":"Sue","last":"Smith","role":"Founder"}
 ```
 
 The final serialization may be converted to a python `dict` by deserializing the JSON to produce:
 
 ```python
 {
-    "said": "EnKa0ALimLL8eQdZGzglJG_SxvncxkmvwFDhIyLFchUk",
+    "said": "EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ",
     "first": "Sue",
     "last": "Smith",
     "role": "Founder"
@@ -1525,7 +1516,7 @@ Third, replace the dummy identifier value with the derived identifier value in t
 
 ```json
     {
-        "$id": "EZT9Idj7zLA0Ek6o8oevixdX20607CljNg4zrf_NQINY",
+        "$id": "EGU_SHY-8ywNBJOqPKHr4sXV9tOtOwpYzYOM63_zUCDW",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "properties": {
