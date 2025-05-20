@@ -1123,10 +1123,12 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 | `--U#####` | Last event seal source singles  `aid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-V##`   | Backer registrar identifier seal couples `brid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `--V#####` | Backer registrar identifier seal couples `brid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-W##`   | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `--W#####` | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-X##`   | Transferable last indexed sig group pre+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `--X#####` | Transferable last indexed sig group pre+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-W##`   | Typed digest seal couples `type+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--W#####` | Typed digest seal couples `type+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-X##`   | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--X#####` | Transferable indexed sig group pre+snu+dig+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-Y##`   | Transferable last indexed sig group pre+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--Y#####` | Transferable last indexed sig group pre+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-Z##`   | ESSR (TSP) Payload `version+messagtype+...` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `-0Z#####` | ESSR (TSP) Payload `version+messagtype+...` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |            |  Operation Codes   |             |              |              |
