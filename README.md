@@ -1,32 +1,26 @@
 # Composable Event Streaming Representation (CESR)
 
-This is the working area for the individual Internet-Draft, "Composable Event Streaming Representation (CESR)".
+This is the working area for the Trust over IP, "Composable Event Streaming Representation (CESR)" specification.
 
-* [Editor's Copy](https://trustoverip.github.io/tswg-cesr-specification/#go.draft-ssmith-cesr.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-ssmith-cesr)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-ssmith-cesr)
-* [Compare Editor's Copy to Individual Draft](https://trustoverip.github.io/tswg-cesr-specification/#go.draft-ssmith-cesr.diff)
+* [Editor's Copy](https://trustoverip.github.io/tswg-cesr-specification/)
 
+#### Contributing
 
-## Contributing
+All Trust Over IP Foundation Technical Stack Working Group contributions are done so under the following licenses:
 
-See the
-[guidelines for contributions](https://github.com/trustoverip/tswg-cesr-specification/blob/main/CONTRIBUTING.md).
+* [Patent and Copyright Grants](Contributing.md)
+* [Source Code](SOURCE_CODE.md)
 
-Contributions can be made by creating pull requests.
-The GitHub interface supports creating pull requests using the Edit (✏) button.
+#### Licensing
 
+All Trust Over IP Foundation Technical Stack Working Group deliverables are published under the following licenses:
 
-## Command Line Usage
+* [Patent and Copyright Grants](LICENSE.md)
+* [Source Code](SOURCE_CODE.md)
 
-Formatted text and HTML versions of the draft can be built using `make`.
+#### Getting involved
 
-```sh
-$ make
-```
-
-Command line usage requires that you have the necessary software installed.  See
-[the instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/SETUP.md).
+Join a community of individuals and organizations solving the toughest technical and human-centric problems in digital trust. https://trustoverip.org/get-involved/membership/
 
 #### Note
 
