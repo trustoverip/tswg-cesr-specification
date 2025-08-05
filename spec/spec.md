@@ -1115,10 +1115,10 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 | `--Q#####` | Digest seal singles `dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-R##`   | Merkle Tree Root seal singles `rdig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `--R#####` | Merkle Tree Root seal singles `rdig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-S##`   | Anchoring event seal source triple pre+snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `--S#####` | Anchoring event seal source triple pre+snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-T##`   | Issuer/Delegator/Transaction event seal source couple snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-T#####` | Issuer/Delegator/Transaction event seal source couple snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-S##`   | Issuer/Delegator/Transaction event seal source couple snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-S#####` | Issuer/Delegator/Transaction event seal source couple snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-T##`   | Anchoring event seal source triple pre+snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--T#####` | Anchoring event seal source triple pre+snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-U##`   | Last event seal source singles  `aid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `--U#####` | Last event seal source singles  `aid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-V##`   | Backer registrar identifier seal couples `brid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
@@ -1318,7 +1318,7 @@ The Version String, `v` field MUST be the first field in any top-level field map
 
 The format of the Version String is `PPPPVVVKKKKBBBB.`. It is 16 characters in length and is divided into five parts: 
 * Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
-* Version: `VVV` three character major minor version (described below)
+* Version: `VVV` three character major/minor version (described below)
 * Serialization kind: `KKKK` four character string of the types (`JSON`, `CBOR`, `MGPK`, `CESR`)
 * Serialization length: `BBBB` integer encoded in Base64 equal to the number of characters (inclusive).
 * version 2.XX terminator character `.`
@@ -1341,7 +1341,7 @@ Which is two bytes.  However, there are three base64 characters in this version 
 See https://datatracker.ietf.org/doc/html/rfc4648#section-3.5
 :::
 
-The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[spec: RFC8949]] [[ref: RFC8949]] [[3]] [[ref: CESR]]. The last one, CESR is special. A CESR native serialization of a field map may use either the    `-G##` or  `-0G#####` count codes to indicate both that it is a field map and its size. Moreover, because count codes have unique start bits (see the section on Performant resynchronization) there is no need to embed a regular expression parsable version string field in a CESR native field map. Instead, a native CESR message's field map includes a protocol version field that indicates the protocol and version but not the size and serialization type. These are provided already by the count code. As a result, once deserialized into an in-memory data object representation of that field map, there is no normative indication that the in-memory object was deserialized from a  CESR native field map (i.e. no version string field with serialization kind).   This serialization kind indication would otherwise have to be provided externally.  Instead, the in-memory object representation of the field map may inject a placeholder version string, `v` field, whose value is a version string but with the serialization kind set to `CESR`. This way, when re-serializing, there is a normative indicator to reserialize as a CESR native field map, not JSON, CBOR, or MGPK.  This reserialization does not include an embedded version string field. It only appears in the in-memory object representation, not the serialization.
+The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[spec: RFC8949]] [[ref: RFC8949]] [[3]] [[ref: CESR]]. The last one, CESR is special. A CESR native serialization of a field map may use either the    `-G##` or  `--G#####` count codes to indicate both that it is a field map and its size. Moreover, because count codes have unique start bits (see the section on Performant resynchronization) there is no need to embed a regular expression parsable version string field in a CESR native field map. Instead, a native CESR message's field map includes a protocol version field that indicates the protocol and version but not the size and serialization type. These are provided already by the count code. As a result, once deserialized into an in-memory data object representation of that field map, there is no normative indication that the in-memory object was deserialized from a  CESR native field map (i.e. no version string field with serialization kind).   This serialization kind indication would otherwise have to be provided externally.  Instead, the in-memory object representation of the field map may inject a placeholder version string, `v` field, whose value is a version string but with the serialization kind set to `CESR`. This way, when re-serializing, there is a normative indicator to reserialize as a CESR native field map, not JSON, CBOR, or MGPK.  This reserialization does not include an embedded version string field. It only appears in the in-memory object representation, not the serialization.
 
 The next four characters, `BBBB`, provide in Base64 notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 64<sup>4</sup> = 2<sup>24</sup> = 16,777,216 characters in length. This is deemed generous enough for the vast majority of anticipated applications. For serializations that may exceed this size, a secure hash chain of Messages may be employed where the value of a field in one Message is the cryptographic digest, SAID of the following Message. The total size of the chain of Messages may, therefore, be some multiple of 2<sup>24</sup>.
 
@@ -1355,7 +1355,7 @@ Compliant Version 2.XX implementations MUST support the old Version 1.XX Version
 
 The format of the Version String for version 1.XX is `PPPPvvKKKKllllll_`. It is 17 characters in length and is divided into five parts: 
 * Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
-* Version: `vv` twocharacter major minor version (described below)
+* Version: `vv` two character major minor version (described below)
 * Serialization kind: `KKKK` four character string of the types (`JSON`, `CBOR`, `MGPK`, `CESR`)
 * Serialization length: `llllll` integer encoded in lowercase hexidecimal (Base 16) format
 * legacy version terminator character `_`
