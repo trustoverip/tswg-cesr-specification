@@ -1115,10 +1115,10 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 | `--Q#####` | Digest seal singles `dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-R##`   | Merkle Tree Root seal singles `rdig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `--R#####` | Merkle Tree Root seal singles `rdig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-S##`   | Anchoring event seal source triple pre+snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `--S#####` | Anchoring event seal source triple pre+snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
-|   `-T##`   | Issuer/Delegator/Transaction event seal source couple snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-T#####` | Issuer/Delegator/Transaction event seal source couple snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-S##`   | Issuer/Delegator/Transaction event seal source couple snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `-S#####` | Issuer/Delegator/Transaction event seal source couple snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-T##`   | Anchoring event seal source triple pre+snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--T#####` | Anchoring event seal source triple pre+snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-U##`   | Last event seal source singles  `aid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `--U#####` | Last event seal source singles  `aid+dig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-V##`   | Backer registrar identifier seal couples `brid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
