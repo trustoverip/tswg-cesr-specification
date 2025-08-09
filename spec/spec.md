@@ -1130,7 +1130,9 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `-Y##`   | Transferable last indexed sig group pre+idx-controller-sig-groups up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `--Y#####` | Transferable last indexed sig group pre+idx-controller-sig-groups up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-Z##`   | ESSR (TSP) Payload `version+messagtype+...` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-0Z#####` | ESSR (TSP) Payload `version+messagtype+...` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--Z#####` | ESSR (TSP) Payload `version+messagtype+...` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+|   `-a##`   | Blinded State quadruples dig+uuid+said+state up to 4,095 quadlets/triplets |      4      |       2      |       4      |
+| `--a#####` | Big Blinded State quadruples dig+uuid+said+state up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |            |  Operation Codes   |             |              |              |
 |   `_`      |      Reserved TBD  |             |              |              |
 |            |  Primitive Matter Codes  |             |              |              |
@@ -1197,6 +1199,8 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `1AAM`   | Yes truthy Boolean value|      4      |              |      4      |
 |   `1AAN`   | Tag8 8 B64 encoded chars for special values |      4      |       8       |      12      |
 |            |  Variable Raw Size Codes  |             |              |              |
+|   `1AAO`   | Escape code for escaping special map field values |      4      |              |      4      |
+|   `1AAP`   | Empty value for nonce or string |      4      |              |      4      |
 |   `4A`     | String Base64 Only Lead Size 0      |      4      |      2        |            |
 |   `5A`     | String Base64 Only Lead Size 1      |      4      |      2        |            |
 |   `6A`     | String Base64 Only Lead Size 2      |      4      |      2        |            |
@@ -1290,23 +1294,25 @@ Legend:
 
 #### Examples
 
-The tables above include complex groups that maybe composed of other groups. For example, consider the counter attachment group with code `-F##` where `##` is replaced by the two-character Base64 count of the number of complex groups. This is known as the TransIndexedSigGroups counter.  Within the complex group are one or more attached
-groups where each group consists of a triple pre+snu+dig followed by a ControllerIdxSigs group that in turn, consists of a Count Code `-A##` followed by one or more indexed signature Primitives.
+The tables above include complex groups that maybe composed of other groups. For example, consider the counter transferable indexed signatures attachment group with code `-X##` where `##` is replaced by the two-character Base64 count of the number of complex groups. This is known as the TransIndexedSigGroups counter.  Within the complex group are one or more attached groups where each TransIndexedSigGroup group consists of a triple pre+snu+dig followed by a ControllerIdxSigs group that in turn, consists of a Count Code `-K##` followed by one or more indexed signature Primitives each with indexed primitive code `A#`.
+
 
 The following example details how a complex nested group may appear.
 
-The example has only one group that includes nested groups. The example is annotated with comments, spaces, and line feeds for clarity.
+The example has only one group that includes one nested group. The example is annotated with comments, spaces, and line feeds for clarity.
 
 ```text
--FAB     # Trans Indexed Sig Groups Count Code 1 following group
-E_T2_p83_gRSuAYvGhqV3S0JzYEF2dIa-OCPLbIhBO7Y    # trans prefix of signer for sigs
--EAB0AAAAAAAAAAAAAAAAAAAAAAB    # sequence number of est event of signer's public keys for sigs
-EwmQtlcszNoEIDfqD-Zih3N6o5B3humRKvBBln2juTEM    # digest of est event of signer's public keys for sigs
--AAD     # Controller Indexed Sigs Count Code 3 following sigs
-AA5267UlFg1jHee4Dauht77SzGl8WUC_0oimYG5If3SdIOSzWM8Qs9SFajAilQcozXJVnbkY5stG_K4NbKdNB4AQ # sig 0
-ABBgeqntZW3Gu4HL0h3odYz6LaZ_SMfmITL-Btoq_7OZFe3L16jmOe49Ur108wH7mnBaq2E_0U0N0c5vgrJtDpAQ # sig 1
-ACTD7NDX93ZGTkZBBuSeSGsAQ7u0hngpNTZTK_Um7rUZGnLRNJvo5oOnnC1J2iBQHuxoq8PyjdT3BHS2LiPrs2Cg # sig 2
+-XBf  # Trans Indexed Sig Groups count Bf Quadlets in group
+    EPR7FWsN3tOM8PqfMap2FRfF4MFQ4v3ZXjBUcMVtvhmB  # AID of signer
+    0AAAAAAAAAAAAAAAAAAAAAAA  # sequence number of event being signed
+    EPR7FWsN3tOM8PqfMap2FRfF4MFQ4v3ZXjBUcMVtvhmB  # SAID of event being signed
+    -KBC  # Controller Indexed Sigs count BC quadlets in group 
+        AADQ-rNV53XEXW1mI24X6uK3LlSMxqQxzM3HuWv_rbEkGP8kVjEYjzrBg8o5hRCxXPnoO2zpHmh52OdUdog7xb0B  # signature 0
+        ABCD_iSjAJvu9JsXHBAnCCTGCA-YSTKiRG-y6gUV42tzkL11OSEqRztXZOq4yCBHcf4WTPT8fsMoaJGbW1a5JFkP  # signature 1
+        ACBcPS0C_QwGdJUZTKXvC_qCs6069pqV8rdQymrJTdcmJAEYJDJXuHUc6sjgdb0_VlPYIPtVZ9ypbRhkkuXJOykL  # signature 2
+        
 ```
+
 
 ### Version String field
 
@@ -1316,27 +1322,30 @@ Non-CESR serializations, namely, JSON, CBOR, and MGPK when interleaved in a CESR
 
 The Version String, `v` field MUST be the first field in any top-level field map of any interleaved JSON, CBOR, or MGPK serialization. It provides a regular expression target for determining a serialized field map's serialization format and size (character count) of its enclosing field map. A Stream parser MUST be able to use the Version String to extract and deserialize (deterministically) any serialized Stream field maps. Each field map in a Stream MUST use one of the serialization types from the JSON, CBOR, or MGPK set. Each field map MAY have a different serialization type.
 
-The format of the Version String is `PPPPVVVKKKKBBBB.`. It is 16 characters in length and is divided into five parts: 
+The format of the Version String is `PPPPMmmGggKKKKBBBB.`. It is 19 characters in length and is divided into five parts: 
 * Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
-* Version: `VVV` three character major/minor version (described below)
+* Protocol Version: `Mmm` three character major/minor version of the protocol (described below)
+* Genus Version: `Ggg` three character major/minor version of the CESR genus table (described below)
 * Serialization kind: `KKKK` four character string of the types (`JSON`, `CBOR`, `MGPK`, `CESR`)
 * Serialization length: `BBBB` integer encoded in Base64 equal to the number of characters (inclusive).
 * version 2.XX terminator character `.`
 
 The first four characters, `PPPP` indicate the protocol. Each genus of a given CESR code table set may support multiple protocols.  
 
-The next three characters, `VVV`, provide in Base64 notation the major and minor version numbers of the Version of the protocol specification. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.00`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
+The next three characters, `Mmm`, provide in Base64 notation the major and minor version numbers of the Version of the protocol specification. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version decimal 0 or in dotted-decimal notation, i.e., `2.0`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
+
+The next three characters, `Ggg`, provide in Base64 notation the major and minor version numbers of the Version of the CESR genus table used in the message. This assumes that for a given Protocol the CESR genus is fixed and is determinable by the protocol so only the genus version is needed. The first `G` character provides the major version number, and the final two `gg` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.0`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
 
 ::: warning non-canonical base64
-This is a non-canonical encoding using Base64 indicies. Most [[spec: RFC4648]]-compliant libraries will drop bits that aren't on a byte boundary if you just call decode on these characters naively.
+The versions employ a non-canonical encoding using Base64 indices. Most [[spec: RFC4648]]-compliant libraries will not encode/decode these correctly if they do not align on a 24 bit boundary. 
 
-For example, in python (with padding character for demonstration), using a semantic version 2.00 that would map to "CAA" in our scheme as above.
+For example, in Python (with padding character for demonstration), using a semantic version 2.0 that would map to "CAA" in our scheme as above.
 ```python
 >>> base64.urlsafe_b64decode("CAA=")
 b'\x08\x00'
 ```
 
-Which is two bytes.  However, there are three base64 characters in this version scheme which encode 18 bits.  base64 encoding works on 6-bit groupings so: `C -> 0b000010, A -> 0b000000, A -> 0b000000` which is two bytes + two bits when concatenated together.  In the python example above we get back `b'\x08\x00'` -> `'0b00001000 0b00000000'` which is two bytes (16 bits) in hexidecimal notation.  The canonical decoding by the library is stripping the last two bits per the RFC.  Implementers should thus use a library capable of getting the index of the b64 characters according to the scheme (for this version string only) and not those written to give canonical decodings.
+Which is two bytes.  However, there are three base64 characters in this version scheme, which encode 18 bits.  base64 encoding works on 6-bit groupings so: `C -> 0b000010, A -> 0b000000, A -> 0b000000` which is two bytes + two bits when concatenated together.  In the Python example above we get back `b'\x08\x00'` -> `'0b00001000 0b00000000'` which is two bytes (16 bits) in hexadecimal notation.  The canonical decoding by the library strips the last two bits per the RFC.  Implementers should thus use a library capable of getting the index of the b64 characters according to the scheme (for this version string only) and not those written to give canonical decodings.
 
 See https://datatracker.ietf.org/doc/html/rfc4648#section-3.5
 :::
@@ -1397,31 +1406,37 @@ The SAID verification protocol MUST be implemented as follows:
 
 
 ##### Example Computation
-The CESR [CESR] encoding of a Blake3-256 (32 byte) binary digest has 44 Base-64 URL-safe characters. The first character is `E` which represents Blake3-256. Therefore, a serialization of a fixed field data structure with a SAID generated by a Blake3-256 digest must reserve a field of length 44 characters. Suppose the initial value of the fixed field serialization is the following string:
-
-
-```
-field0______field1______________________________________field2______
-```
-
-In the string, `field1` is of length 44 characters. The first step to generating the SAID for this serialization is to replace the contents of `field1` with a dummy string of `#` characters of length 44 as follows:
+The CESR [CESR] encoding of a Blake3-256 (32 byte) binary digest has 44 Base-64 URL-safe characters. The first character is `E` which represents Blake3-256. Therefore, a serialization of a fixed field data structure with a SAID generated by a Blake3-256 digest must reserve a field of length 44 characters. Suppose the initial value of the fixed field serialization is the 76-character string as follows:
 
 ```
-field0______############################################field2______
-```
-The Blake3-256 digest is then computed on the above string and encoded in CESR format. This gives the following SAID:
-
-```
-E8wYuBjhslETYaLZcxMkWrhVbMcA8RS1pKYl7nJ77ntA
+field_0_01234567field_1_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789field_2_98765432
 ```
 
-The dummy string is then replaced with the SAID above to produce the final serialization with embedded SAID as follows:
+where:
+
+field0 is the 16-character string "field_0_01234567"
+field1 is the 44-character placeholder string "field_1_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+field2 is the 16 character string "field_2_98765432"
+
+The first step to generating the SAID for this serialization is to replace the placeholder contents of `field1` with a dummy string of `#` characters of length 44. This produces a dummied 76-character string as follows:
 
 ```
-field0______E8wYuBjhslETYaLZcxMkWrhVbMcA8RS1pKYl7nJ77ntA______
+field_0_01234567############################################field_2_98765432
 ```
 
-To verify the embedded SAID with respect to its encompassing serialization above, just reverse the generation steps.
+The Blake3-256 digest is then computed on the above string and encoded in CESR format. This is the SAID of the 76-character string as follows:
+```
+ENI2bDYghiu1KYYkFrPofH8tJ5tNiNt8WrTIc4s_5IIH
+```
+
+Replacing the 44 dummy characters with the SAID of the same length produces the final SAIDified string as follows:
+
+```
+field_0_01234567ENI2bDYghiu1KYYkFrPofH8tJ5tNiNt8WrTIc4s_5IIHfield_2_98765432
+```
+
+To verify the embedded SAID with respect to its encompassing serialization above, just reverse the generation steps. In other words, replace the SAID in the string with dummy characters of the same length, compute the Blake3 digest as SAID of this dummied version, and then compare the SAIDs.
+
 
 ##### Serialization Generation
 
@@ -1465,8 +1480,20 @@ As before, the SAID will be a 44-character CESR encoded Blake3-256 digest. The s
 
 The `dict` is then serialized into JSON with no extra whitespace. The serialization is the following string:
 
-```json
+```python
 {"said":"############################################","first":"Sue","last":"Smith","role":"Founder"}
+```
+
+The Python code snippet for creating the JSON serialization is as follows:
+
+```python
+import json
+
+dummy = "#" * 44
+dd = dict(said=dummy, first="Sue", last="Smith", role="Founder")
+raw = json.dumps(dd, separators=(",", ":"), ensure_ascii=False)
+assert raw == '{"said":"############################################","first":"Sue","last":"Smith","role":"Founder"}'
+
 ```
 
 The Blake3-256 digest is then computed on that serialization above and encoded in CESR to provide the SAID as follows:
@@ -1498,48 +1525,64 @@ The generation steps may be reversed to verify the embedded SAID. The SAID gener
 
 SAIDs make [JSON Schema](https://json-schema.org/draft/2020-12/json-schema-core.html) fully self-contained with self-referential, unambiguously cryptographically bound, and verifiable content-addressable identifiers. The SAID derivation protocol defined above is applied to generate the `$id` field.
 
+Given a Python dict of the schema:
 First, replace the value of the `$id` field with a string filled with dummy characters of the same length as the eventual derived value for `$id`.
 
-```json
-    {
-        "$id": "############################################",
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "type": "object",
-        "properties": {
-            "full_name": {
-            	"type": "string"
-            }
+```python
+{
+    "$id": "############################################",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "full_name": {
+        	"type": "string"
         }
     }
+}
 ```
 
+Second, serialize the Python dict into JSON with no white space as follows:
 
-Second, make a digest of the serialized schema contents that include the dummy value for the `$id`.
+```python
+import json
+
+raw = json.dumps(dummied_schema-dict, separators=(",", ":"), ensure_ascii=False)
+```
+
+The serialization as a Python byte string is as follows:
+
+```python
+(b'{"$id":"############################################","$schema":"http://json'
+b'-schema.org/draft-07/schema#","type":"object","properties":{"full_name":{"ty'
+b'pe":"string"}}}')
+```
+
+Third, make a digest of the serialized schema contents `raw` above and encode in CESR format.
+In this case this produces the schema SAID as follows:
 
 ```
-EZT9Idj7zLA0Ek6o8oevixdX20607CljNg4zrf_NQINY
+EGU_SHY-8ywNBJOqPKHr4sXV9tOtOwpYzYOM63_zUCDW
 ```
 
 Third, replace the dummy identifier value with the derived identifier value in the schema contents.
 
-```json
-    {
-        "$id": "EGU_SHY-8ywNBJOqPKHr4sXV9tOtOwpYzYOM63_zUCDW",
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "type": "object",
-        "properties": {
-            "full_name": {
-                "type": "string"
-            }
+```python
+{
+    "$id": "EGU_SHY-8ywNBJOqPKHr4sXV9tOtOwpYzYOM63_zUCDW",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "full_name": {
+            "type": "string"
         }
     }
+}
 ```
 
-Usages of SAIDs within authentic data containers as demonstrated here are referred to as self-addressing data (SAD).
+When a SAID is used for some field map data structure the enclosing data-structure is called self-addressing data (SAD).
 
 ##### Discussion
 As long as any verifier recognizes the derivation code of a SAID, the SAID is a cryptographically secure commitment to the contents in which it is embedded; it is a cryptographically verifiable, self-referential, content-addressable identifier. Because a SAID is both self-referential and cryptographically bound to the contents it identifies, anyone can validate this binding if they follow the _derivation protocol_ outlined above.
-
 
 To elaborate, this approach of deriving self-referential identifiers from the contents they identify, is called `self-addressing`. It allows any validator to verify or re-derive the self-referential, self-addressing identifier given the contents it identifies. To clarify, a SAID is different from a standard content address or content-addressable identifier in that a standard content-addressable identifier is not included inside the contents it addresses. Moreover, a standard content-addressable identifier is computed on the finished immutable contents, and therefore is not self-referential.
 
@@ -1586,7 +1629,7 @@ An example SAD Path using only labels that resolve to map contexts follows:
 In addition, integers can be specified and their meaning is dependent on the context of the SAD.
 
 ```
--1-12-personal-0
+-5-3-name
 ```
 
 The rules for a SAD Path Language processor are simple. If a path consists of only a single `-`, it represents the root of the SAD and therefore the entire SAD content. Following any `-` character is a path component that points to a field if the current context is a map in the SAD or is an index of an element if the current context is an array. It is an error for any sub-path to resolve to a value this is not a map or an array.  Any trailing `-` character in a SAD Path can be ignored.
@@ -1600,37 +1643,41 @@ SAD Paths are variable raw size Primitives that require CESR variable size codes
 
 This section provides some more examples for SAD Path expressions. The examples are based on Authentic Chained Data Containers (ACDCs) representing Verifiable Credentials.
 
-```json
+```python
 {
-  "v": "ACDC10JSON00011c_",
-  "d": "EBdXt3gIXOf2BBWNHdSXCJnFJL5OuQPyM5K0neuniccM",
-  "i": "EmkPreYpZfFk66jpf3uFv7vklXKhzBrAqjsKAn2EDIPM",
-  "s": "E46jrVPTzlSkUPqGGeIZ8a8FWS7a6s4reAXRZOkogZ2A",
-  "a": {
-    "d": "EgveY4-9XgOcLxUderzwLIr9Bf7V_NHwY1lkFrn9y2PY",
-    "i": "EQzFVaMasUf4cZZBKA0pUbRc9T8yUXRFLyM1JDASYqAA",
-    "dt": "2021-06-09T17:35:54.169967+00:00",
-    "ri": "EymRy7xMwsxUelUauaXtMxTfPAMPAI6FkekwlOjkggt",
-    "LEI": "254900OPPU84GM83MG36",
-    "personal": {
-      "legalName": "John Doe",
-      "home-city": "Durham"
-    }
-  },
-  "p": [
+    "v": "ACDCCAACAAJSONAAIe.",
+    "t": "acm",
+    "d": "EO3117lnAbjDt66qe2PtgHooXKAYQT_C6SIbESMcJ5lN",
+    "i": "EEDGM_DvZ9qFEAPf_FX08J3HX49ycrVvYVXe9isaP5SW",
+    "s": "EGU_SHY-8ywNBJOqPKHr4sXV9tOtOwpYzYOM63_zUCDW",
+    "a":
     {
-      "qualifiedIssuerCredential": {
-        "d": "EIl3MORH3dCdoFOLe71iheqcywJcnjtJtQIYPvAu6DZA",
-        "i": "Et2DOOu4ivLsjpv89vgv6auPntSLx4CvOhGUxMhxPS24"
-      }
-    },
-    {
-      "certifiedLender": {
-        "d": "EglG9JLG6UhkLrrv012NPuLEc1F3ne5vPH_sHGP_QPN0",
-        "i": "E8YrUcVIqrMtDJHMHDde7LHsrBOpvN38PLKe_JCDzVrA"
-      }
+        "d": "ED1wMKzV72L7YI1yJ3NXlClPUgvEerw4jRocOYxaZGtH",
+        "i": "ECsGDKWAYtHBCkiDrzajkxs3Iw2g-dls3bLUsRP4yVdT",
+        "dt": "2025-06-09T17:35:54.169967+00:00",
+        "personal":
+        {
+            "name": "John Doe",
+            "home": "Atlanta"
+        },
+        "p":
+        [
+            {
+                "ref0":
+                {
+                    "name": "Amy",
+                    "i": "ECmiMVHTfZIjhA_rovnfx73T3G_FJzIQtzDn1meBVLAz"
+                }
+            },
+            {
+                "ref1":
+                {
+                    "name": "Bob",
+                    "i": "ECWJZFBtllh99fESUOrBvT3EtBujWtDKCmyzDAXWhYmf"
+                }
+            }
+        ]
     }
-  ]
 }
 ```
 
@@ -1638,17 +1685,17 @@ Figure 1. Example ACDC Credential SAD
 
 The examples in Table 1 represent all the features of the SAD Path language when referring to the SAD in Figure 1. along with the CESR text encoding.
 
-|   SAD Path   | Result                            | CESR T domain Encoding |
-|:-------------|:----------------------------------|:------|
-|  -           | The root of the SAD               | 6AABAAA- |
-|  -a-personal | The personal map of the a field   | 4AADA-a-personal |
-|  -4-5        | The personal map of the a field   | 4AAB-4-5 |
-|  -4-5-legalName        | "John Doe"   | 5AAEAA-4-5-legalName |
-|  -a-personal-1        | "Durham"   |  6AAEAAA-a-personal-1 |
-|  -p-1        | The second element in the p array | 4AAB-p-1 |
-|  -a-LEI     | "254900OPPU84GM83MG36" | 5AACAA-a-LEI |
-| -p-0-0-d     | "EIl3MORH...6DZA" | 4AAC-p-0-0-d |
-| -p-0-certifiedLender-i | "E8YrUcVI...zVrA" | 5AAGAA-p-0-certifiedLender-i |
+|   SAD Path   | CESR Encoding | Portion of SAD addressed by path|
+|:-------------|:---------------|:------------|
+|  `-`           | `'6AABAAA-'`| whole SAD  |
+|  `-a-personal` | `4AADA-a-personal` | `{'name': 'John Doe', 'home': 'Atlanta'}` |
+|  `-5-3` | `4AAB-5-3` | `{'name': 'John Doe', 'home': 'Atlanta'}` |
+|  `-5-3-name` | `6AADAAA-5-3-name` | `'John Doe'` |
+|  `-a-personal-1` | `6AAEAAA-a-personal-1` | `'Atlanta'` |
+| `-a-p-1-0` | `'4AAC-a-p-1-0` | `{'name': 'Bob', 'i': 'ECWJZFBtllh99fESUOrBvT3EtBujWtDKCmyzDAXWhYmf'}` |
+| `-a-p-0-0-name` | `6AAEAAA-a-p-0-0-name` | `'Amy'` |
+| `-a-p-0-ref0-i` | `6AAEAAA-a-p-0-ref0-i` | `'ECmiMVHTfZIjhA_rovnfx73T3G_FJzIQtzDn1meBVLAz'`|
+
 
 #### Alternative Pathing / Query Languages
 The SAD Path language was chosen over alternatives such as JSONPtr and JSONPath in order to create a more compact representation of a pathing language in the text domain.  Many of the features of the alternatives are not needed for SAD Path Signatures.  The only token in the language (`-`) is Base64 compatible.  The use of field indices in SADs (which require statically ordered fields) allows for Base64 compatible pathing even when the field labels of the target SAD are not Base64 compatible.  The language accomplishes the goal of uniquely locating any path in a SAD using minimally sufficient means in a manner that allows it to be embedded in a CESR attachment as Base64.  Alternative syntaxes would need to be Base64 encoded to be used in a CESR attachment in the text domain thus incurring the additional bandwidth cost of such an encoding.
