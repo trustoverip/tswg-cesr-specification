@@ -1,3 +1,3 @@
-[[tref: kmg-1, framing-codes, Framing Codes]]
+[[tref: kmg-1, framing-code, Framing Code]]
 
 ~ - - -
