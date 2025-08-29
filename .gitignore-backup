@@ -7,7 +7,6 @@ Gemfile.lock
 *.html
 /lib
 /node_modules/
-package-lock.json
 *.pdf
 *.redxml
 /.refcache
@@ -23,3 +22,13 @@ report.xml
 !requirements.txt
 .DS_Store
 .idea
+node_modules
+*.log
+dist
+*.bak
+*.tmp
+.env
+coverage
+build
+.history
+/.cache/
