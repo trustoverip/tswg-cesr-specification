@@ -4,7 +4,6 @@ archive.json
 draft-ssmith-keri.xml
 Gemfile.lock
 /.gems/
-*.html
 /lib
 /node_modules/
 *.pdf
