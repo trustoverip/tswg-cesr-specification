@@ -1,1 +1,3 @@
-[[tref: kmg-1, Stable]]
+[[tref: kmg-1, stable, Stable]]
+
+~ - - -

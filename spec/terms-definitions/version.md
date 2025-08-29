@@ -1,3 +1,3 @@
-[[tref: kmg-1, Version]]
+[[tref: kmg-1, version, Version]]
 
 ~ No local definition found.

@@ -1,3 +1,3 @@
-[[tref: kmg-1, Variable Length]]
+[[tref: kmg-1, variable-length, Variable Length]]
 
 ~ No local definition found.
