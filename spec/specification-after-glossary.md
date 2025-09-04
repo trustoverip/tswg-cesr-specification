@@ -92,9 +92,9 @@ The Composability property is an essential building block for streaming in eithe
 
 ### Concrete Domain representations
 
-The Text, ‘T’, domain representations in CESR MUST use only the characters from the URL/filename safe variant of the IETF RFC-4648 Base64 standard [[spec: RFC4648]]. Unless otherwise indicated, all references to Base64 [[spec: RFC4648]] in this document imply the URL and filename safe variant. The URL and filename safe variant of Base64 uses in order the 64 characters `A to Z`, `a to z`, `0 to 9`, `-`, and `_` to encode 6 bits of information. In addition, Base64 uses the `=` character for padding, but CESR does not use the `=` character for any purpose because all CESR-encoded Primitives are composable.
+The Text, ‘T’, domain representations in CESR MUST use only the characters from the URL/filename safe variant of the IETF RFC-4648 Base64 standard [[RFC4648](#RFC4648)]. Unless otherwise indicated, all references to Base64 [[RFC4648](#RFC4648)] in this document imply the URL and filename safe variant. The URL and filename safe variant of Base64 uses in order the 64 characters `A to Z`, `a to z`, `0 to 9`, `-`, and `_` to encode 6 bits of information. In addition, Base64 uses the `=` character for padding, but CESR does not use the `=` character for any purpose because all CESR-encoded Primitives are composable.
 
-It is notable that Base64 [[spec: RFC4648]] by itself does not satisfy the Composability property and as a result, employs pad characters to ensure one-way convertibility between the Binary domain and the Text domain.
+It is notable that Base64 [[RFC4648](#RFC4648)] by itself does not satisfy the Composability property and as a result, employs pad characters to ensure one-way convertibility between the Binary domain and the Text domain.
 
 In CESR, however, both ‘T’ and ‘B’ domain representations include a prepended Framing Code prefix that is structured to ensure Composition.
 
@@ -367,7 +367,7 @@ To elaborate, Count Codes MAY be used as separators to better organize a Stream 
 
 ### Interleaved non-CESR serializations
 
-As mentioned above, one extremely useful property of CESR is that at the top-level of a CESR stream, non-native message serializations, namely, JSON, CBOR, and MGPK may be interleaved with native message serializations. Many applications use JSON [[spec: RFC4627]] [[spec: RFC4627]], CBOR [[spec: RFC8949]] [[spec: RFC8949]], or MessagePack (MGPK) [[3](#ref3)] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. In addition, non-native CESR serializations may be encoded as CESR primitives and then enclosed in a special count code for non-native messages. To clarify, regarding field map serializations, CESR Primitives may also appear as a delimited text Primitive inside a non-native field map serialization. The delimited text may be either the key or value of a (key, value) pair. 
+As mentioned above, one extremely useful property of CESR is that at the top-level of a CESR stream, non-native message serializations, namely, JSON, CBOR, and MGPK may be interleaved with native message serializations. Many applications use JSON [[RFC4627](#RFC4627)], CBOR [[RFC8949](#RFC8949)], or MessagePack (MGPK) [[3](#ref3)] to serialize flexible self-describing data structures based on field maps, also known as dictionaries or hash tables. In addition, non-native CESR serializations may be encoded as CESR primitives and then enclosed in a special count code for non-native messages. To clarify, regarding field map serializations, CESR Primitives may also appear as a delimited text Primitive inside a non-native field map serialization. The delimited text may be either the key or value of a (key, value) pair. 
 
 ### Cold start Stream parsing problem
 
@@ -1138,7 +1138,7 @@ The next three characters, `Mmm`, provide in Base64 notation the major and minor
 The next three characters, `Ggg`, provide in Base64 notation the major and minor version numbers of the Version of the CESR genus table used in the message. This assumes that for a given Protocol the CESR genus is fixed and is determinable by the protocol so only the genus version is needed. The first `G` character provides the major version number, and the final two `gg` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.0`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
 
 ::: warning non-canonical base64
-The versions employ a non-canonical encoding using Base64 indices. Most [[spec: RFC4648]]-compliant libraries will not encode/decode these correctly if they do not align on a 24 bit boundary. 
+The versions employ a non-canonical encoding using Base64 indices. Most [[RFC4648](#RFC4648)]-compliant libraries will not encode/decode these correctly if they do not align on a 24 bit boundary. 
 
 For example, in Python (with padding character for demonstration), using a semantic version 2.0 that would map to "CAA" in our scheme as above.
 ```python
@@ -1151,7 +1151,7 @@ Which is two bytes.  However, there are three base64 characters in this version 
 See https://datatracker.ietf.org/doc/html/rfc4648#section-3.5
 :::
 
-The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[spec: RFC8949]] [[ref: RFC8949]] [[3](#ref3)] [[ref: CESR]]. The last one, CESR is special. A CESR native serialization of a field map may use either the    `-G##` or  `--G#####` count codes to indicate both that it is a field map and its size. Moreover, because count codes have unique start bits (see the section on Performant resynchronization) there is no need to embed a regular expression parsable version string field in a CESR native field map. Instead, a native CESR message's field map includes a protocol version field that indicates the protocol and version but not the size and serialization type. These are provided already by the count code. As a result, once deserialized into an in-memory data object representation of that field map, there is no normative indication that the in-memory object was deserialized from a  CESR native field map (i.e. no version string field with serialization kind).   This serialization kind indication would otherwise have to be provided externally.  Instead, the in-memory object representation of the field map may inject a placeholder version string, `v` field, whose value is a version string but with the serialization kind set to `CESR`. This way, when re-serializing, there is a normative indicator to reserialize as a CESR native field map, not JSON, CBOR, or MGPK.  This reserialization does not include an embedded version string field. It only appears in the in-memory object representation, not the serialization.
+The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[RFC4627](#RFC4627)] [[RFC8949](#RFC8949)] [[3](#ref3)] [[ref: CESR]]. The last one, CESR is special. A CESR native serialization of a field map may use either the    `-G##` or  `--G#####` count codes to indicate both that it is a field map and its size. Moreover, because count codes have unique start bits (see the section on Performant resynchronization) there is no need to embed a regular expression parsable version string field in a CESR native field map. Instead, a native CESR message's field map includes a protocol version field that indicates the protocol and version but not the size and serialization type. These are provided already by the count code. As a result, once deserialized into an in-memory data object representation of that field map, there is no normative indication that the in-memory object was deserialized from a  CESR native field map (i.e. no version string field with serialization kind).   This serialization kind indication would otherwise have to be provided externally.  Instead, the in-memory object representation of the field map may inject a placeholder version string, `v` field, whose value is a version string but with the serialization kind set to `CESR`. This way, when re-serializing, there is a normative indicator to reserialize as a CESR native field map, not JSON, CBOR, or MGPK.  This reserialization does not include an embedded version string field. It only appears in the in-memory object representation, not the serialization.
 
 The next four characters, `BBBB`, provide in Base64 notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 64<sup>4</sup> = 2<sup>24</sup> = 16,777,216 characters in length. This is deemed generous enough for the vast majority of anticipated applications. For serializations that may exceed this size, a secure hash chain of Messages may be employed where the value of a field in one Message is the cryptographic digest, SAID of the following Message. The total size of the chain of Messages may, therefore, be some multiple of 2<sup>24</sup>.
 
@@ -1174,7 +1174,7 @@ The first four characters, `PPPP` indicate the protocol.
 
 The next two characters, `vv` provide the major and minor version numbers of the Version of the protocol specification in lowercase hexadecimal notation. The first `v` provides the major version number, and the second `v` provides the minor version number. For example, `01` indicates major version 0 and minor version 1 or in dotted-decimal notation `0.1`. Likewise, `1c` indicates major version 1 and minor version decimal 12 or in dotted-decimal notation `1.12`.
 
- The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[spec: RFC4627]] [[spec: RFC4627]] [[spec: RFC8949]] [[ref: RFC8949]] [[3](#ref3)] [[ref: CESR]]. 
+ The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[RFC4627](#RFC4627)] [[RFC8949](#RFC8949)] [[ref: RFC8949]] [[3](#ref3)] [[ref: CESR]]. 
 
 The next six characters provide in lowercase hexadecimal notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 16<sup>6</sup> = 2<sup>24</sup> = 16,777,216 characters in length. For example, when the length of serialization is 384 decimal characters/bytes, the length part of the Version String has the value `000180`. The final character `_` is the Version String terminator. This enables later Versions of the protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String. 
 
@@ -1394,7 +1394,7 @@ SAD Path signatures are an extension to CESR that provide transposable cryptogra
 CESR is a dual text-binary encoding format that has the unique property of text-binary concatenation composability. The CESR specification not only provides the definition of the streaming format but also the attachment codes needed for differentiating the types of cryptographic material (such as signatures) used as attachments on all event types for the KERI [[1](#ref1)]. While all KERI event Messages are SADs, there is a broad class of SADs that are not KERI events but that require signature attachments. ACDC Verifiable Credentials fit into this class of SADs. With more complex data structures represented as SADs, such as Verifiable Credentials, there is a need to provide signature attachments on nested subsets of SADs. Similar to indices in indexed controller signatures in KERI that specify the location of the public key that they represent, nested SAD signatures need a path mechanism to specify the exact location of the nested content that they are signing. SAD Path Signatures provide this mechanism with the CESR SAD Path Language and new CESR attachment codes are detailed in this specification.
 
 #### Streamable SADs
-A primary goal of SAD Path Signatures is to allow any signed SAD to be streamed inline with any other CESR content.  In support of that goal, SAD Path Signatures leverage CESR attachments to define a signature scheme that can be attached to any SAD content serialized as JSON [[spec: RFC4627]], MessagePack [[3](#ref3)] or CBOR [[spec: RFC8949]].  Using this capability, SADs signed with SAD Path Signatures can be streamed inline in either the Text (T) or Binary (B) domain alongside any other KERI event Message over, for example TCP or UDP.  In addition, signed SADs can be transported via HTTP as a CESR HTTP Request.
+A primary goal of SAD Path Signatures is to allow any signed SAD to be streamed inline with any other CESR content.  In support of that goal, SAD Path Signatures leverage CESR attachments to define a signature scheme that can be attached to any SAD content serialized as JSON [[RFC4627](#RFC4627)], MessagePack [[3](#ref3)] or CBOR [[RFC8949](#RFC8949)].  Using this capability, SADs signed with SAD Path Signatures can be streamed inline in either the Text (T) or Binary (B) domain alongside any other KERI event Message over, for example TCP or UDP.  In addition, signed SADs can be transported via HTTP as a CESR HTTP Request.
 
 #### Nested Partial Signatures
 SAD Path Signatures can be used to sign as many portions of a SAD as needed, including the entire SAD. The signed subsets are either SADs themselves or the SAID of a SAD that will be provided out of band.  A new CESR Count Code is included with this specification to allow for multiple signatures on nested portions of a SAD to be grouped together under one attachment.  By including a SAD Path in the new CESR attachment for grouping signatures, the entire group of signatures can be transposed across envelope boundaries by changing only the root path of the group attachment code.
@@ -1405,7 +1405,7 @@ There are several events in KERI that can contain context specific embedded SADs
 
 ### SAD Path Language
 
-SAD Path Signatures defines a SAD Path Language to be used in signature attachments for specifying the location of the SAD content within the signed SAD that a signature attachment is verifying. This path language has a more limited scope than alternatives like JSONPtr [[spec: RFC6901]] or JSONPath [[ref: JSONPath]] and is therefore simpler and more compact when encoding in CESR signature attachments. SADs in CESR and therefore SAD Path Signatures require static field ordering of all maps. The SAD path language takes advantage of this feature to allow for a Base64 compatible syntax into SADs even when a SAD uses non-Base64 compatible characters for field labels.
+SAD Path Signatures defines a SAD Path Language to be used in signature attachments for specifying the location of the SAD content within the signed SAD that a signature attachment is verifying. This path language has a more limited scope than alternatives like JSONPtr [[RFC6901](#RFC6901)] or JSONPath [[ref: JSONPath]] and is therefore simpler and more compact when encoding in CESR signature attachments. SADs in CESR and therefore SAD Path Signatures require static field ordering of all maps. The SAD path language takes advantage of this feature to allow for a Base64 compatible syntax into SADs even when a SAD uses non-Base64 compatible characters for field labels.
 
 #### Description and Usage
 
@@ -1509,15 +1509,27 @@ To elaborate, a post-quantum attack that may practically invert the one-way publ
 
 ## Bibliography
 
-[[spec]]
+### Normative section
 
-### Informative section
 
 <a id="KERI">1</a><a id="ref1"></a>. [KERI specification](https://trustoverip.github.io/tswg-keri-specification/)
 
 <a id="RFC20">2</a><a id="ref2"></a>. ASCII, RFC20 https://www.rfc-editor.org/rfc/rfc20
 
 <a id="MGPK">3</a><a id="ref3"></a>. [MGPK specification](https://github.com/msgpack/msgpack/blob/master/spec.md)
+
+<a id="RAET">16</a><a id="ref16"></a>. Reliable Asynchronous Event Transport, RAET, https://github.com/RaetProtocol/raet
+
+<a id="RFC4627">18</a><a id="ref18"></a>. [The application/json Media Type for JavaScript Object Notation (JSON)](https://www.rfc-editor.org/rfc/rfc4627). D. Crockford; 2006-07. Status: Informational. 
+
+<a id="RFC4648">19</a><a id="ref19"></a>. [The Base16, Base32, and Base64 Data Encodings](https://www.rfc-editor.org/rfc/rfc4648). S. Josefsson; 2006-10. Status: Proposed Standard. 
+
+<a id="RFC6901">20</a><a id="ref20"></a>. [JavaScript Object Notation (JSON) Pointer](https://www.rfc-editor.org/rfc/rfc6901). P. Bryan, Ed.; K. Zyp; M. Nottingham, Ed.; 2013-04. Status: Proposed Standard.
+### Informative section
+
+<a id="RFC8949">21</a><a id="ref21"></a>. [Concise Binary Object Representation (CBOR)](https://www.rfc-editor.org/rfc/rfc8949). C. Bormann; P. Hoffman; 2020-12. Status: Internet Standard.
+
+### Informative section
 
 <a id="BOM">4</a><a id="ref4"></a>. BOM, UTF Byte Order Mark, https://en.wikipedia.org/wiki/Byte_order_mark
 
@@ -1544,6 +1556,6 @@ To elaborate, a post-quantum attack that may practically invert the one-way publ
 
 <a id="STOMP">15</a><a id="ref15"></a>. Simple Text Oriented Messaging Protocol, STOMP, https://stomp.github.io
 
-<a id="RAET">16</a><a id="ref16"></a>. Reliable Asynchronous Event Transport, RAET, https://github.com/RaetProtocol/raet
+
 
 <a id="Nathan-NDM14">17</a><a id="ref17"></a>. Analysis of the Effect of Core Affinity on High-Throughput Flows, Affinity, https://crd.lbl.gov/assets/Uploads/Nathan-NDM14.pdf
