@@ -1515,7 +1515,7 @@ To elaborate, a post-quantum attack that may practically invert the one-way publ
 
 <a id="KERI">1</a><a id="ref1"></a>. [KERI specification](https://trustoverip.github.io/tswg-keri-specification/)
 
-<a id="">2</a><a id="ref2"></a>. ASCII, RFC20 https://www.rfc-editor.org/rfc/rfc20
+<a id="RFC20">2</a><a id="ref2"></a>. ASCII, RFC20 https://www.rfc-editor.org/rfc/rfc20
 
 <a id="MGPK">3</a><a id="ref3"></a>. [MGPK specification](https://github.com/msgpack/msgpack/blob/master/spec.md)
 
