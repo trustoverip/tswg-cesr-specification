@@ -1531,19 +1531,19 @@ To elaborate, a post-quantum attack that may practically invert the one-way publ
 
 <a id="IPFS">9</a><a id="ref9"></a>. IPFS MultiFormats, IPFS https://richardschneider.github.io/net-ipfs-core/api/Ipfs.Registry.HashingAlgorithm.html
 
-<a id="MultiCodec">10</a><a id="ref10"></a>. Base58Check Encoding, [Base58Check](https://en.bitcoin.it/wiki/Base58Check_encoding)
+<a id="Base58Check">10</a><a id="ref10"></a>. Base58Check Encoding, [Base58Check](https://en.bitcoin.it/wiki/Base58Check_encoding)
 
-<a id="MultiCodec">11</a><a id="ref11"></a>. Wallet Import Format ECDSA Base58Check, WIF,
+<a id="WIF">11</a><a id="ref11"></a>. Wallet Import Format ECDSA Base58Check, WIF,
 [Wallet Import Format](https://en.bitcoin.it/wiki/Wallet_import_format)
 
-<a id="MultiCodec">12</a><a id="ref12"></a>. Binary to Text Encoding, Bin2Txt [Binary to Text Encoding](https://en.wikipedia.org/wiki/Binary-to-text_encoding)
+<a id="Bin2Txt">12</a><a id="ref12"></a>. Binary to Text Encoding, Bin2Txt [Binary to Text Encoding](https://en.wikipedia.org/wiki/Binary-to-text_encoding)
 
-<a id="MultiCodec">13</a><a id="ref13"></a>. UTF8, [UTF-8 Unicode](https://en.wikipedia.org/wiki/UTF-8)
+<a id="UTF8">13</a><a id="ref13"></a>. UTF8, [UTF-8 Unicode](https://en.wikipedia.org/wiki/UTF-8)
 
-<a id="MultiCodec">14</a><a id="ref14"></a>. Latin1 https://en.wikipedia.org/wiki/ISO/IEC_8859-1
+<a id="Latin1">14</a><a id="ref14"></a>. Latin1 https://en.wikipedia.org/wiki/ISO/IEC_8859-1
 
-<a id="MultiCodec">15</a><a id="ref15"></a>. Simple Text Oriented Messaging Protocol, STOMP, https://stomp.github.io
+<a id="STOMP">15</a><a id="ref15"></a>. Simple Text Oriented Messaging Protocol, STOMP, https://stomp.github.io
 
-<a id="MultiCodec">16</a><a id="ref16"></a>. Reliable Asynchronous Event Transport, RAET, https://github.com/RaetProtocol/raet
+<a id="RAET">16</a><a id="ref16"></a>. Reliable Asynchronous Event Transport, RAET, https://github.com/RaetProtocol/raet
 
-<a id="MultiCodec">17</a><a id="ref17"></a>. Analysis of the Effect of Core Affinity on High-Throughput Flows, Affinity, https://crd.lbl.gov/assets/Uploads/Nathan-NDM14.pdf
+<a id="Nathan-NDM14">17</a><a id="ref17"></a>. Analysis of the Effect of Core Affinity on High-Throughput Flows, Affinity, https://crd.lbl.gov/assets/Uploads/Nathan-NDM14.pdf
