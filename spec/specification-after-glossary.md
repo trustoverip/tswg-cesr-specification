@@ -1524,7 +1524,6 @@ To elaborate, a post-quantum attack that may practically invert the one-way publ
 <a id="RFC4648">19</a><a id="ref19"></a>. [The Base16, Base32, and Base64 Data Encodings](https://www.rfc-editor.org/rfc/rfc4648). S. Josefsson; 2006-10. Status: Proposed Standard. 
 
 <a id="RFC6901">20</a><a id="ref20"></a>. [JavaScript Object Notation (JSON) Pointer](https://www.rfc-editor.org/rfc/rfc6901). P. Bryan, Ed.; K. Zyp; M. Nottingham, Ed.; 2013-04. Status: Proposed Standard.
-### Informative section
 
 <a id="RFC8949">21</a><a id="ref21"></a>. [Concise Binary Object Representation (CBOR)](https://www.rfc-editor.org/rfc/rfc8949). C. Bormann; P. Hoffman; 2020-12. Status: Internet Standard.
 
