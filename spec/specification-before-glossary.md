@@ -17,6 +17,9 @@ Composable Event Streaming Representation (CESR)
 
 **Contributors:**
 
+- [Henk van Cann](https://github.com/henkvancann), [Blockchainbird](https://blockchainbird.org/)
+- [Kor Dwarshuis](https://github.com/kordwarshuis), [Blockchainbird](https://blockchainbird.org/)
+
 **Participate:**
 
 ~ [GitHub repo](https://github.com/trustoverip/tswg-cesr-specification)
