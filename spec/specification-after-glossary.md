@@ -1511,7 +1511,6 @@ To elaborate, a post-quantum attack that may practically invert the one-way publ
 
 ### Normative section
 
-
 <a id="KERI">1</a><a id="ref1"></a>. [KERI specification](https://trustoverip.github.io/tswg-keri-specification/)
 
 <a id="RFC20">2</a><a id="ref2"></a>. ASCII, RFC20 https://www.rfc-editor.org/rfc/rfc20
@@ -1555,7 +1554,5 @@ To elaborate, a post-quantum attack that may practically invert the one-way publ
 <a id="Latin1">14</a><a id="ref14"></a>. Latin1 https://en.wikipedia.org/wiki/ISO/IEC_8859-1
 
 <a id="STOMP">15</a><a id="ref15"></a>. Simple Text Oriented Messaging Protocol, STOMP, https://stomp.github.io
-
-
 
 <a id="Nathan-NDM14">17</a><a id="ref17"></a>. Analysis of the Effect of Core Affinity on High-Throughput Flows, Affinity, https://crd.lbl.gov/assets/Uploads/Nathan-NDM14.pdf
