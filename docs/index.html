@@ -792,8 +792,8 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
                             <a class="mx-auto p-2" href="https://github.com/trustoverip/spec-up-t"
                                 target="_blank" rel="noopener">Powered By Spec-Up-T</a>
                             <small>
-                                <time class="timestamp mx-auto p-2 text-muted" datetime="2025-09-04T18:43:29.223Z">
-                                    Generated: 2025-09-04T18:43:29.223Z
+                                <time class="timestamp mx-auto p-2 text-muted" datetime="2025-09-05T13:30:41.712Z">
+                                    Generated: 2025-09-05T13:30:41.712Z
                                 </time>
                             </small>
                         </div>
@@ -1303,7 +1303,7 @@ These tritet start bit REQUIREMENTS are summarized in the following table:</p>
 <p>This table uses <code>6</code> as its first character or selector. The second character provides the type. The final two characters provide the size of the value in quadlets/triplets as a Base64 encoded integer. Only raw binaries with a pad size of 0 are encoded with this table. The 1-character type code provides a total of 64 unique type code values. The maximum length of the value provided by the 2 size characters is 4095 quadlets of characters in the ‘T’ domain and triplets of bytes in the ‘B’ domain. All are raw binary Primitives with a pad size of 2 that each includes 2 lead bytes.</p>
 <h4 id="large-variable-length-raw-size-tables"><a class="toc-anchor d-print-none" href="#large-variable-length-raw-size-tables">§</a> Large variable-length raw-size tables</h4>
 <p>Many legacy cryptographic libraries such as OpenSSL and GPG support any variable-sized Primitive for keys, signatures, and digests such as RSA. Although this approach is often criticized for providing too much flexibility, many legacy applications depend on this degree of flexibility. Consequently, these large variable raw size tables provide a sufficiently expansive set of tables with enough types and sizes to accommodate all the legacy cryptographic libraries as well as all the variable-sized non-cryptographic raw Primitive types for the foreseeable future.</p>
-<div id="issue-1" class="notice issue"><a class="notice-link" href="#issue-1">ISSUE</a><p><a path-0="github.com" path-1="trustoverip" path-2="tswg-cesr-specification" path-3="issues" path-4="14" href="https://github.com/trustoverip/tswg-cesr-specification/issues/14"><span>https://github.com/trustoverip/tswg-cesr-specification/issues/14</span></a></p>
+<div id="issue-1" class="notice issue"><a class="notice-link" href="#issue-1">ISSUE</a><p><a path-0="github.com" path-1="trustoverip" path-2="tswg-cesr-specification" path-3="issues" path-4="14" href="https://github.com/trustoverip/tswg-cesr-specification/issues/14">Post-quantum cryptographic operations</a></p>
 </div>
 <p>The three tables in this group are for large variable raw size Primitives. These three large variable raw size tables use 0, 1, or 2 lead bytes as appropriate for the associated pad size of 0, 1, or 2 for a given variable-sized raw binary value. The text code size for all three tables is 8 characters. As a special case, the first 62 entries in these tables represent that same crypto suite type as the 62 entries in the small variable raw size tables above. This allows one type to use a smaller 4-character text code when the raw size is small enough. The first character is the selector, the next three characters provide the type, and the last four characters provide the size of the value as a Base64 encoded integer.</p>
 <p>With 3 characters for each unique type code, each table provides 262,144 unique type codes. This should be enough type codes to accommodate all fixed raw size Primitive types for the foreseeable future.  A given type code is repeated in each table for the same type. What is different for each table is the number of lead bytes needed to align a given length on a 24-bit boundary. The selector not only encodes the table but also implicitly encodes the number of lead bytes. The variable size is measured in quadlets of 4 characters each in the ‘T’ domain and equivalently in triplets of 3 bytes each in the B’ domain. Thus, computing the number of characters when parsing or off-loading in the ‘T’ domain means multiplying the variable size by 4. Likewise, computing the number of bytes when parsing or off-loading in the ‘B’ domain means multiplying the variable size by 3. The four Base64 size characters provide value lengths in Quadlets/triplets from 0 to 16,777,215 (<code>64**4 -1</code>). This corresponds to value lengths of up to 67,108,860 characters (<code>16777215 * 4</code>) or 50,331,645 bytes (<code>16777215 * 3</code>).</p>
@@ -2825,6 +2825,7 @@ the contents of a Count Code group are other primitives or groups.</p>
 <td style="text-align:left"></td>
 <td style="text-align:center"></td>
 <td style="text-align:center"></td>
+<td style="text-align:center"></td>
 </tr>
 <tr>
 <td style="text-align:center"><code>0A</code></td>
@@ -3927,10 +3928,10 @@ In this case this produces the schema SAID as follows:</p>
 <p><a id="RFC20">2</a><a id="ref2"></a>. ASCII, RFC20 <a path-0="www.rfc-editor.org" path-1="rfc" path-2="rfc20" href="https://www.rfc-editor.org/rfc/rfc20"><span>https://www.rfc-editor.org/rfc/rfc20</span></a></p>
 <p><a id="MGPK">3</a><a id="ref3"></a>. <a path-0="github.com" path-1="msgpack" path-2="msgpack" path-3="blob" path-4="master" path-5="spec.md" href="https://github.com/msgpack/msgpack/blob/master/spec.md">MGPK specification</a></p>
 <p><a id="RAET">16</a><a id="ref16"></a>. Reliable Asynchronous Event Transport, RAET, <a path-0="github.com" path-1="RaetProtocol" path-2="raet" href="https://github.com/RaetProtocol/raet"><span>https://github.com/RaetProtocol/raet</span></a></p>
-<p><a id="RFC4627">18</a><a id="ref18"></a>. <a path-0="www.rfc-editor.org" path-1="rfc" path-2="rfc4627" href="https://www.rfc-editor.org/rfc/rfc4627">The application/json Media Type for JavaScript Object Notation (JSON)</a>. D. Crockford; 2006-07. Status: Informational.</p>
-<p><a id="RFC4648">19</a><a id="ref19"></a>. <a path-0="www.rfc-editor.org" path-1="rfc" path-2="rfc4648" href="https://www.rfc-editor.org/rfc/rfc4648">The Base16, Base32, and Base64 Data Encodings</a>. S. Josefsson; 2006-10. Status: Proposed Standard.</p>
-<p><a id="RFC6901">20</a><a id="ref20"></a>. <a path-0="www.rfc-editor.org" path-1="rfc" path-2="rfc6901" href="https://www.rfc-editor.org/rfc/rfc6901">JavaScript Object Notation (JSON) Pointer</a>. P. Bryan, Ed.; K. Zyp; M. Nottingham, Ed.; 2013-04. Status: Proposed Standard.</p>
-<p><a id="RFC8949">21</a><a id="ref21"></a>. <a path-0="www.rfc-editor.org" path-1="rfc" path-2="rfc8949" href="https://www.rfc-editor.org/rfc/rfc8949">Concise Binary Object Representation (CBOR)</a>. C. Bormann; P. Hoffman; 2020-12. Status: Internet Standard.</p>
+<p><a id="RFC4627">18</a><a id="ref18"></a>. RFC4627 <a path-0="www.rfc-editor.org" path-1="rfc" path-2="rfc4627" href="https://www.rfc-editor.org/rfc/rfc4627">The application/json Media Type for JavaScript Object Notation (JSON)</a>. D. Crockford; 2006-07. Status: Informational.</p>
+<p><a id="RFC4648">19</a><a id="ref19"></a>. RFC4648 <a path-0="www.rfc-editor.org" path-1="rfc" path-2="rfc4648" href="https://www.rfc-editor.org/rfc/rfc4648">The Base16, Base32, and Base64 Data Encodings</a>. S. Josefsson; 2006-10. Status: Proposed Standard.</p>
+<p><a id="RFC6901">20</a><a id="ref20"></a>. RFC6901 <a path-0="www.rfc-editor.org" path-1="rfc" path-2="rfc6901" href="https://www.rfc-editor.org/rfc/rfc6901">JavaScript Object Notation (JSON) Pointer</a>. P. Bryan, Ed.; K. Zyp; M. Nottingham, Ed.; 2013-04. Status: Proposed Standard.</p>
+<p><a id="RFC8949">21</a><a id="ref21"></a>. RFC8949 <a path-0="www.rfc-editor.org" path-1="rfc" path-2="rfc8949" href="https://www.rfc-editor.org/rfc/rfc8949">Concise Binary Object Representation (CBOR)</a>. C. Bormann; P. Hoffman; 2020-12. Status: Internet Standard.</p>
 <h3 id="informative-section"><a class="toc-anchor d-print-none" href="#informative-section">§</a> Informative section</h3>
 <p><a id="BOM">4</a><a id="ref4"></a>. BOM, UTF Byte Order Mark, <a path-0="en.wikipedia.org" path-1="wiki" path-2="Byte_order_mark" href="https://en.wikipedia.org/wiki/Byte_order_mark"><span>https://en.wikipedia.org/wiki/Byte_order_mark</span></a></p>
 <p><a id="Dlog">5</a><a id="ref5"></a>. DLog, Discrete Logarithm Problem, <a path-0="en.wikipedia.org" path-1="wiki" path-2="Discrete_logarithm" href="https://en.wikipedia.org/wiki/Discrete_logarithm"><span>https://en.wikipedia.org/wiki/Discrete_logarithm</span></a></p>
@@ -4053,7 +4054,7 @@ In this case this produces the schema SAID as follows:</p>
     </ul></div>
             </div>
             <hr>
-            <p class="ps-3 pe-3" id="w3c-state">W3C Recommendation, 04 September 2025</p>
+            <p class="ps-3 pe-3" id="w3c-state">W3C Recommendation, 05 September 2025</p>
         </div>
     </div>
 

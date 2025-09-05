@@ -1,4 +1,3 @@
-
 ## Composability and Domain representations
 
 ### Composability
@@ -6,7 +5,6 @@
 An encoding has Composability when any set of Self-Framing concatenated Primitives expressed in either the Text domain or Binary domain may be converted as a group to the other Domain and back again without loss. Essentially, Composability provides round-trippable lossless conversion between Text and Binary domain representations of any set of concatenated Primitives when converted as a set not merely individually. The property enables a Stream processor to safely convert en-masse a Stream in the Text domain to an equivalent Stream in the Binary domain for compact transmission that may be safely converted back to Text domain en-masse by a Stream processor at the other end for further processing or archival storage. All compliant encoded Primitives MUST be Composable. All compliant encoded Primitives MUST be self-framing.
 
 The use of Count Codes as independently composable groups enables hierarchical compositions. Such a hierarchically composable encoding protocol enables pipelining (multiplexing and de-multiplexing) of complex Streams in either text or compact binary. This allows management at scale for high-bandwidth applications that benefit from core affinity off-loading of Streams [[17](#ref17)].  All Count Code groups of Primitives or other compositions of Primitives and Count code groups MUST be Composable.  All Count Code groups of Primitives or other compositions of Primitives and Count code groups MUST be self-framing.  
-
 
 ### Abstract Domain representations
 
@@ -550,7 +548,7 @@ This table uses `6` as its first character or selector. The second character pro
 Many legacy cryptographic libraries such as OpenSSL and GPG support any variable-sized Primitive for keys, signatures, and digests such as RSA. Although this approach is often criticized for providing too much flexibility, many legacy applications depend on this degree of flexibility. Consequently, these large variable raw size tables provide a sufficiently expansive set of tables with enough types and sizes to accommodate all the legacy cryptographic libraries as well as all the variable-sized non-cryptographic raw Primitive types for the foreseeable future.
 
 ::: issue
-https://github.com/trustoverip/tswg-cesr-specification/issues/14
+[Post-quantum cryptographic operations](https://github.com/trustoverip/tswg-cesr-specification/issues/14)
 :::
 
 The three tables in this group are for large variable raw size Primitives. These three large variable raw size tables use 0, 1, or 2 lead bytes as appropriate for the associated pad size of 0, 1, or 2 for a given variable-sized raw binary value. The text code size for all three tables is 8 characters. As a special case, the first 62 entries in these tables represent that same crypto suite type as the 62 entries in the small variable raw size tables above. This allows one type to use a smaller 4-character text code when the raw size is small enough. The first character is the selector, the next three characters provide the type, and the last four characters provide the size of the value as a Base64 encoded integer. 
@@ -618,7 +616,6 @@ A minor change occurs when a code is added to a table; this only breaks backward
 ##### Op Code table
 
 The `_` selector MUST be reserved for the yet-to-be-defined opcode table or tables. Opcodes are designed to provide Stream processing instructions that are more general and flexible than simply concatenating Primitives or groups of Primitives. A yet-to-be-determined stack-based virtual machine could be executed using a set of opcodes that provide Primitive, groups of Primitives, or Stream processing instructions. This would enable highly customizable uses for CESR. 
-
 
 ### Summary of Selector code tables and encoding scheme design
 
@@ -870,7 +867,6 @@ This master table includes both the Primitive and Count Code types. The types ar
 
 A compliant KERI/ACDC genus MUST have the following codes in its Primitive and Count code tables.
 
-
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            | Count Codes |     |        |       |
@@ -963,8 +959,8 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |     `W`    | Label2 2 bytes for label lead size 0 |      1      |              |      4    |
 |     `X`    | Tag3 3 B64 encoded chars for special values |      1      |       3       |      4    |
 |     `Y`    | Tag7 7 B64 encoded chars for special values  |      1      |        7      |      8   |
-|     `Z`    | Blinding factor 256 bits, Cryptographic strength deterministically generated from random salt |      1      |              |      44 |         
-| Basic Two Character Codes    |             |              |              |
+|     `Z`    | Blinding factor 256 bits, Cryptographic strength deterministically generated from random salt |      1      |              |      44 |
+| Basic Two Character Codes    |             |              |              |    |
 |    `0A`    | Random salt, seed, nonce, private key, or sequence number of length 128 bits |      2      |              |      24      |
 |    `0B`    | Ed25519 signature                 |      2      |              |      88      |
 |    `0C`    | ECDSA secp256k1 signature         |      2      |              |      88      |
@@ -1519,13 +1515,13 @@ To elaborate, a post-quantum attack that may practically invert the one-way publ
 
 <a id="RAET">16</a><a id="ref16"></a>. Reliable Asynchronous Event Transport, RAET, https://github.com/RaetProtocol/raet
 
-<a id="RFC4627">18</a><a id="ref18"></a>. [The application/json Media Type for JavaScript Object Notation (JSON)](https://www.rfc-editor.org/rfc/rfc4627). D. Crockford; 2006-07. Status: Informational. 
+<a id="RFC4627">18</a><a id="ref18"></a>. RFC4627 [The application/json Media Type for JavaScript Object Notation (JSON)](https://www.rfc-editor.org/rfc/rfc4627). D. Crockford; 2006-07. Status: Informational. 
 
-<a id="RFC4648">19</a><a id="ref19"></a>. [The Base16, Base32, and Base64 Data Encodings](https://www.rfc-editor.org/rfc/rfc4648). S. Josefsson; 2006-10. Status: Proposed Standard. 
+<a id="RFC4648">19</a><a id="ref19"></a>. RFC4648 [The Base16, Base32, and Base64 Data Encodings](https://www.rfc-editor.org/rfc/rfc4648). S. Josefsson; 2006-10. Status: Proposed Standard. 
 
-<a id="RFC6901">20</a><a id="ref20"></a>. [JavaScript Object Notation (JSON) Pointer](https://www.rfc-editor.org/rfc/rfc6901). P. Bryan, Ed.; K. Zyp; M. Nottingham, Ed.; 2013-04. Status: Proposed Standard.
+<a id="RFC6901">20</a><a id="ref20"></a>. RFC6901 [JavaScript Object Notation (JSON) Pointer](https://www.rfc-editor.org/rfc/rfc6901). P. Bryan, Ed.; K. Zyp; M. Nottingham, Ed.; 2013-04. Status: Proposed Standard.
 
-<a id="RFC8949">21</a><a id="ref21"></a>. [Concise Binary Object Representation (CBOR)](https://www.rfc-editor.org/rfc/rfc8949). C. Bormann; P. Hoffman; 2020-12. Status: Internet Standard.
+<a id="RFC8949">21</a><a id="ref21"></a>. RFC8949 [Concise Binary Object Representation (CBOR)](https://www.rfc-editor.org/rfc/rfc8949). C. Bormann; P. Hoffman; 2020-12. Status: Internet Standard.
 
 ### Informative section
 
