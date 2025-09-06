@@ -481,9 +481,10 @@ In summary, a compliant CESR implementation MAY use up to 13 standard (non-speci
 ## Table types
 
 The tables in CESR consist of:
+
 * Two major types for raw CESR primitives:
-	* fixed-length raw size primitives 
-	* variable-length raw size primitives
+    * fixed-length raw size primitives 
+    * variable-length raw size primitives
 * Count code tables for grouping primitives
 * Protocol genus and version tables for use in differentiating between genus and versions of protocols encoded in CESR
 * Opcode tables that are not yet specified but may be used for advanced decentralized applications in the future
@@ -574,6 +575,7 @@ All Count Codes except the genus/version code table (see below) are pipelineable
 This invariance allows a stream parser to extract the number of characters/bytes in a group from the Stream without parsing the group's contents; it is therefore pipeline-able. By making all Count Codes pipeline-able, the Stream parser can be optimized in a granular way, including granular core affinity.
 
 There may be as many at 13 Count Code tables, but only three are specified in the current version. These three are:
+
 * The small count, four-character table
 * The large count, eight-character table
 * The eight-character protocol genus and version table. 
@@ -665,7 +667,6 @@ The following table defines the meaning of the symbols used in the encoding sche
 | `&` | Base64 value characters that represent the converted raw binary value.  The actual number of characters is determined by the prepended text code.  Shown is the minimum number of value characters. |
 | `TBD` | to be determined, reserved for future use |
 
-
 ### Special context-specific code tables
 
 The set of tables above provides the basic or master encoding schemes. These coding schemes constitute the basic or master set of code tables. This basic or master set, however, may be extended with context-specific code tables. The context in which a Primitive occurs may provide an additional implicit selector that is not part of the actual explicit text code. This allows context-specific coding schemes that would otherwise conflict with the basic or master encoding schemes and tables.
@@ -720,7 +721,7 @@ Selector code size table
 |       `5` |   2  |
 |           |      |
 
-#### Table 2 
+#### Table 2
 
 Parse size table
 
@@ -765,10 +766,9 @@ The following table includes both labels of parts shown in the columns in the pa
 | ‘rs’ | raw size in bytes (derived) of binary value where rs is derived from `R(T)` |
 | ‘bs’ | binary size in bytes (derived) where bs = ls + rs |
 
-
 ## Annex A
 
-### Code table entry policy 
+### Code table entry policy
 
 The policy for placing entries into the tables, in general, is in order of first needed first-entered basis. In addition, the compact code tables prioritize entries that satisfy the requirement that the associated cryptographic operations maintain at least 128 bits of cryptographic strength. This precludes the entry of many weak cryptographic suites into the compact tables. CESR's compact code table includes only best-of-class cryptographic operations along with common non-Cryptographic Primitive types. At the time of this writing, there is the expectation that the National Institute of Standards and Technology (NIST) soon will approve standardized post-quantum resistant cryptographic operations. When that happens, codes for the most appropriate post-quantum operations will be added. For example, Falcon appears to be among the leading candidates with open-source code already available.
 
@@ -812,7 +812,7 @@ All genera MUST have the following codes in their Count Code table.
 |   Code     | Description                       | Code Length | Count Length | Total Length |
 |:----------:|:----------------------------------|:-----------:|:------------:|:------------:|
 |            |  Count Codes |     |        |       |
-|            |  Universal Count Codes that allow genus/version override |       |        |        | 
+|            |  Universal Count Codes that allow genus/version override |       |        |        |
 |   `-A##`   | Generic pipeline group up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `--A#####` | Generic pipeline group up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-B##`   | Message + attachments group up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
@@ -843,8 +843,8 @@ All genera MUST have the following codes in their Count Code table.
 |   `-J##`   | Generic list mixed types up to 4,095 quadlets/triplets   |      4      |       2      |       4      |
 | `--J#####` | Generic list mixed types up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 
-
 ### KERI/ACDC protocol stack tables
+
 These tables are specific to the KERI/ACDC protocol genus. A compliant implementation of KERI/ACDC MUST support the following codes
 
 #### KERI/ACDC protocol genus version table
@@ -863,7 +863,7 @@ Unlike the code in the Universal Code Selector Table above, these represent *spe
 
 This master table includes the REQUIRED Primitive and Count Code types for the KERI/ACDC protocol stack. This table only provides the codes for the KERI/ACDC protocol stack code table genus `AAA` at Version 2.00 given by the genus/version code = `-_AAACAA` KERI/ACDC 2.00.  It is anticipated that the code tables for the KERI/ACDC/TSP protocol stack will not change much in the future after 2.00. Hopefully, there will never be a Version 3.00 because 2.00 was designed properly.
 
-This master table includes both the Primitive and Count Code types. The types are separated by headers. 
+This master table includes both the Primitive and Count Code types. The types are separated by headers.
 
 A compliant KERI/ACDC genus MUST have the following codes in its Primitive and Count code tables.
 
@@ -1119,7 +1119,8 @@ Non-CESR serializations, namely, JSON, CBOR, and MGPK when interleaved in a CESR
 
 The Version String, `v` field MUST be the first field in any top-level field map of any interleaved JSON, CBOR, or MGPK serialization. It provides a regular expression target for determining a serialized field map's serialization format and size (character count) of its enclosing field map. A Stream parser MUST be able to use the Version String to extract and deserialize (deterministically) any serialized Stream field maps. Each field map in a Stream MUST use one of the serialization types from the JSON, CBOR, or MGPK set. Each field map MAY have a different serialization type.
 
-The format of the Version String is `PPPPMmmGggKKKKBBBB.`. It is 19 characters in length and is divided into five parts: 
+The format of the Version String is `PPPPMmmGggKKKKBBBB.`. It is 19 characters in length and is divided into five parts:
+
 * Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
 * Protocol Version: `Mmm` three character major/minor version of the protocol (described below)
 * Genus Version: `Ggg` three character major/minor version of the CESR genus table (described below)
@@ -1131,12 +1132,13 @@ The first four characters, `PPPP` indicate the protocol. Each genus of a given C
 
 The next three characters, `Mmm`, provide in Base64 notation the major and minor version numbers of the Version of the protocol specification. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version decimal 0 or in dotted-decimal notation, i.e., `2.0`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
 
-The next three characters, `Ggg`, provide in Base64 notation the major and minor version numbers of the Version of the CESR genus table used in the message. This assumes that for a given Protocol the CESR genus is fixed and is determinable by the protocol so only the genus version is needed. The first `G` character provides the major version number, and the final two `gg` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.0`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version. 
+The next three characters, `Ggg`, provide in Base64 notation the major and minor version numbers of the Version of the CESR genus table used in the message. This assumes that for a given Protocol the CESR genus is fixed and is determinable by the protocol so only the genus version is needed. The first `G` character provides the major version number, and the final two `gg` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.0`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version.
 
 ::: warning non-canonical base64
 The versions employ a non-canonical encoding using Base64 indices. Most [[RFC4648](#RFC4648)]-compliant libraries will not encode/decode these correctly if they do not align on a 24 bit boundary. 
 
 For example, in Python (with padding character for demonstration), using a semantic version 2.0 that would map to "CAA" in our scheme as above.
+
 ```python
 >>> base64.urlsafe_b64decode("CAA=")
 b'\x08\x00'
@@ -1151,7 +1153,7 @@ The next four characters, `KKKK` indicate the serialization kind in uppercase. T
 
 The next four characters, `BBBB`, provide in Base64 notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 64<sup>4</sup> = 2<sup>24</sup> = 16,777,216 characters in length. This is deemed generous enough for the vast majority of anticipated applications. For serializations that may exceed this size, a secure hash chain of Messages may be employed where the value of a field in one Message is the cryptographic digest, SAID of the following Message. The total size of the chain of Messages may, therefore, be some multiple of 2<sup>24</sup>.
 
-The final character `.` is the Version String terminator. This enables later Versions of a protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String. 
+The final character `.` is the Version String terminator. This enables later Versions of a protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String.
 
 Although a given field map serialization kind may have characters or bytes such as field map delimiters or Framing Codes that appear before, i.e., prefix the Version String field in a serialization, the set of possible prefixes for each of the supported serialization kinds is sufficiently constrained by the allowed serialization protocols to guarantee that a regular expression can determine unambiguously the start of any ordered field map serialization that includes the Version String as the first field value. Given the length of the serialization provided by the Version String, a parser may then determine the end of the serialization to extract the full field map serialization from the Stream without first deserializing it. This enables performant Stream parsing and off-loading of Streams that include any or all of the supported serialization types.
 
@@ -1159,7 +1161,8 @@ Although a given field map serialization kind may have characters or bytes such 
 
 Compliant Version 2.XX implementations MUST support the old Version 1.XX Version String format to properly verify field maps created with 1.XX format events.
 
-The format of the Version String for version 1.XX is `PPPPvvKKKKllllll_`. It is 17 characters in length and is divided into five parts: 
+The format of the Version String for version 1.XX is `PPPPvvKKKKllllll_`. It is 17 characters in length and is divided into five parts:
+
 * Protocol: `PPPP` four character version string (for example, `KERI` or `ACDC`)
 * Version: `vv` two character major minor version (described below)
 * Serialization kind: `KKKK` four character string of the types (`JSON`, `CBOR`, `MGPK`, `CESR`)
@@ -1173,7 +1176,6 @@ The next two characters, `vv` provide the major and minor version numbers of the
  The next four characters, `KKKK` indicate the serialization kind in uppercase. The four supported serialization kinds are `JSON`, `CBOR`, `MGPK`, and `CESR` for the JSON, CBOR, MessagePack, and CESR serialization standards, respectively [[RFC4627](#RFC4627)] [[RFC8949](#RFC8949)] [[ref: RFC8949]] [[3](#ref3)] [[ref: CESR]]. 
 
 The next six characters provide in lowercase hexadecimal notation the total length of the serialization, inclusive of the Version String and any prefixed characters or bytes. This length is the total number of characters in the serialization of the field map. The maximum length of a given field map serialization is thereby constrained to be 16<sup>6</sup> = 2<sup>24</sup> = 16,777,216 characters in length. For example, when the length of serialization is 384 decimal characters/bytes, the length part of the Version String has the value `000180`. The final character `_` is the Version String terminator. This enables later Versions of the protocol to change the total Version String size and thereby enable versioned changes to the composition of the fields in the Version String while preserving deterministic regular expression extractability of the Version String. 
-
 
 ### Self-addressing identifier (SAID)
 
@@ -1201,11 +1203,11 @@ The SAID verification protocol MUST be implemented as follows:
 - Encode the computed digest with CESR [CESR] to create the final derived and encoded SAID of the same total length as the dummy string and the copied embedded SAID.
 - Compare the copied SAID with the recomputed SAID. If they are identical then the verification is successful; otherwise, unsuccessful.
 
-
 ##### Example Computation
+
 The CESR [CESR] encoding of a Blake3-256 (32 byte) binary digest has 44 Base-64 URL-safe characters. The first character is `E` which represents Blake3-256. Therefore, a serialization of a fixed field data structure with a SAID generated by a Blake3-256 digest must reserve a field of length 44 characters. Suppose the initial value of the fixed field serialization is the 76-character string as follows:
 
-```
+```text
 field_0_01234567field_1_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789field_2_98765432
 ```
 
@@ -1217,23 +1219,23 @@ field2 is the 16 character string "field_2_98765432"
 
 The first step to generating the SAID for this serialization is to replace the placeholder contents of `field1` with a dummy string of `#` characters of length 44. This produces a dummied 76-character string as follows:
 
-```
+```text
 field_0_01234567############################################field_2_98765432
 ```
 
 The Blake3-256 digest is then computed on the above string and encoded in CESR format. This is the SAID of the 76-character string as follows:
-```
+
+```text
 ENI2bDYghiu1KYYkFrPofH8tJ5tNiNt8WrTIc4s_5IIH
 ```
 
 Replacing the 44 dummy characters with the SAID of the same length produces the final SAIDified string as follows:
 
-```
+```text
 field_0_01234567ENI2bDYghiu1KYYkFrPofH8tJ5tNiNt8WrTIc4s_5IIHfield_2_98765432
 ```
 
 To verify the embedded SAID with respect to its encompassing serialization above, just reverse the generation steps. In other words, replace the SAID in the string with dummy characters of the same length, compute the Blake3 digest as SAID of this dummied version, and then compare the SAIDs.
-
 
 ##### Serialization Generation
 
@@ -1295,7 +1297,7 @@ assert raw == '{"said":"############################################","first":"S
 
 The Blake3-256 digest is then computed on that serialization above and encoded in CESR to provide the SAID as follows:
 
-```
+```text
 EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ
 ```
 
@@ -1332,7 +1334,7 @@ First, replace the value of the `$id` field with a string filled with dummy char
     "type": "object",
     "properties": {
         "full_name": {
-        	"type": "string"
+           "type": "string"
         }
     }
 }
@@ -1419,13 +1421,13 @@ After the root path, path components follow, delimited by the `-` character. Pat
 
 An example SAD Path using only labels that resolve to map contexts follows:
 
-```
+```text
 -a-personal
 ```
 
 In addition, integers can be specified and their meaning is dependent on the context of the SAD.
 
-```
+```text
 -5-3-name
 ```
 
