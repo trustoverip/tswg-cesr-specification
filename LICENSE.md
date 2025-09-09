@@ -1,14 +1,16 @@
 # Licensing
 
+This repository and its content inherit a licensing model from the Technical Stack Working Group ([TSWG](https://wiki.trustoverip.org/display/HOME/Technology+Stack+Working+Group)) at the Trust over IP Foundation ([ToIP](https://trustoverip.org))
+=======
 All software and documentation in this repository are *Copyright 2023 CESR Contributors* and 
 all contributions to this repository are *Licensed under the OWFa 1.0 (the "License")* [here](https://github.com/trustoverip/tswg-acdc-specification/blob/main/LICENSE).
 
-As as defined in the License, contributions include but are not limited to patents, source code, specification text, 
-documentation, comments and issues. You may not use the software or documentation in this repository except in compliance with the License.
-Unless required by applicable law or agreed to in writing, software distributed
-under the License is distributed on an "AS IS" BASIS.
-You may obtain a copy of the License at [OWFa 1.0](https://www.openwebfoundation.org/the-agreements/the-owf-1-0-agreements-granted-claims/owfa-1-0).
+The license model comprises of three parts and as such three documents:
 
+* [Copyright Policy](COPYRIGHT_POLICY.md)
+* [Approved Deliverable Patent Licensing](PATENT_LICENSING.md)
+* [Source Code](SOURCE_CODE.md)
+=======
 To remove any doubt as the origin on any contributions, all contributers are also bound by the
 Developer Ceritificate of Origin v1.1 (DCO 1.1) which may be found [here](https://developercertificate.org)
 
