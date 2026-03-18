@@ -780,7 +780,7 @@ The following table includes both labels of parts shown in the columns in the pa
 
 ### Code table entry policy
 
-The policy for placing entries into the tables, in general, is in order of first needed first-entered basis. In addition, the compact code tables prioritize entries that satisfy the requirement that the associated cryptographic operations maintain at least 128 bits of cryptographic strength. This precludes the entry of many weak cryptographic suites into the compact tables. CESR's compact code table includes only best-of-class cryptographic operations along with common non-Cryptographic Primitive types. At the time of this writing, there is the expectation that the National Institute of Standards and Technology (NIST) soon will approve standardized post-quantum resistant cryptographic operations. When that happens, codes for the most appropriate post-quantum operations will be added. For example, Falcon appears to be among the leading candidates with open-source code already available.
+The policy for placing entries into the tables, in general, is in order of first needed first-entered basis. In addition, the compact code tables prioritize entries that satisfy the requirement that the associated cryptographic operations maintain at least 128 bits of cryptographic strength. This precludes the entry of many weak cryptographic suites into the compact tables. CESR's compact code table includes only best-of-class cryptographic operations along with common non-Cryptographic Primitive types. NIST finalized its first three post-quantum cryptography standards in August 2024: ML-KEM (FIPS 203) [[FIPS203](#FIPS203)], ML-DSA (FIPS 204) [[FIPS204](#FIPS204)], and SLH-DSA (FIPS 205) [[FIPS205](#FIPS205)]. A fourth standard, FN-DSA (FIPS 206) [[FIPS206](#FIPS206)], based on the Falcon algorithm, is in active standardization and expected to be finalized in 2026 or 2027. Codes for these post-quantum algorithms are being introduced in successive updates to this specification. The entries below include primitives for FN-DSA (Falcon), which offers the most compact signatures and public keys among the NIST post-quantum signature schemes and is of particular interest to bandwidth-sensitive protocols such as KERI.
 
 ### Table format
 
@@ -975,6 +975,13 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |     `Y`    | Tag7 7 B64 encoded chars for special values  |      1      |        7      |      8   |
 |     `Z`    | Tag11  11 B64 encoded chars for special values |      1      |              |      12 |
 |     `a`    | Blinding factor 256 bits, Cryptographic strength deterministically generated from random salt |      1      |              |      44 |
+|     `b`    | FN-DSA-1024 public verification key [[FIPS206](#FIPS206)] |      1      |              |      2392      |
+|     `c`    | Seed of FN-DSA-512 private key [[FIPS206](#FIPS206)] |      1      |              |      44      |
+|     `d`    | Seed of FN-DSA-1024 private key [[FIPS206](#FIPS206)] |      1      |              |      44      |
+|     `e`    | FN-DSA-512 non-transferable prefix AID (Blake3-256 digest of FN-DSA-512 public key) [[FIPS206](#FIPS206)] |      1      |              |      44      |
+|     `f`    | FN-DSA-512 public verification key digest (Blake3-256, transferable) [[FIPS206](#FIPS206)] |      1      |              |      44      |
+|     `g`    | FN-DSA-1024 non-transferable prefix AID (Blake3-256 digest of FN-DSA-1024 public key) [[FIPS206](#FIPS206)] |      1      |              |      44      |
+|     `h`    | FN-DSA-1024 public verification key digest (Blake3-256, transferable) [[FIPS206](#FIPS206)] |      1      |              |      44      |
 | Basic Two Character Codes    |             |              |              |    |
 |    `0A`    | Random salt, seed, nonce, private key, or sequence number of length 128 bits |      2      |              |      24      |
 |    `0B`    | Ed25519 signature                 |      2      |              |      88      |
@@ -1010,6 +1017,7 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `1AAL`   | No falsey Boolean value |      4      |              |      4      |
 |   `1AAM`   | Yes truthy Boolean value|      4      |              |      4      |
 |   `1AAN`   | Tag8 8 B64 encoded chars for special values |      4      |       8       |      12      |
+|   `1AAQ`   | FN-DSA-512 public verification key [[FIPS206](#FIPS206)] |      4      |              |      1200      |
 |            |  Variable Raw Size Codes  |             |              |              |
 |   `1AAO`   | Escape code for escaping special map field values |      4      |              |      4      |
 |   `1AAP`   | Empty value for nonce or string |      4      |              |      4      |
@@ -1049,6 +1057,12 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `7AAF`   | HPKE Base cipher bytes of QB2 plaintext big lead size 0 |      8      |      4        |            |
 |   `8AAF`   | HPKE Base cipher bytes of QB2 plaintext big lead size 1 |      8      |      4        |            |
 |   `9AAF`   | HPKE Base cipher bytes of QB2 plaintext big lead size 2 |      8      |      4        |            |
+|   `4G`     | FN-DSA-512 signature bytes lead size 0 [[FIPS206](#FIPS206)] |      4      |      2        |            |
+|   `5G`     | FN-DSA-512 signature bytes lead size 1 [[FIPS206](#FIPS206)] |      4      |      2        |            |
+|   `6G`     | FN-DSA-512 signature bytes lead size 2 [[FIPS206](#FIPS206)] |      4      |      2        |            |
+|   `4I`     | FN-DSA-1024 signature bytes lead size 0 [[FIPS206](#FIPS206)] |      4      |      2        |            |
+|   `5I`     | FN-DSA-1024 signature bytes lead size 1 [[FIPS206](#FIPS206)] |      4      |      2        |            |
+|   `6I`     | FN-DSA-1024 signature bytes lead size 2 [[FIPS206](#FIPS206)] |      4      |      2        |            |
 |   `4H`     | Decimal number string lead size 0 |      4      |      2        |            |
 |   `5H`     | Decimal number string lead size 1 |      4      |      2        |            |
 |   `6H`     | Decimal number string lead size 2 |      4      |      2        |            |
@@ -1505,6 +1519,8 @@ Consequently, one way to provide some degree of post-quantum security is to hide
 
 To elaborate, a post-quantum attack that may practically invert the one-way public key generation (ECC scalar multiplication) function using quantum computation must first invert the public key's digest using non-quantum computation. Pre-quantum cryptographic strength is, therefore, not weakened post-quantum. A surprise quantum capability may no longer be a vulnerability. Strong one-way hash functions, such as 256-bit (32-byte) Blake2, Blake3, and SHA3, with 128 bits of pre-quantum strength, maintain that strength post-quantum. Furthermore, hiding the pre-rotation public keys does not impose any additional storage burden on the controller because the controller must always be able to reproduce or recover the associated private keys to sign the associated rotation operation. Hidden public keys may be compactly expressed as Base64 encoded qualified public keys' digests (hidden), where the digest function is indicated in the derivation code.
 
+The same digest-hiding technique applies to post-quantum public keys themselves. Post-quantum public keys such as FN-DSA-512 (897 bytes) and FN-DSA-1024 (1793 bytes) are considerably larger than classical public keys. Rather than embedding the full public key in every event as the AID, a Blake3-256 digest of the public key (32 bytes, 44 qb64 characters) may serve as the AID, yielding an identifier of the same compact size as a classical AID. The full public key must then be provided wherever signature verification is required, typically in the inception event's key list. This design is consistent with the existing KERI pre-rotation commitment model: the AID commits to the digest of the key, and the key is disclosed when first used. For FN-DSA, the CESR codes `e` and `f` (FN-DSA-512 non-transferable and transferable prefix AIDs) and `g` and `h` (FN-DSA-1024 non-transferable and transferable prefix AIDs) encode a Blake3-256 digest of the respective public key, serving as compact AIDs. The corresponding full public keys use codes `1AAQ` (FN-DSA-512) and `b` (FN-DSA-1024). FN-DSA signatures, which are variable in length up to a maximum of 666 bytes (FN-DSA-512) or 1280 bytes (FN-DSA-1024), use the typed variable-size codes `4G`/`5G`/`6G` and `4I`/`5I`/`6I` respectively. No indexed signature codes are defined for FN-DSA because the variable-length signature format is not compatible with the fixed-size indexed code scheme; position within a multi-signature attachment group is instead conveyed by the enclosing count code.
+
 ## Bibliography
 
 ### Normative section
@@ -1530,6 +1546,14 @@ To elaborate, a post-quantum attack that may practically invert the one-way publ
 <a id="JSON">23</a><a id="ref23"></a>. IETF <a id="RFC8259">RFC-8259</a> [JSON](https://www.rfc-editor.org/rfc/rfc8259.txt). T. Bray, Ed. 2017-12. Status:  Standards Track
 
 <a id="BLAKE3">24</a><a id="ref24"></a>. Blake3 Specification [Blake3](https://github.com/BLAKE3-team/BLAKE3-specs). J. O’Connor; J-P. Aumasson; S. Neves ; Z. Wilcox-O’Hearn.  Version 20211102173700.
+
+<a id="FIPS203">25</a><a id="ref25"></a>. FIPS 203, Module-Lattice-Based Key-Encapsulation Mechanism Standard. National Institute of Standards and Technology, August 2024. https://doi.org/10.6028/NIST.FIPS.203
+
+<a id="FIPS204">26</a><a id="ref26"></a>. FIPS 204, Module-Lattice-Based Digital Signature Standard. National Institute of Standards and Technology, August 2024. https://doi.org/10.6028/NIST.FIPS.204
+
+<a id="FIPS205">27</a><a id="ref27"></a>. FIPS 205, Stateless Hash-Based Digital Signature Standard. National Institute of Standards and Technology, August 2024. https://doi.org/10.6028/NIST.FIPS.205
+
+<a id="FIPS206">28</a><a id="ref28"></a>. FIPS 206 (Initial Public Draft), FN-DSA: FFT (fast-Fourier transform) over NTRU-Lattice-Based Digital Signature Algorithm. National Institute of Standards and Technology. https://csrc.nist.gov/pubs/fips/206/ipd
 
 ### Informative section
 
