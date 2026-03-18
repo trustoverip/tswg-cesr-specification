@@ -1553,7 +1553,7 @@ The same digest-hiding technique applies to post-quantum public keys themselves.
 
 <a id="FIPS205">27</a><a id="ref27"></a>. FIPS 205, Stateless Hash-Based Digital Signature Standard. National Institute of Standards and Technology, August 2024. https://doi.org/10.6028/NIST.FIPS.205
 
-<a id="FIPS206">28</a><a id="ref28"></a>. FIPS 206 (Initial Public Draft), FN-DSA: FFT (fast-Fourier transform) over NTRU-Lattice-Based Digital Signature Algorithm. National Institute of Standards and Technology. https://csrc.nist.gov/pubs/fips/206/ipd
+<a id="FIPS206">28</a><a id="ref28"></a>. FIPS 206: FN-DSA (Falcon). National Institute of Standards and Technology. https://csrc.nist.gov/presentations/2025/fips-206-fn-dsa-falcon
 
 ### Informative section
 
