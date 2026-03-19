@@ -978,10 +978,7 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |     `b`    | FN-DSA-1024 public verification key [[FIPS206](#FIPS206)] |      1      |              |      2392      |
 |     `c`    | Seed of FN-DSA-512 private key [[FIPS206](#FIPS206)] |      1      |              |      44      |
 |     `d`    | Seed of FN-DSA-1024 private key [[FIPS206](#FIPS206)] |      1      |              |      44      |
-|     `e`    | FN-DSA-512 non-transferable prefix AID (Blake3-256 digest of FN-DSA-512 public key) [[FIPS206](#FIPS206)] |      1      |              |      44      |
-|     `f`    | FN-DSA-512 public verification key digest (Blake3-256, transferable) [[FIPS206](#FIPS206)] |      1      |              |      44      |
-|     `g`    | FN-DSA-1024 non-transferable prefix AID (Blake3-256 digest of FN-DSA-1024 public key) [[FIPS206](#FIPS206)] |      1      |              |      44      |
-|     `h`    | FN-DSA-1024 public verification key digest (Blake3-256, transferable) [[FIPS206](#FIPS206)] |      1      |              |      44      |
+|     `e`    | FN-DSA-1024 signature [[FIPS206](#FIPS206)] |      1      |              |      1708      |
 | Basic Two Character Codes    |             |              |              |    |
 |    `0A`    | Random salt, seed, nonce, private key, or sequence number of length 128 bits |      2      |              |      24      |
 |    `0B`    | Ed25519 signature                 |      2      |              |      88      |
@@ -1018,6 +1015,7 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `1AAM`   | Yes truthy Boolean value|      4      |              |      4      |
 |   `1AAN`   | Tag8 8 B64 encoded chars for special values |      4      |       8       |      12      |
 |   `1AAQ`   | FN-DSA-512 public verification key [[FIPS206](#FIPS206)] |      4      |              |      1200      |
+|   `1AAR`   | FN-DSA-512 signature [[FIPS206](#FIPS206)] |      4      |              |      892      |
 |            |  Variable Raw Size Codes  |             |              |              |
 |   `1AAO`   | Escape code for escaping special map field values |      4      |              |      4      |
 |   `1AAP`   | Empty value for nonce or string |      4      |              |      4      |
@@ -1057,12 +1055,6 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `7AAF`   | HPKE Base cipher bytes of QB2 plaintext big lead size 0 |      8      |      4        |            |
 |   `8AAF`   | HPKE Base cipher bytes of QB2 plaintext big lead size 1 |      8      |      4        |            |
 |   `9AAF`   | HPKE Base cipher bytes of QB2 plaintext big lead size 2 |      8      |      4        |            |
-|   `4G`     | FN-DSA-512 signature bytes lead size 0 [[FIPS206](#FIPS206)] |      4      |      2        |            |
-|   `5G`     | FN-DSA-512 signature bytes lead size 1 [[FIPS206](#FIPS206)] |      4      |      2        |            |
-|   `6G`     | FN-DSA-512 signature bytes lead size 2 [[FIPS206](#FIPS206)] |      4      |      2        |            |
-|   `4I`     | FN-DSA-1024 signature bytes lead size 0 [[FIPS206](#FIPS206)] |      4      |      2        |            |
-|   `5I`     | FN-DSA-1024 signature bytes lead size 1 [[FIPS206](#FIPS206)] |      4      |      2        |            |
-|   `6I`     | FN-DSA-1024 signature bytes lead size 2 [[FIPS206](#FIPS206)] |      4      |      2        |            |
 |   `4H`     | Decimal number string lead size 0 |      4      |      2        |            |
 |   `5H`     | Decimal number string lead size 1 |      4      |      2        |            |
 |   `6H`     | Decimal number string lead size 2 |      4      |      2        |            |
@@ -1519,7 +1511,7 @@ Consequently, one way to provide some degree of post-quantum security is to hide
 
 To elaborate, a post-quantum attack that may practically invert the one-way public key generation (ECC scalar multiplication) function using quantum computation must first invert the public key's digest using non-quantum computation. Pre-quantum cryptographic strength is, therefore, not weakened post-quantum. A surprise quantum capability may no longer be a vulnerability. Strong one-way hash functions, such as 256-bit (32-byte) Blake2, Blake3, and SHA3, with 128 bits of pre-quantum strength, maintain that strength post-quantum. Furthermore, hiding the pre-rotation public keys does not impose any additional storage burden on the controller because the controller must always be able to reproduce or recover the associated private keys to sign the associated rotation operation. Hidden public keys may be compactly expressed as Base64 encoded qualified public keys' digests (hidden), where the digest function is indicated in the derivation code.
 
-The same digest-hiding technique applies to post-quantum public keys themselves. Post-quantum public keys such as FN-DSA-512 (897 bytes) and FN-DSA-1024 (1793 bytes) are considerably larger than classical public keys. Rather than embedding the full public key in every event as the AID, a Blake3-256 digest of the public key (32 bytes, 44 qb64 characters) may serve as the AID, yielding an identifier of the same compact size as a classical AID. The full public key must then be provided wherever signature verification is required, typically in the inception event's key list. This design is consistent with the existing KERI pre-rotation commitment model: the AID commits to the digest of the key, and the key is disclosed when first used. For FN-DSA, the CESR codes `e` and `f` (FN-DSA-512 non-transferable and transferable prefix AIDs) and `g` and `h` (FN-DSA-1024 non-transferable and transferable prefix AIDs) encode a Blake3-256 digest of the respective public key, serving as compact AIDs. The corresponding full public keys use codes `1AAQ` (FN-DSA-512) and `b` (FN-DSA-1024). FN-DSA signatures, which are variable in length up to a maximum of 666 bytes (FN-DSA-512) or 1280 bytes (FN-DSA-1024), use the typed variable-size codes `4G`/`5G`/`6G` and `4I`/`5I`/`6I` respectively. No indexed signature codes are defined for FN-DSA because the variable-length signature format is not compatible with the fixed-size indexed code scheme; position within a multi-signature attachment group is instead conveyed by the enclosing count code.
+CESR codes for FN-DSA public keys and signatures use the fixed-length encodings defined by FIPS 206. FN-DSA public keys use codes `1AAQ` (FN-DSA-512, 897 bytes raw, 1200 qb64 chars) and `b` (FN-DSA-1024, 1793 bytes raw, 2392 qb64 chars). FN-DSA signatures are zero-padded to their maximum length and encoded as fixed-size primitives: `1AAR` (FN-DSA-512, 666 bytes raw, 892 qb64 chars) and `e` (FN-DSA-1024, 1280 bytes raw, 1708 qb64 chars). Seeds for FN-DSA private keys use codes `c` (FN-DSA-512) and `d` (FN-DSA-1024), both 32 bytes raw and 44 qb64 chars. Where a compact AID derived from an FN-DSA public key is needed, the existing CESR digest codes (such as `E` for Blake3-256) may be applied to the public key bytes; context determines whether a given digest primitive encodes a hash of an FN-DSA key or of some other value.
 
 ## Bibliography
 

@@ -2540,31 +2540,10 @@ the contents of a Count Code group are other primitives or groups.</p>
 </tr>
 <tr>
 <td style="text-align:center"><code>e</code></td>
-<td style="text-align:left">FN-DSA-512 non-transferable prefix AID (Blake3-256 digest of FN-DSA-512 public key) [<a href="#FIPS206">FIPS206</a>]</td>
+<td style="text-align:left">FN-DSA-1024 signature [<a href="#FIPS206">FIPS206</a>]</td>
 <td style="text-align:center">1</td>
 <td style="text-align:center"></td>
-<td style="text-align:center">44</td>
-</tr>
-<tr>
-<td style="text-align:center"><code>f</code></td>
-<td style="text-align:left">FN-DSA-512 public verification key digest (Blake3-256, transferable) [<a href="#FIPS206">FIPS206</a>]</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">44</td>
-</tr>
-<tr>
-<td style="text-align:center"><code>g</code></td>
-<td style="text-align:left">FN-DSA-1024 non-transferable prefix AID (Blake3-256 digest of FN-DSA-1024 public key) [<a href="#FIPS206">FIPS206</a>]</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">44</td>
-</tr>
-<tr>
-<td style="text-align:center"><code>h</code></td>
-<td style="text-align:left">FN-DSA-1024 public verification key digest (Blake3-256, transferable) [<a href="#FIPS206">FIPS206</a>]</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">44</td>
+<td style="text-align:center">1708</td>
 </tr>
 <tr>
 <td style="text-align:center">Basic Two Character Codes</td>
@@ -2817,6 +2796,13 @@ the contents of a Count Code group are other primitives or groups.</p>
 <td style="text-align:center">4</td>
 <td style="text-align:center"></td>
 <td style="text-align:center">1200</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>1AAR</code></td>
+<td style="text-align:left">FN-DSA-512 signature [<a href="#FIPS206">FIPS206</a>]</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">892</td>
 </tr>
 <tr>
 <td style="text-align:center"></td>
@@ -3089,48 +3075,6 @@ the contents of a Count Code group are other primitives or groups.</p>
 <td style="text-align:left">HPKE Base cipher bytes of QB2 plaintext big lead size 2</td>
 <td style="text-align:center">8</td>
 <td style="text-align:center">4</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center"><code>4G</code></td>
-<td style="text-align:left">FN-DSA-512 signature bytes lead size 0 [<a href="#FIPS206">FIPS206</a>]</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center"><code>5G</code></td>
-<td style="text-align:left">FN-DSA-512 signature bytes lead size 1 [<a href="#FIPS206">FIPS206</a>]</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center"><code>6G</code></td>
-<td style="text-align:left">FN-DSA-512 signature bytes lead size 2 [<a href="#FIPS206">FIPS206</a>]</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center"><code>4I</code></td>
-<td style="text-align:left">FN-DSA-1024 signature bytes lead size 0 [<a href="#FIPS206">FIPS206</a>]</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center"><code>5I</code></td>
-<td style="text-align:left">FN-DSA-1024 signature bytes lead size 1 [<a href="#FIPS206">FIPS206</a>]</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center"><code>6I</code></td>
-<td style="text-align:left">FN-DSA-1024 signature bytes lead size 2 [<a href="#FIPS206">FIPS206</a>]</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">2</td>
 <td style="text-align:center"></td>
 </tr>
 <tr>
@@ -3671,7 +3615,7 @@ In this case this produces the schema SAID as follows:</p>
 <p><a class="x-term-reference term-reference" data-local-href="#term:toip2:post-quantum" href="https://trustoverip.github.io/ctwg-general-glossary/#term:post-quantum">Post-quantum</a> or quantum-safe cryptography deals with techniques that maintain their cryptographic strength despite attacks from quantum computers. Because it is currently assumed that practical quantum computers do not yet exist, post-quantum techniques are designed for a future when they do. A one-way function that is post-quantum secure will not be any less secure (resistant to inversion) in the event that practical quantum computers suddenly or unexpectedly become available. One class of post-quantum secure one-way functions consists of some cryptographic strength hashes. The analysis of D.J. Bernstein with regard to the collision resistance of cryptographic one-way hashing functions concludes that quantum computation provides no advantage over non-quantum techniques [<a href="#PQCollisonCost">PQCollisonCost</a>].</p>
 <p>Consequently, one way to provide some degree of post-quantum security is to hide cryptographic material behind digests of that material created by such hashing functions. This directly applies to the public keys declared in the pre-rotations. Instead of a pre-rotation making a cryptographic pre-commitment to a public key, it makes a pre-commitment to a digest of that public key. The digest may be verified once the public key is disclosed (unhidden) in a later rotation operation. Because the digest is the output of a one-way hash function, it is uniquely and strongly bound to the public key. When the unexposed public keys of a pre-rotation are hidden in a digest, the associated private keys are protected from a post-quantum brute force inversion attack on those public keys.</p>
 <p>To elaborate, a post-quantum attack that may practically invert the one-way public key generation (ECC scalar multiplication) function using quantum computation must first invert the public key’s digest using non-quantum computation. Pre-quantum cryptographic strength is, therefore, not weakened post-quantum. A surprise quantum capability may no longer be a vulnerability. Strong one-way hash functions, such as 256-bit (32-byte) Blake2, Blake3, and SHA3, with 128 bits of pre-quantum strength, maintain that strength post-quantum. Furthermore, hiding the pre-rotation public keys does not impose any additional storage burden on the controller because the controller must always be able to reproduce or recover the associated private keys to sign the associated rotation operation. Hidden public keys may be compactly expressed as Base64 encoded qualified public keys’ digests (hidden), where the digest function is indicated in the derivation code.</p>
-<p>The same digest-hiding technique applies to post-quantum public keys themselves. Post-quantum public keys such as FN-DSA-512 (897 bytes) and FN-DSA-1024 (1793 bytes) are considerably larger than classical public keys. Rather than embedding the full public key in every event as the AID, a Blake3-256 digest of the public key (32 bytes, 44 qb64 characters) may serve as the AID, yielding an identifier of the same compact size as a classical AID. The full public key must then be provided wherever signature verification is required, typically in the inception event’s key list. This design is consistent with the existing KERI pre-rotation commitment model: the AID commits to the digest of the key, and the key is disclosed when first used. For FN-DSA, the CESR codes <code>e</code> and <code>f</code> (FN-DSA-512 non-transferable and transferable prefix AIDs) and <code>g</code> and <code>h</code> (FN-DSA-1024 non-transferable and transferable prefix AIDs) encode a Blake3-256 digest of the respective public key, serving as compact AIDs. The corresponding full public keys use codes <code>1AAQ</code> (FN-DSA-512) and <code>b</code> (FN-DSA-1024). FN-DSA signatures, which are variable in length up to a maximum of 666 bytes (FN-DSA-512) or 1280 bytes (FN-DSA-1024), use the typed variable-size codes <code>4G</code>/<code>5G</code>/<code>6G</code> and <code>4I</code>/<code>5I</code>/<code>6I</code> respectively. No indexed signature codes are defined for FN-DSA because the variable-length signature format is not compatible with the fixed-size indexed code scheme; position within a multi-signature attachment group is instead conveyed by the enclosing count code.</p>
+<p>CESR codes for FN-DSA public keys and signatures use the fixed-length encodings defined by FIPS 206. FN-DSA public keys use codes <code>1AAQ</code> (FN-DSA-512, 897 bytes raw, 1200 qb64 chars) and <code>b</code> (FN-DSA-1024, 1793 bytes raw, 2392 qb64 chars). FN-DSA signatures are zero-padded to their maximum length and encoded as fixed-size primitives: <code>1AAR</code> (FN-DSA-512, 666 bytes raw, 892 qb64 chars) and <code>e</code> (FN-DSA-1024, 1280 bytes raw, 1708 qb64 chars). Seeds for FN-DSA private keys use codes <code>c</code> (FN-DSA-512) and <code>d</code> (FN-DSA-1024), both 32 bytes raw and 44 qb64 chars. Where a compact AID derived from an FN-DSA public key is needed, the existing CESR digest codes (such as <code>E</code> for Blake3-256) may be applied to the public key bytes; context determines whether a given digest primitive encodes a hash of an FN-DSA key or of some other value.</p>
 <h2 id="bibliography"><a class="toc-anchor d-print-none" href="#bibliography">§</a> Bibliography</h2>
 <h3 id="normative-section"><a class="toc-anchor d-print-none" href="#normative-section">§</a> Normative section</h3>
 <p><a id="KERI">1</a><a id="ref1"></a>. <a href="https://trustoverip.github.io/kswg-keri-specification/">KERI specification</a></p>
