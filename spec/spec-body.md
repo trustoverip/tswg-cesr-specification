@@ -1143,7 +1143,7 @@ Legend:
 
 #### Examples
 
-The tables above include complex groups that maybe composed of other groups. For example, consider the counter transferable indexed signatures attachment group with code `-X##` where `##` is replaced by the two-character Base64 count of the number of complex groups. This is known as the TransIndexedSigGroups counter.  Within the complex group are one or more attached groups where each TransIndexedSigGroup group consists of a triple pre+snu+dig followed by a ControllerIdxSigs group that in turn, consists of a Count Code `-K##` followed by one or more indexed signature Primitives each with indexed primitive code `A#`.
+The tables above include complex groups that maybe composed of other groups. For example, consider the counter transferable indexed signatures attachment group with code `-X##` where `##` is replaced by the two-character Base64 size of the complex groups that follow, counted in quadlets/triplets. This is known as the TransIndexedSigGroups counter.  Within the complex group are one or more attached groups where each TransIndexedSigGroup group consists of a triple pre+snu+dig followed by a ControllerIdxSigs group that in turn, consists of a Count Code `-K##` followed by one or more indexed signature Primitives each with indexed primitive code `A#`. The `##` of that `-K##` Count Code likewise gives the size of the signatures that follow in quadlets/triplets, not their number. For example, an Ed25519 indexed signature has 88 characters, so a `-K##` group holding one such signature is written `-KAW` (22 quadlets).
 
 
 The following example details how a complex nested group may appear.
