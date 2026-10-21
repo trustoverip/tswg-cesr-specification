@@ -671,7 +671,7 @@ The following table defines the meaning of the symbols used in the encoding sche
 | `*` | selector-code character also provides the type |
 | `$` | type-code character from subset of Base64 `[A-Z, a-z,0-9,-,_]` |
 | `%` | lead byte where pre-converted binary includes the number of lead bytes shown |
-| `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following Quadlets or triplets. When part of a Count Code determines the count of the following Primitives or groups of Primitives |
+| `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following Quadlets or triplets. When part of a Count Code determines the size of the following group in quadlets/triplets |
 | `&` | Base64 value characters that represent the converted raw binary value.  The actual number of characters is determined by the prepended text code.  Shown is the minimum number of value characters. |
 | `TBD` | to be determined, reserved for future use |
 
@@ -711,7 +711,7 @@ The following table defines the meaning of the symbols used in the Indexed Code 
 | `*` | selector-code character also provides the type |
 | `$` | type-code character from subset of Base64 `[A-Z,a-z,0-9,-,_]` |
 | `%` | lead byte where pre-converted binary includes the number of lead bytes shown |
-| `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following Quadlets or triplets. When part of a Count Code determines the count of following Primitives or groups of Primitives |
+| `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following Quadlets or triplets. When part of a Count Code determines the size of the following group in quadlets/triplets |
 | `&` | Base64 value characters that represent the converted raw binary value.  The actual number of characters is determined by the prepended text code.  Shown is the minimum number of value characters. |
 | `TBD` | to be determined, reserved for future |
 
@@ -1143,7 +1143,7 @@ Legend:
 
 #### Examples
 
-The tables above include complex groups that maybe composed of other groups. For example, consider the counter transferable indexed signatures attachment group with code `-X##` where `##` is replaced by the two-character Base64 count of the number of complex groups. This is known as the TransIndexedSigGroups counter.  Within the complex group are one or more attached groups where each TransIndexedSigGroup group consists of a triple pre+snu+dig followed by a ControllerIdxSigs group that in turn, consists of a Count Code `-K##` followed by one or more indexed signature Primitives each with indexed primitive code `A#`.
+The tables above include complex groups that maybe composed of other groups. For example, consider the counter transferable indexed signatures attachment group with code `-X##` where `##` is replaced by the two-character Base64 size of the complex groups that follow, counted in quadlets/triplets. This is known as the TransIndexedSigGroups counter.  Within the complex group are one or more attached groups where each TransIndexedSigGroup group consists of a triple pre+snu+dig followed by a ControllerIdxSigs group that in turn, consists of a Count Code `-K##` followed by one or more indexed signature Primitives each with indexed primitive code `A#`. The `##` of that `-K##` Count Code likewise gives the size of the signatures that follow in quadlets/triplets, not their number. For example, an Ed25519 indexed signature has 88 characters, so a `-K##` group holding one such signature is written `-KAW` (22 quadlets).
 
 
 The following example details how a complex nested group may appear.
