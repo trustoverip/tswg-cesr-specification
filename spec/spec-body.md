@@ -711,7 +711,7 @@ The following table defines the meaning of the symbols used in the Indexed Code 
 | `*` | selector-code character also provides the type |
 | `$` | type-code character from subset of Base64 `[A-Z,a-z,0-9,-,_]` |
 | `%` | lead byte where pre-converted binary includes the number of lead bytes shown |
-| `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following Quadlets or triplets. When part of a Count Code determines the count of following Primitives or groups of Primitives |
+| `#` | Base64 digit as part of a base 64 integer. When part of Primitive determines the number of following Quadlets or triplets. When part of a Count Code determines the size of the following group in quadlets/triplets |
 | `&` | Base64 value characters that represent the converted raw binary value.  The actual number of characters is determined by the prepended text code.  Shown is the minimum number of value characters. |
 | `TBD` | to be determined, reserved for future |
 
