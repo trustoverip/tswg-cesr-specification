@@ -550,7 +550,7 @@ This table uses `5` as its first character or selector. The second character pro
 
 ##### Small variable-length raw-size table with 2 lead bytes
 
-This table uses `6` as its first character or selector. The second character provides the type. The final two characters provide the size of the value in quadlets/triplets as a Base64 encoded integer. Only raw binaries with a pad size of 0 are encoded with this table. The 1-character type code provides a total of 64 unique type code values. The maximum length of the value provided by the 2 size characters is 4095 quadlets of characters in the ‘T’ domain and triplets of bytes in the ‘B’ domain. All are raw binary Primitives with a pad size of 2 that each includes 2 lead bytes.
+This table uses `6` as its first character or selector. The second character provides the type. The final two characters provide the size of the value in quadlets/triplets as a Base64 encoded integer. Only raw binaries with a pad size of 2 are encoded with this table. The 1-character type code provides a total of 64 unique type code values. The maximum length of the value provided by the 2 size characters is 4095 quadlets of characters in the ‘T’ domain and triplets of bytes in the ‘B’ domain. All are raw binary Primitives with a pad size of 2 that each includes 2 lead bytes.
 
 #### Large Variable-length Raw-size Tables
 
@@ -699,7 +699,7 @@ The associated indexed schemes are provided in the following table:
 |`[A-Z,a-z]`|  `1*`      |     1       |      0      |      2    |      0     |      2   |         `$#&&`|
 |     `0`   |   1        |     1       |      1      |      4    |      0     |      0   |     `0$##&&&&`|
 |     `2`   |   1        |     2       |      2      |      6    |      0     |      2   |   `2$####&&&&`|
-|     `3`   |   1        |     3       |      3      |      6    |      0     |      0   | `3$######&&&&`|
+|     `3`   |   1        |     3       |      3      |      8    |      0     |      0   | `3$######&&&&`|
 
 ##### Encoding scheme format symbol table
 
@@ -931,7 +931,7 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `-R##`   | Merkle Tree Root seal singles `rdig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `--R#####` | Merkle Tree Root seal singles `rdig` up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-S##`   | Issuer/Delegator/Transaction event seal source couple snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
-| `-S#####` | Issuer/Delegator/Transaction event seal source couple snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
+| `--S#####` | Issuer/Delegator/Transaction event seal source couple snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-T##`   | Anchoring event seal source triple pre+snu+dig up to 4,095 quadlets/triplets |      4      |       2      |       4      |
 | `--T#####` | Anchoring event seal source triple pre+snu+dig up to 1,073,741,823 quadlets/triplets |      8      |       5      |       8      |
 |   `-U##`   | Last event seal source singles  `aid+dig` up to 4,095 quadlets/triplets |      4      |       2      |       4      |
@@ -1106,7 +1106,7 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 :::
 
 
-#### Indexed code table for genus/version `--AAACAA` (KERI/ACDC protocol stack version 2.00)
+#### Indexed code table for genus/version `-_AAACAA` (KERI/ACDC protocol stack version 2.00)
 
 A compliant KERI/ACDC genus MUST have the following codes in its contextual indexed code table.
 
@@ -1184,7 +1184,7 @@ The first four characters, `PPPP` indicate the protocol. Each genus of a given C
 
 The next three characters, `Mmm`, provide in base 64 numerical notation the major and minor version numbers of the Version of the protocol specification. The first `V` character provides the major version number, and the final two `VV` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version decimal 0 or in dotted-decimal notation, i.e., `2.0`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `2.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version.
 
-The next three characters, `Ggg`, provide in base 64 numerical notation the major and minor version numbers of the Version of the CESR genus table used in the [[ref: message]]. This assumes that for a given Protocol, the CESR genus is fixed and is determinable by the protocol, so only the genus version is needed. The first `G` character provides the major version number, and the final two `gg` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.0`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `1.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version.
+The next three characters, `Ggg`, provide in base 64 numerical notation the major and minor version numbers of the Version of the CESR genus table used in the [[ref: message]]. This assumes that for a given Protocol, the CESR genus is fixed and is determinable by the protocol, so only the genus version is needed. The first `G` character provides the major version number, and the final two `gg` characters provide the minor version number. For example, `CAA` indicates major version 2 and minor version 00 or in dotted-decimal notation, i.e., `2.0`. Likewise, `CAQ` indicates major version 2 and minor version decimal 16 or in dotted-decimal notation `2.16`. The Version part supports up to 64 major versions with 4096 minor versions per major version.
 
 By base 64 numerical notation, we mean a number expressed as a base 64 number, not a string encoded in Base64. A single base 64 digit has 64 possible numeric values, `[0-63]` base 10, where `A` corresponds to 0 and `_` corresponds to 63. The numeric value comes from the index or offset of the character in the Base64 conversion table. To clarify, in base 64 numerical notation, each base 64 digit is a part of a number base 64, where the position in the number determines the base 64 exponent.  For example, to convert a base 64 number to base 10,  the digit in the zeroth position (right most) is multiplied by 64 raised to the exponent 0, i.e. is multiplied by 1, the digit in the first position is multiplied by 64 raised to the exponent 1, i.e. multiplied by 64, the second digit is multiplied by 64 raised to the exponent 2, i.e. multiplied by  4096. The position values are summed together to provide the equivalent base 10 numerical value. In the case of a version string, a 3-digit base 64 number is used as is without converting to base 10. One just needs to remember that each base 64 numerical digit has 64 numerical values `[0-63]` in base 10, which correspond to the index in the Base64 conversion table for each character.
 
