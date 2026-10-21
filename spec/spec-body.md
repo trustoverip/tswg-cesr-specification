@@ -1106,7 +1106,7 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 :::
 
 
-#### Indexed code table for genus/version `--AAACAA` (KERI/ACDC protocol stack version 2.00)
+#### Indexed code table for genus/version `-_AAACAA` (KERI/ACDC protocol stack version 2.00)
 
 A compliant KERI/ACDC genus MUST have the following codes in its contextual indexed code table.
 
